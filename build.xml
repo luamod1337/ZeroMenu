@@ -1,0 +1,36 @@
+<project name="ZeroMenu" default="compile" basedir="C:\Users\Julius\AppData\Roaming\PopstarDevs\2Take1Menu\scripts">
+  <description>
+    simple example build file
+  </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="release" location="release"/>
+  <property name="dist" location="dist"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${release}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source">
+    <!-- Compile the Java code from ${src} into ${build} -->
+  	<copy todir="">
+  		<fileset dir="D:\Dropbox\Dropbox\lua\ZeroMenu2\src">
+  		    <include name="**/*.lua"/>
+  			<exclude name="**/2Take1Api/**.lua"/>
+  		  </fileset>
+  		</copy>
+  </target>
+
+  <target name="clean"
+        description="clean up">
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
