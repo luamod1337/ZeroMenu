@@ -1,7 +1,7 @@
-Event = {}
-Event.__index = Event
+event = {}
+event.__index = event
 
 
-function Event:add_event_listener(eventName, callback)end
-function Event:remove_event_listener(eventName, id)end
+function event:add_event_listener(eventName, callback)end
+function event:remove_event_listener(eventName, id)end
 

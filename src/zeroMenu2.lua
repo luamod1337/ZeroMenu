@@ -4,6 +4,7 @@ require("ZeroMenuLib/Options/Nearby")
 require("ZeroMenuLib/Options/Self")
 require("ZeroMenuLib/Options/Grief")
 require("ZeroMenuLib/Options/Protection")
+require("ZeroMenuLib/Options/ChatCommands")
 require("ZeroMenuLib/Options/World")
 
 require("ZeroMenuLib/util/config")
@@ -36,6 +37,8 @@ function zeroMenuMain()
   createProtectionMenu(zeroMenu,config)
 	
 	createWorldMenu(zeroMenu,config)
+	
+	createChatCommands(zeroMenu,config)
 	
 end
 

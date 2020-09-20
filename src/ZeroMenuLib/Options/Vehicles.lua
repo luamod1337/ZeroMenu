@@ -1,4 +1,3 @@
-
 --local speed = 5000000
 local speed = 15000
 local distance = 50
