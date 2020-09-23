@@ -31,6 +31,10 @@ local vpnIPList
 
 local checkedList
 
+local ProddyUtils = require("ProddyUtils")
+
+local VPNCheckerThread
+
 function createModderDetectionMenuEntry(parent,config)
 
 	zModderMain = menu.add_feature("Zero's Modder Detection", "parent", parent.id, nil)
@@ -94,57 +98,46 @@ function loadVPNList()
 end
 
 
-local lastIPCheck = 0
-function checkIP()
-  if (os.time() - lastIPCheck) > 10 then
-    for slot = 0, 31 do
-      if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
-        if checkedList[player.get_player_name(slot)] == nil then        
-          local ip = player.get_player_ip(slot)
-          
-          local ipS = string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)
-         
-          --local http = require("socket.http")
-          print("requesting...")
-          --local l = http.request("http://www.cs.princeton.edu/~diego/professional/luasocket")
-          --local http = require("socket.http")
-          
-         
-         --[[
-          local ipBlockA = tonumber((ip >> 24) & 0xff);
-          local ipBlockB = tonumber((ip >> 16) & 0xff);
-          local ipBlockC = tonumber((ip >> 8) & 0xff);
-          local ipBlockD = tonumber(ip & 0xff);
-    
-          --Check Private 10.0.0.0 till 10.255.255.255
-          if(ipBlockA == 10) then
-            ui.notify_above_map(player.get_player_name(slot) .. " has an invalid IP " .. ipS,"ZModder Detection",140)
-          end
-          --Check Private 172.16.0.0 till 172.31.255.255
-          if(ipBlockA == 172 and (ipBlockB >= 16 and ipBlockB <= 31)) then
-            ui.notify_above_map(player.get_player_name(slot) .. " has an invalid IP " .. ipS,"ZModder Detection",140)
-          end
-          --Check Private 192.168.0.0 till 192.168.255.255
-          if(ipBlockA == 192 and ipBlockB == 168) then
-            ui.notify_above_map(player.get_player_name(slot) .. " has an invalid IP " .. ipS,"ZModder Detection",140)
-          end
-          
-          
-          if vpnlist[ipS] ~= nil then
-            ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZModder Detection",140)
-          end        
-          checkedList[player.get_player_name(slot)] = 1
-          ]]--
-      end        
-    end
-  end
-    lastIPCheck = os.time()    
-  end
+
+function checkIP()  
   if iPchecker.on then    
+    if VPNCheckerThread ~= nil then
+       VPNCheckerThread =  menu.create_thread(workWithRequest,{})
+    end
+    
+    if menu.has_thread_finished(VPNCheckerThread) then
+      ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZeroMenu",140)    
+    end    
     return HANDLER_CONTINUE
   else
+    menu.delete_thread(VPNCheckerThread)
     return HANDLER_POP
   end
+end
+
+local lastIPCheck = 0
+
+function workWithRequest(para)  
+  while true do
+    if (os.time() - lastIPCheck) > 10 then
+      for slot = 0, 31 do
+        if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
+          if checkedList[player.get_player_name(slot)] == nil then        
+            local ip = player.get_player_ip(slot)          
+            local ipS = string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)       
+            local success, res = ProddyUtils.Net.DownloadString("ip-api.com", "/json/" .. para['ip'] .. "?fields=proxy")
+            if success then
+              if res == "true" then
+                ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZeroMenu",140)          
+              end
+            end
+            checkedList[player.get_player_name(slot)] = 1          
+          end        
+        end
+      end
+      lastIPCheck = os.time()    
+    end
+  end  
 end
 
 function checkInvisible()

@@ -67,15 +67,15 @@ function pushAwayGrief(feat,slot)
     if r == 1 then return HANDLER_CONTINUE end
     if r == 2 then return HANDLER_POP end
     lastSpeed = s
-  end
-  
-  
+  end  
     entity.set_entity_max_speed(veh,10000)
     vehicle.set_vehicle_out_of_control(veh,false,false)   
     entity.set_entity_rotation(veh,rotation)
     vehicle.set_vehicle_forward_speed(veh, lastSpeed)
     if feat.on then
       return HANDLER_CONTINUE
+    else
+      return HANDLER_POP      
     end
   end   	
 end

@@ -28,7 +28,7 @@ function loadVehicleMenu(parent,config)
   setMaxSpeed = menu.add_feature("Set Max Speed", "action", vehiclesubmenu.id, setMaxSpeedVehicle)
   setMaxSpeed.threaded = false
 
-  setHeliBladeSpeed = menu.add_feature("Set Max Speed", "action", vehiclesubmenu.id, setHeliBladeSpeed)
+  setHeliBladeSpeed = menu.add_feature("Set Heli Blade Speed", "action", vehiclesubmenu.id, setHeliBladeSpeed)
   setHeliBladeSpeed.threaded = false
 
   vehicleParachute = menu.add_feature("Open Vehicle Parachute", "action", vehiclesubmenu.id, openVehicleParachute)

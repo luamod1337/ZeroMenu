@@ -1,4 +1,4 @@
-<project name="ZeroMenu" default="compile" basedir="C:\Users\Julius\AppData\Roaming\PopstarDevs\2Take1Menu\scripts">
+<project name="ZeroMenu" default="compile">
   <description>
     simple example build file
   </description>
@@ -11,16 +11,14 @@
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-    <mkdir dir="${release}"/>
   </target>
 
   <target name="compile" depends="init"
         description="compile the source">
     <!-- Compile the Java code from ${src} into ${build} -->
-  	<copy todir="">
-  		<fileset dir="D:\Dropbox\Dropbox\lua\ZeroMenu2\src">
+  	
+  	<copy todir="C:\Users\${user.name}\AppData\Roaming\PopstarDevs\2Take1Menu\scripts\">
+  		<fileset dir="src">
   		    <include name="**/*.lua"/>
   			<exclude name="**/2Take1Api/**.lua"/>
   		  </fileset>

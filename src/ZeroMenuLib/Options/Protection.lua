@@ -1,6 +1,7 @@
 local fpsCrashAttampt
 
 local vehicleNearByStorage = {}
+local lastNotify = 0
 
 function createProtectionMenu(zModderMain,config)
   local protectionSubMenu = menu.add_feature("Protection", "parent", zModderMain.id, nil)
@@ -8,6 +9,7 @@ function createProtectionMenu(zModderMain,config)
   fpsCrashAttampt = menu.add_feature("FPS Crash", "toggle", protectionSubMenu.id, fpsCrashCheck)
   fpsCrashAttampt.threaded = false
 end
+
 
 function fpsCrashCheck()
   local limit = 10  
@@ -27,7 +29,10 @@ function fpsCrashCheck()
       network.request_control_of_entity(veh)
       entity.set_entity_coords_no_offset(veh,pos)
       entity.freeze_entity(veh,true)
-      ui.notify_above_map("Removed Possible FPS Crash Vehicle " .. entity.get_entity_model_hash(veh),"ZeroMenu Protections",140)
+      if (os.time() - lastNotify) > 10 then
+        ui.notify_above_map("Removed Possible FPS Crash Vehicle " .. entity.get_entity_model_hash(veh),"ZeroMenu Protections",140)
+        lastNotify = os.time()
+      end
     end
   end
   vehicleNearByStorage = {}
