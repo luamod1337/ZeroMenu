@@ -1,4 +1,5 @@
---local speed = 5000000
+require("ZeroMenuLib/Util/Util")
+
 local speed = 15000
 local distance = 50
 local askedInput = false
@@ -34,10 +35,12 @@ function loadVehicleMenu(parent,config)
   vehicleParachute = menu.add_feature("Open Vehicle Parachute", "action", vehiclesubmenu.id, openVehicleParachute)
   vehicleParachute.threaded = false
   
-  freezeVehicleOnExitVar = menu.add_feature("Freeze Vehicle on exit", "toggle", vehiclesubmenu.id, freezeVehicleOnExit)
+  freezeVehicleOnExitVar = createConfigedMenuOption("Freeze Vehicle on exit","toggle",vehiclesubmenu.id,freezeVehicleOnExit,config,"freezeVehOnExit",false,nil)
+  --freezeVehicleOnExitVar = menu.add_feature("Freeze Vehicle on exit", "toggle", vehiclesubmenu.id, freezeVehicleOnExit)
   freezeVehicleOnExitVar.threaded = false
   
-  noClipVehicleOnExitVar = menu.add_feature("NoClip Vehicle on exit", "toggle", vehiclesubmenu.id, NoClipVehicleOnExit)
+  noClipVehicleOnExitVar = createConfigedMenuOption("NoClip Vehicle on exit (stay nearby)","toggle",vehiclesubmenu.id,NoClipVehicleOnExit,config,"noClipVehOnExit",false,nil)
+  --noClipVehicleOnExitVar = menu.add_feature("NoClip Vehicle on exit", "toggle", vehiclesubmenu.id, NoClipVehicleOnExit)
   noClipVehicleOnExitVar.threaded = false
 
   

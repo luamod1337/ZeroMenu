@@ -6,6 +6,7 @@ require("ZeroMenuLib/Options/Grief")
 require("ZeroMenuLib/Options/Protection")
 require("ZeroMenuLib/Options/ChatCommands")
 require("ZeroMenuLib/Options/World")
+require("ZeroMenuLib/Options/Lobby")
 
 require("ZeroMenuLib/util/config")
 
@@ -17,12 +18,10 @@ configpath = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMe
 
 function zeroMenuMain()
 
-  config = Config:create(configpath)
+  config = Config:create(configpath,true)
 
 -- Main Feature
 	zeroMenu = menu.add_feature("ZeroMenu", "parent", 0, nil)	
-	--load Settings
-	loadSetting(zeroMenu,config)
 	--load Vehicle Options
 	loadVehicleMenu(zeroMenu,config)	
 	--Load Modder Detection	
@@ -40,6 +39,14 @@ function zeroMenuMain()
 	
 	createChatCommands(zeroMenu,config)
 	
+	createLobbyOptions(zeroMenu,config)
+	
+	
+	
+	
+  --load Settings
+  loadSetting(zeroMenu,config)
+	
 end
 
 function loadSetting(parent,config)
@@ -51,7 +58,7 @@ function loadSetting(parent,config)
   
   settings = menu.add_feature("Save", "action",settings.id, 
   function()
-    config.saveConfig()
+    config:saveConfig()
     ui.notify_above_map("saving config","ZeroMenu",140)
   end)
 end

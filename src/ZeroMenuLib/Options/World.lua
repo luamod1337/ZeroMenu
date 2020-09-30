@@ -1,4 +1,4 @@
-
+require("ZeroMenuLib/Util/Util")
 
 function createWorldMenu(zModderMain,config)
 

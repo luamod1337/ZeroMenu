@@ -1,17 +1,19 @@
+require("ZeroMenuLib/Util/Util")
 local selfMain
 local wander
 
 function createSelfMenuEntry(parent,config)
   selfMain = menu.add_feature("Self", "parent", parent.id, nil)
-  wander = menu.add_feature("Wander Streets (Vehicle)", "toggle", selfMain.id, wanderStreet)
+  
+  wander = createConfigedMenuOption("Wander Streets (Vehicle)","toggle",selfMain.id,wanderStreet,config,"wander",false,nil)
+  --wander = menu.add_feature("Wander Streets (Vehicle)", "toggle", selfMain.id, wanderStreet)
   wander.threaded = false
   
-  config = config
-  config:saveIfNotExist("wander",false)  
+  --config:saveIfNotExist("wander",false)  
   
-  if config:isFeatureEnabled("wander") then
-    wander.on = true
-  end  
+  --if config:isFeatureEnabled("wander") then
+  --  wander.on = true
+  --end  
 end
 
 function wanderStreet()

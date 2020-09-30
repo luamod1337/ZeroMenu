@@ -4,6 +4,7 @@ function createGriefEntry(config)
   menu.add_player_feature("Vehicle Speed Grief","action",0,speedVehicleGriefPlayer) 
   menu.add_player_feature("Vehicle Speed Upgrade Grief","action",0,speedVehicleUpgradeGriefPlayer)
   menu.add_player_feature("Vehicle Door Grief","action",0,doorVehicleGriefPlayer)
+ 
   menu.add_player_feature("Push Grief","toggle",0,pushAwayGrief)  
   menu.add_player_feature("Disable Vehicle","toggle",0,disableVehicle)  
   griefscream = menu.add_player_feature("Scream Grief","toggle",0,screamGriefPlayer)
@@ -112,6 +113,7 @@ function speedVehicleUpgradeGriefPlayer(feat, slot)
       local r, s = input.get("Enter new Torque", 1000000, 64, 0)
       if r == 1 then return HANDLER_CONTINUE end
       if r == 2 then return HANDLER_POP end
+      
       local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(slot))
       if veh ~= nil then
         if not network.has_control_of_entity(veh) then

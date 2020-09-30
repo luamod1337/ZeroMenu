@@ -1,7 +1,9 @@
+require("ZeroMenuLib/Util/Util")
+
 local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
 
-local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning,AntiDepressorMain, deppressorCheck, distanceTP,oppressor,hydra,lazer,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
+local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning,AntiDepressorMain, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
 local clearPath,noCollissionmenu,partyHardMenu,blmMenu
 
 local lastSlowMoRun = 0
@@ -18,67 +20,75 @@ function createNearbyMenu(parent,config)
   nearby = menu.add_feature("Nearby", "parent", parent.id, nil)
   AntiDepressorMain = menu.add_feature("Anti Depressor", "parent", nearby.id, nil)
   
-  slowMo  = menu.add_feature("SlowMo", "toggle", nearby.id, slowMoLobby)
+  slowMo = createConfigedMenuOption("SlowMo","toggle",nearby.id,slowMoLobby,config,"slowmolobby",false,nil)   
+  --slowMo  = menu.add_feature("SlowMo", "toggle", nearby.id, slowMoLobby)
   slowMo.threaded = false 
   
-  if config:isFeatureEnabled("slowmolobby") then
-    slowMo.on = true
-  end
+  --if config:isFeatureEnabled("slowmolobby") then
+  --  slowMo.on = true
+  --end
   
-  hyper = menu.add_feature("Hyper", "toggle", nearby.id, hyperLobby)
+  hyper = createConfigedMenuOption("Hyper","toggle",nearby.id,hyperLobby,config,"hyperlobby",false,nil)   
+  --hyper = menu.add_feature("Hyper", "toggle", nearby.id, hyperLobby)
   hyper.threaded = false
   
-  if config:isFeatureEnabled("hyperlobby") then
-    hyper.on = true
-  end
+  --if config:isFeatureEnabled("hyperlobby") then
+  --  hyper.on = true
+  --end
   
-  deppressorCheck = menu.add_feature("Check for Depressor", "toggle", AntiDepressorMain.id, checkForDepressor)
+  deppressorCheck = createConfigedMenuOption("Check for Depressor","toggle",AntiDepressorMain.id,checkForDepressor,config,"deppressorCheck",false,nil)   
+  --deppressorCheck = menu.add_feature("Check for Depressor", "toggle", AntiDepressorMain.id, checkForDepressor)
   deppressorCheck.threaded = true
-  config:saveIfNotExist("deppressorCheck","false",configpath)
+  --config:saveIfNotExist("deppressorCheck","false",configpath)
   
-  if config:isFeatureEnabled("deppressorCheck") then
-    deppressorCheck.on = true
-  end
+  --if config:isFeatureEnabled("deppressorCheck") then
+  --  deppressorCheck.on = true
+  --end
   
-  coronaCheck = menu.add_feature("Check for encounters", "toggle", nearby.id, checkForPlayer)
+  coronaCheck = createConfigedMenuOption("Check for encounters","toggle",nearby.id,checkForPlayer,config,"coronaCheck",false,nil)   
+  --coronaCheck = menu.add_feature("Check for encounters", "toggle", nearby.id, checkForPlayer)
   coronaCheck.threaded = false
-  config:saveIfNotExist("coronaCheck","false",configpath)
+  --config:saveIfNotExist("coronaCheck","false",configpath)
   
-  if config:isFeatureEnabled("coronaCheck") then
-    coronaCheck.on = true
-  end
+  --if config:isFeatureEnabled("coronaCheck") then
+  --  coronaCheck.on = true
+  --end
   
-  clearPath = menu.add_feature("Clearpath", "toggle", nearby.id, clearPathNearby)
+  clearPath = createConfigedMenuOption("Clearpath","toggle",nearby.id,clearPathNearby,config,"clearPath",false,nil)   
+  --clearPath = menu.add_feature("Clearpath", "toggle", nearby.id, clearPathNearby)
   clearPath.threaded = false
-  config:saveIfNotExist("clearPath","false",configpath)
+  --config:saveIfNotExist("clearPath","false",configpath)
   
-  if config:isFeatureEnabled("clearPath") then
-    clearPath.on = true
-  end
+  --if config:isFeatureEnabled("clearPath") then
+  --  clearPath.on = true
+  --end
   
-  noCollissionmenu = menu.add_feature("No Colission", "toggle", nearby.id, noCollision)
+  noCollissionmenu = createConfigedMenuOption("No Colission","toggle",nearby.id,noCollision,config,"noCollission",false,nil)
+  --noCollissionmenu = menu.add_feature("No Colission", "toggle", nearby.id, noCollision)
   noCollissionmenu.threaded = false
-  config:saveIfNotExist("noCollission","false",configpath)
+  --config:saveIfNotExist("noCollission","false",configpath)
   
-  if config:isFeatureEnabled("noCollission") then
-    noCollissionmenu.on = true
-  end
+  --if config:isFeatureEnabled("noCollission") then
+  --  noCollissionmenu.on = true
+  --end
   
-  partyHardMenu = menu.add_feature("Party Mode", "toggle", nearby.id, dancingNpcs)
+  partyHardMenu = createConfigedMenuOption("Party Mode","toggle",nearby.id,dancingNpcs,config,"partyHard",false,nil)
+  --partyHardMenu = menu.add_feature("Party Mode", "toggle", nearby.id, dancingNpcs)
   partyHardMenu.threaded = true
-  config:saveIfNotExist("partyHard","false",configpath)
+  --config:saveIfNotExist("partyHard","false",configpath)
   
-  if config:isFeatureEnabled("partyHard") then
-    partyHardMenu.on = true
-  end
+  --if config:isFeatureEnabled("partyHard") then
+  --  partyHardMenu.on = true
+  --end
   
-  blmMenu = menu.add_feature("BLM Demo", "toggle", nearby.id, warZone)
+  blmMenu = createConfigedMenuOption("BLM Demo","toggle",nearby.id,warZone,config,"blm",false,nil)
+  --blmMenu = menu.add_feature("BLM Demo", "toggle", nearby.id, warZone)
   blmMenu.threaded = false
-  config:saveIfNotExist("blm","false",configpath)
+  --config:saveIfNotExist("blm","false",configpath)
   
-  if config:isFeatureEnabled("blm") then
-    blmMenu.on = true
-  end
+  --if config:isFeatureEnabled("blm") then
+  --  blmMenu.on = true
+  --end
   
   storage = {}
 end
@@ -451,8 +461,7 @@ function loadNearbySettings(parent,config)
     
     distanceWarning.value_i = distance
   end)
-  
-  config:saveIfNotExist("cfdistance",distance)
+  config:saveIfNotExist("cfdistance",tonumber(distance))
   config:saveIfNotExist("cfdistancemax",10000)
   
   

@@ -1,6 +1,6 @@
-System = {}
-System.__index = System
+system = {}
+system.__index = system
 
 
-function System:wait(ms)end
-function System:yield(ms)end
+function system:wait(ms)end
+function system:yield(ms)end

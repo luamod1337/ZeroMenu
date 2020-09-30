@@ -1,11 +1,9 @@
-
---local http = require("ZeroMenu2\\ZeroMenuLib\\luasocket\\lua\\http")
-
+require("ZeroMenuLib/Util/Util")
 
 local zModderMain
 
 -- features
-local god,visible,neteventlogger,positionchecker,timer,timerTP,controlchecker,iPchecker
+local god,visible,neteventlogger,positionchecker,timer,timerTP,controlchecker,iPchecker,iPchecker2
 
 -- integers
 local hookID
@@ -31,55 +29,62 @@ local vpnIPList
 
 local checkedList
 
-local ProddyUtils = require("ProddyUtils")
+local VPNCheckerThread,VPNCheckerThread2
 
-local VPNCheckerThread
+
+local doVar = true
 
 function createModderDetectionMenuEntry(parent,config)
 
 	zModderMain = menu.add_feature("Zero's Modder Detection", "parent", parent.id, nil)
 
-  config:saveIfNotExist("godCheck",false)    
-  config:saveIfNotExist("visibleCheck",false)   
-  config:saveIfNotExist("PositionCheck",false)  
-  config:saveIfNotExist("RequestCheck",false)  
-  config:saveIfNotExist("IpCheck",false)
+  --config:saveIfNotExist("godCheck",false)
+  --config:saveIfNotExist("visibleCheck",false)   
+  --config:saveIfNotExist("PositionCheck",false)  
+  --config:saveIfNotExist("RequestCheck",false)  
+  --config:saveIfNotExist("IpCheck",false)
 
 	-- Main Features
-	god	= menu.add_feature("Godmode check", "toggle", zModderMain.id, checkPlayersForGod)
+	god = createConfigedMenuOption("Godmode check","toggle",zModderMain.id,checkPlayersForGod,config,"godCheck",false,nil)   
+	--god	= menu.add_feature("Godmode check", "toggle", zModderMain.id, checkPlayersForGod)
 	god.threaded = false
 	
 	if config:isFeatureEnabled("godCheck") then
     god.on = true
   end  
-	
-	visible	= menu.add_feature("Visible check", "toggle", zModderMain.id, checkInvisible)
+	visible = createConfigedMenuOption("Visible check","toggle",zModderMain.id,checkInvisible,config,"visibleCheck",false,nil)   
+	--visible	= menu.add_feature("Visible check", "toggle", zModderMain.id, checkInvisible)
 	visible.threaded = false
 	
 	if config:isFeatureEnabled("visibleCheck") then
     visible.on = true
   end
-	
-  positionchecker = menu.add_feature("Position Checker", "toggle", zModderMain.id, logDistanceMovedPerSec)
+  
+	positionchecker = createConfigedMenuOption("Position check","toggle",zModderMain.id,logDistanceMovedPerSec,config,"PositionCheck",false,nil)   
+  --positionchecker = menu.add_feature("Position Checker", "toggle", zModderMain.id, logDistanceMovedPerSec)
   positionchecker.threaded = false
   
   if config:isFeatureEnabled("PositionCheck") then
     positionchecker.on = true
   end
   
-  controlchecker = menu.add_feature("Request Control Checker", "toggle", zModderMain.id, checkRequestControl)
+  controlchecker = createConfigedMenuOption("Request Control Checker","toggle",zModderMain.id,checkRequestControl,config,"RequestCheck",false,nil)
+  --controlchecker = menu.add_feature("Request Control Checker", "toggle", zModderMain.id, checkRequestControl)
   controlchecker.threaded = false
   
   if config:isFeatureEnabled("RequestCheck") then
     controlchecker.on = true
   end
   
-  iPchecker = menu.add_feature("IP Range Checker", "toggle", zModderMain.id, checkIP)
+  iPchecker = createConfigedMenuOption("IP Range Checker","toggle",zModderMain.id,checkIP,config,"IpCheck",false,nil)
+  --iPchecker = menu.add_feature("IP Range Checker", "toggle", zModderMain.id, checkIP)
   iPchecker.threaded = true
   
   if config:isFeatureEnabled("IpCheck") then
     iPchecker.on = true
   end
+  
+  iPchecker2 = menu.add_feature("IP Range Checker Test", "toggle", zModderMain.id, checkIP2)
   
 	playerList = {}
 	
@@ -101,43 +106,99 @@ end
 
 function checkIP()  
   if iPchecker.on then    
-    if VPNCheckerThread ~= nil then
-       VPNCheckerThread =  menu.create_thread(workWithRequest,{})
-    end
-    
-    if menu.has_thread_finished(VPNCheckerThread) then
-      ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZeroMenu",140)    
+    if VPNCheckerThread == nil then
+      print("creating thread")
+      local PrintHiParams = {
+          Keys = {"NOMOD", "RETURN"},
+          Callback = function() print("Hi") end
+      }
+      VPNCheckerThread = menu.create_thread(workWithRequest,PrintHiParams)
+      print("creating thread with id " .. VPNCheckerThread)
     end    
     return HANDLER_CONTINUE
   else
+    doVar = false
     menu.delete_thread(VPNCheckerThread)
     return HANDLER_POP
   end
 end
 
-local lastIPCheck = 0
-
-function workWithRequest(para)  
-  while true do
+function workWithRequest(para) 
+  local lastIPCheck = 0 
+  local ProddyUtils = require("ProddyUtils")
+  
+  while doVar do
     if (os.time() - lastIPCheck) > 10 then
+      print("Checking ... ")
       for slot = 0, 31 do
         if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
           if checkedList[player.get_player_name(slot)] == nil then        
-            local ip = player.get_player_ip(slot)          
+            local ip = player.get_player_ip(slot)                 
             local ipS = string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)       
-            local success, res = ProddyUtils.Net.DownloadString("ip-api.com", "/json/" .. para['ip'] .. "?fields=proxy")
+            --ui.notify_above_map("Checking IP " .. ipS ,"ZeroMenu",140)
+            local success, res = ProddyUtils.Net.DownloadString("ip-api.com", "/json/" .. ipS .. "?fields=proxy")
             if success then
-              if res == "true" then
+              if res == "{\"proxy\":true}" then
                 ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZeroMenu",140)          
+              else
+                print(res)              
               end
             end
             checkedList[player.get_player_name(slot)] = 1          
           end        
         end
       end
-      lastIPCheck = os.time()    
-    end
-  end  
+      lastIPCheck = os.time()   
+    end 
+    system.wait(0)
+  end 
+end
+
+function checkIP2()  
+  if iPchecker2.on then    
+    if VPNCheckerThread2 == nil then
+      print("creating thread")
+      local PrintHiParams = {
+          Keys = {"NOMOD", "RETURN"},
+          Callback = function() print("Hi") end
+      }
+      VPNCheckerThread2 = menu.create_thread(workWithRequest2,PrintHiParams)
+      print("creating thread with id " .. VPNCheckerThread2)
+    end    
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
+end
+
+function workWithRequest2(para) 
+  local lastIPCheck = 0 
+  local ProddyUtils = require("ProddyUtils")
+  while doVar do
+    if (os.time() - lastIPCheck) > 10 then
+      for slot = 0, 31 do
+        if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
+          if checkedList[player.get_player_name(slot)] == nil then   
+            print("Checking " .. player.get_player_name(slot))     
+            --local ip = player.get_player_ip(slot)                 
+            --local ipS = string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)       
+            --ui.notify_above_map("Checking IP " .. ipS ,"ZeroMenu",140)
+            local success, res = ProddyUtils.Net.DownloadString("ip-api.com", "/json/" .. "64.44.80.20" .. "?fields=proxy")
+            if success then
+              if res == "{\"proxy\":true}" then
+                ui.notify_above_map(player.get_player_name(slot) .. " uses a VPN","ZeroMenu",140)          
+              else
+                print(res)              
+              end
+            end
+            checkedList[player.get_player_name(slot)] = 1          
+          end        
+        end
+      end
+      lastIPCheck = os.time()   
+    end 
+    system.wait(0)
+  end 
 end
 
 function checkInvisible()

@@ -9,6 +9,7 @@ function Config:create(path,create)
    
    
    if create == true and not utils.file_exists(path) then
+    utils.make_dir(path)
     file = io.open(path, "w")
     file:write("#Created using 1337Zeros config.lua\n")
     file:close()
@@ -53,7 +54,7 @@ function Config:getValue(key)
 end
 
 function Config:saveConfig()
-    os.remove(self.config["path"])
+    os.remove(self.path)
     file = io.open(self.path, "w")
     file:write("#Created using 1337Zeros config.lua\n")
     for k, v in pairs(self.config) do
