@@ -1,33 +1,9 @@
 local eModderDetectionFlags = require("ZeroMenuLib/enums/ModderDetectionFlag")
 
-function createConfigedMenuOption(name,type,parent,script_function_given,config,configValueName,defaultValue,defaultValueMax)
-  local feature = menu.add_feature(name,type,parent,script_function)  
-  local script_function
-  
-  if script_function_given == nil then
-    script_function = 
-    function() 
-      if feature.on then
-        config:storeValue(configValueName,true)
-      else
-        config:storeValue(configValueName,false)
-      end
-    end
-  else
-    script_function = 
-    function() 
-      if feature.on then
-        config:storeValue(configValueName,true)
-        script_function_given()
-      else
-        config:storeValue(configValueName,false)
-      end
-    end
-  end
-  
-  
-  
+function createConfigedMenuOption(name,type,parent,script_function,config,configValueName,defaultValue,defaultValueMax)
+  local feature = menu.add_feature(name,type,parent,script_function)    
   config:saveIfNotExist(configValueName,defaultValue)
+  config:registerConfigedFunction(configValueName,feature,type)
   if type == "toggle" then
     if config:isFeatureEnabled(configValueName) then
       feature.on = true

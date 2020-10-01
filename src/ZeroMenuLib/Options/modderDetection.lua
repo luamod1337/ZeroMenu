@@ -88,7 +88,7 @@ function createModderDetectionMenuEntry(parent,config)
   
 	playerList = {}
 	
-	vpnIPList = loadVPNList()
+	--vpnIPList = loadVPNList()
 	checkedList = {}
 end
 

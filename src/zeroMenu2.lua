@@ -15,9 +15,12 @@ require("ZeroMenuLib/enums/VehicleHash")
 
 local ignoreplayers
 configpath = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
+configfolder = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data"
 
 function zeroMenuMain()
-
+  if not utils.dir_exists(configfolder) then
+    utils.make_dir(configfolder)
+  end
   config = Config:create(configpath,true)
 
 -- Main Feature
