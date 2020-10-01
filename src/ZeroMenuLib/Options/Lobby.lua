@@ -8,7 +8,7 @@ local logModderOption,warnOfLoadedModdersOption
 function createLobbyOptions(parent,config)
   if not utils.file_exists(modderFilePath) then
       local file = io.open(modderFilePath, "a")
-      file:write("date,scid,name,reason\n")
+      file:write("date,scid,name,reason,ip\n")
       file:close()
     end    
     local LobbyParent = menu.add_feature("Lobby","parent",parent.id,nil)    
@@ -46,12 +46,13 @@ function loadModderFile()
         --if not tostring(line:sub(1,1)) == '#' then
         if not starts_with(line,'#') then
           for date, scid,name,reason in string.gmatch(line, "(%w+),(%w+)") do
-            print("readed modder " .. name .. " (" .. scid  ..") marked for " .. reason .. " on " .. date )
+            print("readed modder " .. name .. " (" .. scid  ..") marked for " .. reason .. " on " .. date .. " with ip " .. ip)
             local modderDataTable = {}
             modderDataTable["date"] = date
             modderDataTable["name"] = name
             modderDataTable["scid"] = scid
             modderDataTable["reason"] = reason
+            modderDataTable["ip"] = ip
             modders[name] = modderDataTable
           end
         end     
@@ -68,6 +69,6 @@ function storeModder(slot)
     os.date("[%d/%m/%Y %H:%M:%S]") .. 
       ", " .. player.get_player_scid(slot) .. 
       "," .. player.get_player_name(slot) .. 
-      "," .. player.get_player_modder_flags(slot) .. "\n")
+      "," .. player.get_player_modder_flags(slot) .. "," .. player.get_player_ip(slot) .. "\n")
     file:close()  
 end

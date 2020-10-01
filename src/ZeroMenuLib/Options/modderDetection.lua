@@ -102,8 +102,6 @@ function loadVPNList()
   return vpnlist;
 end
 
-
-
 function checkIP()  
   if iPchecker.on then    
     if VPNCheckerThread == nil then
