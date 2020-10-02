@@ -4,7 +4,7 @@ local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
 
 local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning,AntiDepressorMain, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
-local clearPath,noCollissionmenu,partyHardMenu,blmMenu
+local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu
 
 local lastSlowMoRun = 0
 local storage 
@@ -63,11 +63,14 @@ function createNearbyMenu(parent,config)
   --  clearPath.on = true
   --end
   
-  noCollissionmenu = createConfigedMenuOption("No Colission","toggle",nearby.id,noCollision,config,"noCollission",false,nil)
+  noCollissionmenu = createConfigedMenuOption("No Vehicle Colission","toggle",nearby.id,noCollision,config,"noCollission",false,nil)
   --noCollissionmenu = menu.add_feature("No Colission", "toggle", nearby.id, noCollision)
   noCollissionmenu.threaded = false
   --config:saveIfNotExist("noCollission","false",configpath)
   
+  
+  noCollissionObjmenu = createConfigedMenuOption("No Object Colission","toggle",nearby.id,noObjectCollision,config,"noObjCollission",false,nil)
+  noCollissionObjmenu.threaded = false
   --if config:isFeatureEnabled("noCollission") then
   --  noCollissionmenu.on = true
   --end
@@ -335,24 +338,63 @@ function noCollision()
       local tempveh = vehicle.get_all_vehicles()[i]
       if slot ~= player.player_id() then      
       if noCollisionList[tempveh] == nil then
-	  
+    
          --if not ped.is_ped_a_player(tempped) then            
          -- if ped.is_ped_in_any_vehicle(tempped) then 
-			local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-            
-			  if not network.has_control_of_entity(tempveh) then
-				network.request_control_of_entity(tempveh)  
-			  end 
-			entity.set_entity_no_collsion_entity(tempveh,myveh,false)
-         --end  
-        --end   
-      noCollisionList[tempveh] = true
+      local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+      if myveh ~= nil then
+        if not network.has_control_of_entity(tempveh) then
+          network.request_control_of_entity(tempveh)  
+          end 
+        entity.set_entity_no_collsion_entity(tempveh,myveh,false)
+           --end  
+          --end   
+        noCollisionList[tempveh] = true
+      end
+        
       end
      
       end
     end
   end
   if noCollissionmenu.on then   
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
+end
+
+
+local noCollisionObjList = {}
+
+function noObjectCollision() 
+  if noCollissionObjmenu.on then   
+    for i in ipairs(object.get_all_objects())do
+      local tempObj = object.get_all_objects()[i]
+
+      if slot ~= player.player_id() then      
+      if noCollisionObjList[tempObj] == nil then
+    
+         --if not ped.is_ped_a_player(tempped) then            
+         -- if ped.is_ped_in_any_vehicle(tempped) then 
+      local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+            
+      if myveh ~= nil then
+        if not network.has_control_of_entity(tempObj) then
+          network.request_control_of_entity(tempObj)  
+        end 
+        entity.set_entity_no_collsion_entity(tempObj,myveh,false)
+           --end  
+          --end   
+        noCollisionObjList[tempObj] = true
+      end
+      
+      end
+     
+      end
+    end
+  end
+  if noCollissionObjmenu.on then   
     return HANDLER_CONTINUE
   else
     return HANDLER_POP

@@ -48,8 +48,12 @@ function disableVehicle(feat,slot)
     vehicle.set_vehicle_engine_torque_multiplier_this_frame(veh,1)
     vehicle.set_vehicle_engine_on(veh,false,true,true)
   end
+  if feat.on then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP      
+    end
 end
-
 
 local lastSpeed = 0
 

@@ -17,20 +17,8 @@ function createConfigedMenuOption(name,type,parent,script_function,config,config
 end
 
 
-function isPlayerModder(playerName)
-  if player.is_player_modder(playerName,eModderDetectionFlags.MDF_MANUAL) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_PLAYER_MODEL) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_SCID_0) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_SCID_SPOOF) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_INVALID_OBJECT_CRASH) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_INVALID_PED_CRASH) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_CLONE_SPAWN) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_PLAYER_MODEL) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_MANUAL) or
-     player.is_player_modder(playerName,eModderDetectionFlags.MDF_PLAYER_MODEL) then      
-      return true
-   end 
-   return false
+function isPlayerModder(slot)
+  return player.get_player_modder_flags(slot) ~= 0
 end
 
 function starts_with(str, start)

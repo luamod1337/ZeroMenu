@@ -1,9 +1,9 @@
-Script = {}
-Script.__index = Script
+script = {}
+script.__index = script
 
-function Script:trigger_script_event(eventId, player, params)end
-function Script:get_host_of_this_script()end
-function Script:get_global_f(i)end
-function Script:get_global_i(i)end
-function Script:get_local_f(script, i)end
-function Script:get_local_i(script, i)end
+function script:trigger_script_event(eventId, player, params)end
+function script:get_host_of_this_script()end
+function script:get_global_f(i)end
+function script:get_global_i(i)end
+function script:get_local_f(script, i)end
+function script:get_local_i(script, i)end
