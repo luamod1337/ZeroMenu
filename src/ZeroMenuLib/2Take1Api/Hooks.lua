@@ -1,6 +1,6 @@
-Hooks = {}
-Hooks.__index = Hooks
+hooks = {}
+hooks.__index = hooks
 
 
-function Hooks:script_event_hook(source, target, paramsArray, count)end
-function Hooks:net_event_hook(source, target, eventId)end
+function hooks:script_event_hook(source, target, paramsArray, count)end
+function hooks:net_event_hook(source, target, eventId)end

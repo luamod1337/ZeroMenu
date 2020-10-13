@@ -44,6 +44,32 @@ function loadVehicleMenu(parent,config)
   noClipVehicleOnExitVar.threaded = false
 
   
+  vehicleArcobatic = menu.add_feature("Arcobatic Right", "toggle", vehiclesubmenu.id, ArcrobaticRight)
+  
+end
+
+local lastAcro = 0
+
+function ArcrobaticRight()
+  local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+  local vehRotationV3 = entity.get_entity_rotation(veh)
+    --rotation.z = 0
+    --rotation.x = 0
+        
+    if(vehRotationV3.y < 75 and (os.time() - lastAcro) > 0)then
+      vehRotationV3.y = 75
+      entity.set_entity_rotation(veh,vehRotationV3)
+      lastAcro = os.time()
+    else
+      print(vehRotationV3.y)
+    end
+  
+    if vehicleArcobatic.on then    
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
+    
 end
 
 function tuneVehicle()

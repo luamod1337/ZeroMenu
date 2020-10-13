@@ -7,6 +7,7 @@ function createGriefEntry(config)
  
   menu.add_player_feature("Push Grief","toggle",0,pushAwayGrief)  
   menu.add_player_feature("Disable Vehicle","toggle",0,disableVehicle)  
+  menu.add_player_feature("Net event Log","toggle",0,logNetEventsAndBlock)  
   griefscream = menu.add_player_feature("Scream Grief","toggle",0,screamGriefPlayer)
   griefcontrol = menu.add_player_feature("Control Grief","toggle",0,controlVehicleGriefPlayer)
 
@@ -34,6 +35,61 @@ function speedVehicleGriefPlayer(feat, slot)
   else
     ui.notify_above_map("I wouldn't grief yourself!","ZeroMenu Grief",140)
   end
+end
+
+
+local logThisPlayer = {}
+
+function logNetEventsAndBlock(feat,slot)
+  
+  if(feat.on) then    
+    logThisPlayer[player.get_player_name(slot)] = 1
+  else  
+    logThisPlayer[player.get_player_name(slot)] = 0 
+  end
+ hook.register_net_event_hook(netEventCallBack)
+ hook.register_script_event_hook(scriptEventCallBack)
+  
+end
+
+function netEventCallBack(slot,target,eventID)
+  if target == player.player_id() then
+    if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
+      ui.notify_above_map("blocked event " .. eventID .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
+      logEvent("blocked event " .. eventID .. " from " .. player.get_player_name(slot))
+      return false
+    end
+  end
+end
+
+function scriptEventCallBack(slot, target, params, count)
+  if target == player.player_id() then
+    if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
+      ui.notify_above_map("blocked script event " .. count .. " from " .. player.get_player_name(slot),"Script Event Block - ZeroMenu",140)
+      logEvent("blocked script event " .. count .. " from " .. player.get_player_name(slot))
+      local cnt = 0
+      for k in pairs(params) do 
+        ui.notify_above_map("paramteter " .. cnt .. " = " .. k,"Script Block - ZeroMenu",140)
+        logEvent("paramteter " .. cnt .. " = " .. k)
+        cnt = cnt+1
+      end
+      return false
+    end
+  end
+end
+local chatEventPath =os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\event.log"
+
+function logEvent(message)    
+  if not utils.file_exists(chatEventPath) then
+   -- utils.make_dir(chatEventPath)
+    file = io.open(chatEventPath, "w")
+    file:write("#Created using 1337Zeros ZeroMenu\n")
+    file:close()
+  end
+
+  file = io.open(chatEventPath, "a")
+  file:write(os.date("[%d/%m/%Y %H:%M:%S]") .. " " .. message ..  "\n")
+  file:close()
 end
 
 function disableVehicle(feat,slot)

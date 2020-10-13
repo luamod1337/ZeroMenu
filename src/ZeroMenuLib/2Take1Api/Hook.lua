@@ -1,8 +1,8 @@
-Hook = {}
-Hook.__index = Hook
+hook = {}
+hook.__index = hook
 
 
-function Hook:register_script_event_hook(callback)end
-function Hook:remove_script_event_hook(id)end
-function Hook:register_net_event_hook(callback)end
-function Hook:remove_net_event_hook(id)end
+function hook:register_script_event_hook(callback)end
+function hook:remove_script_event_hook(id)end
+function hook:register_net_event_hook(callback)end
+function hook:remove_net_event_hook(id)end

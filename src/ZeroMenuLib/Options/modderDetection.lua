@@ -52,7 +52,7 @@ function createModderDetectionMenuEntry(parent,config)
 	if config:isFeatureEnabled("godCheck") then
     god.on = true
   end  
-	visible = createConfigedMenuOption("Visible check","toggle",zModderMain.id,checkInvisible,config,"visibleCheck",false,nil)   
+	visible = createConfigedMenuOption("Visible check (EXP)","toggle",zModderMain.id,checkInvisible,config,"visibleCheck",false,nil)   
 	--visible	= menu.add_feature("Visible check", "toggle", zModderMain.id, checkInvisible)
 	visible.threaded = false
 	
@@ -68,7 +68,7 @@ function createModderDetectionMenuEntry(parent,config)
     positionchecker.on = true
   end
   
-  controlchecker = createConfigedMenuOption("Request Control Checker","toggle",zModderMain.id,checkRequestControl,config,"RequestCheck",false,nil)
+  controlchecker = createConfigedMenuOption("Request Control Checker  (EXP)","toggle",zModderMain.id,checkRequestControl,config,"RequestCheck",false,nil)
   --controlchecker = menu.add_feature("Request Control Checker", "toggle", zModderMain.id, checkRequestControl)
   controlchecker.threaded = false
   
@@ -76,7 +76,7 @@ function createModderDetectionMenuEntry(parent,config)
     controlchecker.on = true
   end
   
-  iPchecker = createConfigedMenuOption("IP Range Checker","toggle",zModderMain.id,checkIP,config,"IpCheck",false,nil)
+  iPchecker = createConfigedMenuOption("IP Range Checker  (EXP)","toggle",zModderMain.id,checkIP,config,"IpCheck",false,nil)
   --iPchecker = menu.add_feature("IP Range Checker", "toggle", zModderMain.id, checkIP)
   iPchecker.threaded = true
   
@@ -84,7 +84,7 @@ function createModderDetectionMenuEntry(parent,config)
     iPchecker.on = true
   end
   
-  iPchecker2 = menu.add_feature("IP Range Checker Test", "toggle", zModderMain.id, checkIP2)
+  iPchecker2 = menu.add_feature("IP Range Checker Test  (EXP-Test)", "toggle", zModderMain.id, checkIP2)
   
 	playerList = {}
 	

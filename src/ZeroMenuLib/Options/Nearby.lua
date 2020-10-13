@@ -371,26 +371,23 @@ function noObjectCollision()
   if noCollissionObjmenu.on then   
     for i in ipairs(object.get_all_objects())do
       local tempObj = object.get_all_objects()[i]
-
       if slot ~= player.player_id() then      
-      if noCollisionObjList[tempObj] == nil then
+        if noCollisionObjList[tempObj] == nil then
+          local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+          local newCord = entity.get_entity_coords(myveh)
+          local oldCord = entity.get_entity_coords(tempObj)
+          local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
     
-         --if not ped.is_ped_a_player(tempped) then            
-         -- if ped.is_ped_in_any_vehicle(tempped) then 
-      local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-            
-      if myveh ~= nil then
-        if not network.has_control_of_entity(tempObj) then
-          network.request_control_of_entity(tempObj)  
-        end 
-        entity.set_entity_no_collsion_entity(tempObj,myveh,false)
-           --end  
-          --end   
-        noCollisionObjList[tempObj] = true
-      end
-      
-      end
-     
+          if tempdistance <= 10 then
+            if myveh ~= nil then
+              if not network.has_control_of_entity(tempObj) then
+                network.request_control_of_entity(tempObj)  
+              end 
+              entity.set_entity_no_collsion_entity(tempObj,myveh,false)
+              noCollisionObjList[tempObj] = true
+            end
+          end          
+        end
       end
     end
   end
