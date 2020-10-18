@@ -55,8 +55,16 @@ end
 function netEventCallBack(slot,target,eventID)
   if target == player.player_id() then
     if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
-      ui.notify_above_map("blocked event " .. eventID .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
-      logEvent("blocked event " .. eventID .. " from " .. player.get_player_name(slot))
+      local eventToInt = require("ZeroMenuLib/enums/EventToInt")
+      local eventname = eventToInt[eventID]
+      if eventname ~= nil then
+        ui.notify_above_map("blocked event " .. eventname .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
+        logEvent("blocked event " .. eventname .. " from " .. player.get_player_name(slot))
+      else
+        ui.notify_above_map("blocked event " .. eventID .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
+        logEvent("blocked event " .. eventID .. " from " .. player.get_player_name(slot))
+      end
+      
       return false
     end
   end
@@ -66,7 +74,7 @@ function scriptEventCallBack(slot, target, params, count)
   if target == player.player_id() then
     if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
       ui.notify_above_map("blocked script event " .. count .. " from " .. player.get_player_name(slot),"Script Event Block - ZeroMenu",140)
-      logEvent("blocked script event " .. count .. " from " .. player.get_player_name(slot))
+      logEvent("blocked script event (size: " .. count .. ") from " .. player.get_player_name(slot))
       local cnt = 0
       for k in pairs(params) do 
         ui.notify_above_map("paramteter " .. cnt .. " = " .. k,"Script Block - ZeroMenu",140)
