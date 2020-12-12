@@ -74,7 +74,7 @@ end
 
 function tuneVehicle()
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-  local r, s = input.get("Enter new Torque", 100, 64, 0)
+  local r, s = input.get("Enter new Torque", 100, 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
     
@@ -97,15 +97,14 @@ function removeMaxSpeedVehicle()
     if not network.has_control_of_entity(veh) then
       network.request_control_of_entity(veh)  
     end 
-    entity.set_entity_max_speed(veh,speed)
-    
+    entity.set_entity_max_speed(veh,150000)    
   end
 end
 
 function setMaxSpeedVehicle()
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
 
-  local r, s = input.get("Enter new Torque", 540, 64, 0)
+  local r, s = input.get("Enter new Torque", 540, 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
 
@@ -126,7 +125,6 @@ function tuneDriftVehicle()
     end 
     entity.set_entity_max_speed(veh,30)
     vehicle.modify_vehicle_top_speed(veh,200)
-    
   end
 end
 function slowVehicle()
@@ -185,7 +183,7 @@ end
 
 function setHeliBladeSpeed()
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-  local r, s = input.get("Enter new Torque", 0, 64, 0)
+  local r, s = input.get("Enter new Torque", 0, 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
   

@@ -132,7 +132,7 @@ function pushAwayGrief(feat,slot)
       network.request_control_of_entity(veh)  
     end 
   if lastSpeed == 0 then
-    local r, s = input.get("Enter new Torque", 10000, 64, 0)
+    local r, s = input.get("Enter new Torque", 10000, 64, 3)
     if r == 1 then return HANDLER_CONTINUE end
     if r == 2 then return HANDLER_POP end
     lastSpeed = s
@@ -178,7 +178,7 @@ end
 function speedVehicleUpgradeGriefPlayer(feat, slot)
   if slot ~= player.player_id()  then
     if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
-      local r, s = input.get("Enter new Torque", 1000000, 64, 0)
+      local r, s = input.get("Enter new Torque", 1000000, 64, 3)
       if r == 1 then return HANDLER_CONTINUE end
       if r == 2 then return HANDLER_POP end
       
@@ -257,7 +257,7 @@ function chaseVehicle(feat, slot)
 
   if ped.get_vehicle_ped_is_using(player.get_player_ped(slot)) ~= nil then
     
-    local r, s = input.get("Chase distance",100, 64, 0)
+    local r, s = input.get("Chase distance",100, 64, 3)
     if r == 1 then return HANDLER_CONTINUE end
     if r == 2 then return HANDLER_POP end
     
@@ -268,7 +268,7 @@ end
 
 function setHeliBladeSpeed(feat, slot)
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(slot))
-  local r, s = input.get("Enter new Torque", 0, 64, 0)
+  local r, s = input.get("Enter new Torque", 0, 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
   

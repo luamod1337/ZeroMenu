@@ -4,7 +4,7 @@ local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
 
 local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning,AntiDepressorMain, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
-local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu
+local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu,firework
 
 local lastSlowMoRun = 0
 local storage 
@@ -13,6 +13,10 @@ local newSpeed = 1000000000
 
 local lastNearbyCheck = 0
 local lConfig
+local lastFirework = 0
+local lastVehicle
+
+
 
 function createNearbyMenu(parent,config)
   lConfig = config
@@ -93,7 +97,37 @@ function createNearbyMenu(parent,config)
   --  blmMenu.on = true
   --end
   
+  firework = menu.add_feature("Firework around you","toggle",nearby.id,randomFireWork) 
+  
   storage = {}
+end
+
+function randomFireWork()
+  if((os.clock() - lastFirework) > 1)then    
+    local pos = player.get_player_coords(player.player_id())
+    pos.z = pos.z+math.random(50)+50  
+    if(math.random(2) == 1) then
+      if(math.random(2) == 1) then
+        pos.x = pos.x+math.random(100)
+      else
+        pos.x = pos.x+(math.random(100)*-1)
+      end
+    else
+    if(math.random(2) == 1) then
+      pos.y = pos.y+math.random(100)
+    else
+      pos.y = pos.y+(math.random(100)*-1)
+    end
+      
+    end
+    gameplay.shoot_single_bullet_between_coords(pos,pos,0,0x7F7497E5,player.player_id(),false,false,1)
+    lastFirework = os.clock()
+  end
+  if(firework.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
 end
 
 function slowMoLobby()
@@ -334,6 +368,10 @@ local noCollisionList = {}
 
 function noCollision() 
   if noCollissionmenu.on then   
+    if lastVehicle ~= ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())) then
+      noCollisionList = {}
+      lastVehicle = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+    end
     for i in ipairs(vehicle.get_all_vehicles())do
       local tempveh = vehicle.get_all_vehicles()[i]
       if slot ~= player.player_id() then      
@@ -683,13 +721,13 @@ end
 
 
 function isBlockedHash(hash)
-  if (entity.get_entity_model_hash(veh) == VehicleHash.B11 and b11.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.MK1 and mk1.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.AKULA and akula.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.DELUXO and deluxo.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.HYDRA and hydra.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.LAZER  and lazer.on) or
-     (entity.get_entity_model_hash(veh) == VehicleHash.MK2 and oppressor.on)
+  if (hash == VehicleHash.B11 and b11.on) or
+     (hash == VehicleHash.MK1 and mk1.on) or
+     (hash == VehicleHash.AKULA and akula.on) or
+     (hash == VehicleHash.DELUXO and deluxo.on) or
+     (hash == VehicleHash.HYDRA and hydra.on) or
+     (hash == VehicleHash.LAZER  and lazer.on) or
+     (hash == VehicleHash.MK2 and oppressor.on)
    then
     return true
   end

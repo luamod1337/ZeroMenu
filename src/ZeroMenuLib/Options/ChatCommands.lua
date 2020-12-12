@@ -70,7 +70,8 @@ function onChatCommand(slot,messageVar)
       if splittedMessage[0] == "!upgrade" and upgradeCommand.on then
         local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(slot))
         local speed = tonumber(splittedMessage[1])
-        if veh ~= nil then
+        
+        if veh ~= nil and speed ~= nil then
           if not network.has_control_of_entity(veh) then
             network.request_control_of_entity(veh)  
           end 
@@ -84,17 +85,22 @@ function onChatCommand(slot,messageVar)
         local pslot = getSlotFromName(splittedMessage[1])
         if pslot ~= nil then
           local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(pslot)) 
-          if veh ~= nil then
-            if not network.has_control_of_entity(veh) then
-              network.request_control_of_entity(veh)  
-            end   
-            entity.set_entity_max_speed(veh,10000)  
+          if veh ~= nil then            
             local rotation = v3()
               rotation.z = 180
-              rotation.y = 0
+              rotation.y = 180
               rotation.x = 0
-            entity.set_entity_rotation(veh,rotation)
-            vehicle.set_vehicle_forward_speed(veh, 100)
+              for i=1000,1,-1 do
+                print("trying " .. i)
+                if not network.has_control_of_entity(veh) then
+                  network.request_control_of_entity(veh)  
+                end   
+                                
+                entity.set_entity_max_speed(veh,10000)
+                vehicle.set_vehicle_out_of_control(veh,false,false)   
+                entity.set_entity_rotation(veh,rotation)
+                vehicle.set_vehicle_forward_speed(veh, 10000)
+              end
             ui.notify_above_map("slapped player's Vehicle " .. player.get_player_name(pslot),"ZeroMenu",140)
           else
             local ped = player.get_player_ped(pslot)

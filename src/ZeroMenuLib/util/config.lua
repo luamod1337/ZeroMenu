@@ -75,8 +75,7 @@ function Config:saveConfig()
       end    
      end
   end
-   
-    os.remove(self.path)
+    --os.remove(self.path)
     file = io.open(self.path, "w")
     file:write("#Created using 1337Zeros config.lua\n")
     for k, v in pairs(self.config) do

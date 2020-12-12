@@ -29,7 +29,9 @@ function logModders()
         if modderData["notified"] == 0 then          
           ui.notify_above_map(player.get_player_name(slot) .. " is a known Modder for " .. player.get_modder_flag_text(modderData["reason"]) .. " (" .. modderData["date"] .. ")" ,"ZeroMenu",140)
           
-          if tostring(player.get_player_scid(slot)) ~= string.sub(tostring(modderData["scid"]),2) then
+          
+          
+          if string.match(tostring(player.get_player_scid(slot)),string.sub(tostring(modderData["scid"]),1)) == nil then
             ui.notify_above_map("Scid missmatch " .. player.get_player_name(slot) .. " had scid '" .. string.sub(tostring(modderData["scid"]),1) .. "' but now he has '" .. player.get_player_scid(slot) .. "'","ZeroMenu",140)
           end
           player.set_player_as_modder(slot,modderData["reason"])
@@ -78,7 +80,7 @@ function storeModder(slot)
   ui.notify_above_map("Storing " .. player.get_player_name(slot) .. " in Modder Database","ZeroMenu",140)
   local file = io.open(modderFilePath, "a")
   local ip = player.get_player_ip(slot)                 
-  local ipS = string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)   
+  local ipS = formatIp(ip)   
   file:write(
     os.date("[%d/%m/%Y %H:%M:%S]") .. 
       ", " .. player.get_player_scid(slot) .. 

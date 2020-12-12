@@ -25,3 +25,4 @@ function gameplay:unload_cloud_hat(szName, a2)end
 function gameplay:get_ground_z(pos)end
 function gameplay:get_frame_count()end
 function gameplay:get_frame_time()end
+function gameplay:shoot_single_bullet_between_coords(V3start, V3end, damage, weapon, owner, audible, invisible, speed)end

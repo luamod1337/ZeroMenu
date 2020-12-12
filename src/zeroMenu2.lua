@@ -7,6 +7,7 @@ require("ZeroMenuLib/Options/Protection")
 require("ZeroMenuLib/Options/ChatCommands")
 require("ZeroMenuLib/Options/World")
 require("ZeroMenuLib/Options/Lobby")
+require("ZeroMenuLib/Options/Dev")
 
 require("ZeroMenuLib/util/config")
 
@@ -42,7 +43,9 @@ function zeroMenuMain()
 	
 	createChatCommands(zeroMenu,config)
 	
-	createLobbyOptions(zeroMenu,config)
+  createLobbyOptions(zeroMenu,config)
+  
+  createDevEntry(zeroMenu,config)
 	
 	
 	

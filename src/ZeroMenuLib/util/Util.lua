@@ -36,3 +36,15 @@ function getSlotFromName(name)
   end
   return nil
 end
+
+function dirVector(p45, h45, d)
+  h45 = math.rad((h45 - 180) * -1)
+  p45.x = p45.x + (math.sin(h45) * -d)
+  p45.y = p45.y + (math.cos(h45) * -d)
+  return p45
+end
+
+
+function formatIP(ip)
+  return string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)
+end

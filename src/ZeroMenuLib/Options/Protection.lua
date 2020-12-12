@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+loadfile("ZeroMenuLib/Util/Util")
 local fpsCrashAttampt
 
 local vehicleNearByStorage = {}
