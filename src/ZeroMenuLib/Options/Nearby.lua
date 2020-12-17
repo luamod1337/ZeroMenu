@@ -367,7 +367,8 @@ end
 local noCollisionList = {}
 
 function noCollision() 
-  if noCollissionmenu.on then   
+  if noCollissionmenu.on then  
+  -- Checks for new player vehicle  
     if lastVehicle ~= ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())) then
       noCollisionList = {}
       lastVehicle = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
