@@ -15,8 +15,8 @@ require("ZeroMenuLib/enums/VehicleHash")
 
 
 local ignoreplayers
-configpath = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
-configfolder = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data"
+configpath = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
+configfolder = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data"
 
 function zeroMenuMain()
   if not utils.dir_exists(configfolder) then
