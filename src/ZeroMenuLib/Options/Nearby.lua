@@ -151,10 +151,10 @@ function slowMoLobby()
     end
       lastSlowMoRun = os.time()
   end
-  if slowMo.on and not lconfig:isFeatureEnabled("slowmolobby") then
-    lconfig:storeValue("slowmolobby","true")
-  elseif not slowMo.on and lconfig:isFeatureEnabled("slowmolobby") then
-    lconfig:storeValue("slowmolobby","false")
+  if slowMo.on and not lConfig:isFeatureEnabled("slowmolobby") then
+    lConfig:storeValue("slowmolobby","true")
+  elseif not slowMo.on and lConfig:isFeatureEnabled("slowmolobby") then
+    lConfig:storeValue("slowmolobby","false")
   end
   if slowMo.on then
     return HANDLER_CONTINUE

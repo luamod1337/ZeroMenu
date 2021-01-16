@@ -1,7 +1,7 @@
 require("ZeroMenuLib/Util/Util")
 
 local modders = {}
-local modderFilePath = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\modders.csv"
+local modderFilePath = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\modders.csv"
 
 local logModderOption,warnOfLoadedModdersOption
 
@@ -80,7 +80,7 @@ function storeModder(slot)
   ui.notify_above_map("Storing " .. player.get_player_name(slot) .. " in Modder Database","ZeroMenu",140)
   local file = io.open(modderFilePath, "a")
   local ip = player.get_player_ip(slot)                 
-  local ipS = formatIp(ip)   
+  local ipS = formatIP(ip)   
   file:write(
     os.date("[%d/%m/%Y %H:%M:%S]") .. 
       ", " .. player.get_player_scid(slot) .. 

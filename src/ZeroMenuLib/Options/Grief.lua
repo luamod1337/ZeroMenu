@@ -85,7 +85,7 @@ function scriptEventCallBack(slot, target, params, count)
     end
   end
 end
-local chatEventPath =os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\event.log"
+local chatEventPath =os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\event.log"
 
 function logEvent(message)    
   if not utils.file_exists(chatEventPath) then

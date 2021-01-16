@@ -6,7 +6,7 @@ local forceTyp = require("ZeroMenuLib/enums/ForceTyp")
 
 local chatLog
 local chatLogOption,chatCommandsOption,upgradeCommand,slapCommand
-local chatLogPath =os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\chat.log"
+local chatLogPath =os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\chat.log"
 
 
 function createChatCommands(parent,config)
