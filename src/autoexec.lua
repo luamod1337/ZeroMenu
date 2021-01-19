@@ -37,7 +37,7 @@ function zeroMenuMain()
   
   createGriefEntry(config)
   
-  createProtectionMenu(zeroMenu,config)wa
+  createProtectionMenu(zeroMenu,config)
   
   createWorldMenu(zeroMenu,config)
   
