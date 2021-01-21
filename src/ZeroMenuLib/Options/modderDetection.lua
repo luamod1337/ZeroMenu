@@ -4,7 +4,7 @@ local zModderMain
 
 -- features
 local god,positionchecker,controlchecker,displayIngameInfo
-local annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck
+local annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings
 
 -- integers
 
@@ -34,7 +34,9 @@ local lastGC = 0
 function createModderDetectionMenuEntry(parent,config)
 
 	zModderMain = menu.add_feature("Zero's Modder Detection", "parent", parent.id, nil)
-
+  
+  
+  
 	-- Main Features
 	god = createConfigedMenuOption("Godmode check","toggle",zModderMain.id,scanPlayers,config,"godCheck",false,nil)
 	god.threaded = false
@@ -51,20 +53,22 @@ function createModderDetectionMenuEntry(parent,config)
   vehicleSpeedCheck = createConfigedMenuOption("Check Vehicle Speed","toggle",zModderMain.id,nil,config,"vehiclespeedcheck",false,nil)
   vehicleSpeedCheck.threaded = false  
 
-  displayIngameInfo = createConfigedMenuOption("Display Player Infos","toggle",zModderMain.id,nil,config,"displayinfos",false,nil)
+  zModderMainSettings = menu.add_feature("Settings", "parent", zModderMain.id, nil)
+
+  displayIngameInfo = createConfigedMenuOption("Display Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
   displayIngameInfo.threaded = false  
   
-  displaySusIngameInfo = createConfigedMenuOption("Display Sus Player Infos","toggle",zModderMain.id,nil,config,"displaySUSinfos",false,nil)
+  displaySusIngameInfo = createConfigedMenuOption("Display Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
   displaySusIngameInfo.threaded = false  
   
 
 
   
   
-  annouceCheaterSMS = createConfigedMenuOption("Annouce Cheater per SMS","toggle",zModderMain.id,nil,config,"modderSMS",false,nil)
+  annouceCheaterSMS = createConfigedMenuOption("Annouce Cheater per SMS","toggle",zModderMainSettings.id,nil,config,"modderSMS",false,nil)
   annouceCheaterSMS.threaded = false
 
-  annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMain.id,nil,config,"modderCHAT",false,nil)
+  annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
   annouceCheaterChat.threaded = false
   
   
@@ -120,10 +124,17 @@ function scanPlayers()
   for slot = 0, 31 do
     -- valid player ?
     if player.is_player_valid(slot) then   
-    --  local perPlayerList = playerList[player.get_player_name(slot)]
-      
+    --  local perPlayerList = playerList[player.get_player_name(slot)]      
       if(not isreCreateData(slot)) then
         if (os.time() -  playerList[player.get_player_name(slot)]['lastCheck']) >= 1 then
+          if(playerList[player.get_player_name(slot)]['willbeInside'] > 0) then
+            if(isPlayerInside(slot)) then
+              playerList[player.get_player_name(slot)]['willbeInside'] = 0
+              ui.notify_above_map("reseting ",title,color)
+            else
+              playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
+            end
+          end
           -- player is inside something
           if(not isPlayerInside(slot)) then
             playerList[player.get_player_name(slot)]['wasInside'] = false
@@ -152,19 +163,27 @@ function scanPlayers()
             end
             
             if(playerList[player.get_player_name(slot)]['godvehicle'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godvehicleannounced']) then
-               ui.notify_above_map(player.get_player_name(slot) .. " is using god vehiclesince " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZModder Detection",140)
+               ui.notify_above_map(player.get_player_name(slot) .. " is using god vehicle since " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZModder Detection",140)
                markSus(player.get_player_name(slot),"Godmode Vehicle")
+               playerList[player.get_player_name(slot)]['godvehicleannounced'] = true
             end
             
-            if(round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0) > 112 and player.get_player_vehicle(slot) ~= nil) then
+            if(round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0) > 112 and player.get_player_vehicle(slot) ~= 0) then
                  playerList[player.get_player_name(slot)]['vehiclespeedTime'] = playerList[player.get_player_name(slot)]['vehiclespeedTime'] + 1
               end
             
             if(distanceMovedSecond > 500 and positionchecker.on and playerList[player.get_player_name(slot)]['moved'] and not playerList[player.get_player_name(slot)]['wasInside']) then            
-              if(not isValidPos(slot)) then
+              if(not isValidPos(slot)) then                
                 ui.notify_above_map(player.get_player_name(slot) .. " teleported (moved " .. round(distanceMovedSecond,0) .. " in 1 Second)","ZModder Detection",140)            
-                markSus(player.get_player_name(slot),"teleport")
+                playerList[player.get_player_name(slot)]['willbeInside'] = 1
               end
+            end
+            
+            --playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
+            if(playerList[player.get_player_name(slot)]['willbeInside'] > 30 ) then 
+              ui.notify_above_map(player.get_player_name(slot) .. " willbeinside = " .. playerList[player.get_player_name(slot)]['willbeInside'],"ZModder Detection",140)            
+              markSus(player.get_player_name(slot),"teleport2")
+              playerList[player.get_player_name(slot)]['willbeInside'] = 0
             end
             if(nameBoundsCheaterChat.on and (string.len(player.get_player_name(slot)) < 6 or string.len(player.get_player_name(slot)) > 16)) then
                 ui.notify_above_map("Name out of Bounds for: " .. player.get_player_name(slot),"ZModder Detection",140)            
@@ -199,7 +218,8 @@ function scanPlayers()
         playerList[player.get_player_name(slot)]['godvehicle'] = 0
         playerList[player.get_player_name(slot)]['godvehicleannounced'] = false
         playerList[player.get_player_name(slot)]['wasInside'] = false
-         playerList[player.get_player_name(slot)]['vehiclespeedTime'] = 0
+        playerList[player.get_player_name(slot)]['vehiclespeedTime'] = 0
+        playerList[player.get_player_name(slot)]['willbeInside'] = 0         
       end      
     end  
   end
@@ -331,7 +351,7 @@ function drawDisplayInfo()
     local baseV2 = v2(0.045,0.009)
     for slot = 0, 31 do
       if(player.is_player_valid(slot) and playerList[player.get_player_name(slot)] ~= nil) then
-        if(playerList[player.get_player_name(slot)]['godTime'] > 0 or round(playerList[player.get_player_name(slot)]['distanceMoved'],0) > 0) then
+       -- if(playerList[player.get_player_name(slot)]['godTime'] > 0 or round(playerList[player.get_player_name(slot)]['distanceMoved'],0) > 0) then
           
           if(displayIngameInfo.on) then
             drawText(player.get_player_name(slot) .. " (" .. playerList[player.get_player_name(slot)]['totalChecked'] .. ")",baseV2)
@@ -367,6 +387,12 @@ function drawDisplayInfo()
              drawText("God Vehicle Time: " .. playerList[player.get_player_name(slot)]['godvehicle'] .. "/" .. playerList[player.get_player_name(slot)]['totalChecked'],baseV2)
              baseV2 = v2(baseV2.x,baseV2.y + 0.02)
           end
+          
+          if(displayIngameInfo.on and playerList[player.get_player_name(slot)]['willbeInside'] > 0) then 
+             drawText("Time since last teleport: " .. playerList[player.get_player_name(slot)]['willbeInside'],baseV2)
+             baseV2 = v2(baseV2.x,baseV2.y + 0.02)
+          end
+          
           if(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'] > 0 and not playerList[player.get_player_name(slot)]['wasInside']) then
             if(round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0) > 112 and player.get_player_vehicle(slot) ~= nil) then
               if (playerList[player.get_player_name(slot)]['vehiclespeedTime'] > 2) then
@@ -384,7 +410,7 @@ function drawDisplayInfo()
             baseV2 = v2(baseV2.x,baseV2.y + 0.02)
           end     
           baseV2 = v2(baseV2.x,baseV2.y + 0.02)
-        end        
+        --end        
       end    
     end
  -- end  
