@@ -130,7 +130,7 @@ function scanPlayers()
           if(playerList[player.get_player_name(slot)]['willbeInside'] > 0) then
             if(isPlayerInside(slot)) then
               playerList[player.get_player_name(slot)]['willbeInside'] = 0
-              ui.notify_above_map("reseting ",title,color)
+              --ui.notify_above_map("reseting " .. player.get_player_name(slot),"ZModder Detection",140)
             else
               playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
             end

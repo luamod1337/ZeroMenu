@@ -63,3 +63,4 @@ function entity:has_entity_been_damaged_by_entity(e1, e2)end
 function entity:does_entity_have_drawable(entity)end
 function entity:has_entity_collided_with_anything(entity)end
 function entity:get_entity_entity_has_collided_with(entity)end
+function entity:get_entity_bone_index_by_name(entity,name)end

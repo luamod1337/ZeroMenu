@@ -6,6 +6,8 @@ local askedInput = false
 
 local lastVehicle = 0
 
+
+
 function loadVehicleMenu(parent,config)
   
   
@@ -45,7 +47,200 @@ function loadVehicleMenu(parent,config)
 
   
   vehicleArcobatic = menu.add_feature("Arcobatic Right", "toggle", vehiclesubmenu.id, ArcrobaticRight)
+  vehicleMods = menu.add_feature("Vehicle Mods", "parent", vehiclesubmenu.id, nil)
+  vehicleAttach = menu.add_feature("Safety First", "action", vehicleMods.id, attachCandles)
+  vehicleAttach = menu.add_feature("Add Ramp", "action", vehicleMods.id, attachRamp)
+  vehicleAttachLamp = menu.add_feature("Lamp Tire", "action", vehicleMods.id, attachLampToTire)
+  spawnobject = menu.add_feature("Spawn Object", "action", vehicleMods.id, spawnObject)
+    
+end
+local requestedObject = 0
+function spawnObject()
+
+if requestedObject == 0 then
+    local r, s = input.get("Enter Object Hash", 10000, 64, 3)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end
+    requestedObject = s
+  end
+  if(streaming.has_model_loaded(requestedObject)) then  
+    local objectCandle = object.create_object(requestedObject,player.get_player_coords(player.player_id()),true,true)
+    requestedObject = 0
+    streaming.set_model_as_no_longer_needed(requestedObject) 
+    return HANDLER_POP
+  else
+    streaming.request_model(requestedObject)
+    return HANDLER_CONTINUE
+  end
+end
+function attachLampToTire()
+ local lentity = player.get_player_vehicle(player.player_id())
   
+  
+  -- wheel_lf
+  -- wheel_rf
+  -- wheel_lm1
+  -- wheel_rm1
+  -- wheel_lm2
+  -- wheel_rm2
+  -- wheel_lm3
+  -- wheel_rm3
+  -- wheel_lr
+  -- wheel_rr
+  --attach_entity_to_entity(Entity subject, Entity target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
+  local candle = -647884455
+  if(streaming.has_model_loaded(candle)) then  
+    local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    local offset = v3(0,0,0)
+    local rot = v3(0,0,0)
+        
+        print(entity.is_entity_a_vehicle(lentity))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_lf"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_rf"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_lr"))
+  print(entity.get_entity_bone_index_by_name(lentity,"wheel_rr"))
+        
+            --attach_entity_to_entity(subject,target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lf"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rf"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lr"),offset,rot,false,true,false,0,true)
+    objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rr"),offset,rot,false,true,false,0,true)
+    
+    
+    streaming.set_model_as_no_longer_needed(candle) 
+    return HANDLER_POP
+  else
+    streaming.request_model(candle)
+    return HANDLER_CONTINUE
+  end
+end
+function attachRamp()
+  local candle = 1290523964
+  local lentity = player.get_player_vehicle(player.player_id())
+  if(streaming.has_model_loaded(candle)) then  
+    local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    local offset = v3(0,5,0)
+    local rot = v3(0,0,180)        
+        
+
+    print(entity.get_entity_bone_index_by_name(lentity,"bonnet"))
+            --attach_entity_to_entity(subject,target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
+    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"bonnet"),offset,rot,false,true,false,0,true)
+    streaming.set_model_as_no_longer_needed(candle) 
+    return HANDLER_POP
+  else
+    streaming.request_model(candle)
+    return HANDLER_CONTINUE
+  end
+
+
+end
+
+local callStack = 0
+function attachCandles()
+  local lentity = player.get_player_vehicle(player.player_id())
+  
+  
+  -- wheel_lf
+  -- wheel_rf
+  -- wheel_lm1
+  -- wheel_rm1
+  -- wheel_lm2
+  -- wheel_rm2
+  -- wheel_lm3
+  -- wheel_rm3
+  -- wheel_lr
+  -- wheel_rr
+  --attach_entity_to_entity(Entity subject, Entity target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
+  --2041509221 - safety first
+  local candle = -1915729838
+  if(streaming.has_model_loaded(candle)) then  
+    local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+    local offset = v3(0,0,0)
+    local rot = v3(0,0,0)
+     --[[
+      print(entity.is_entity_a_vehicle(lentity))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lf"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rf"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lr"))
+      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rr"))
+    --]]
+    if(graphics.has_named_ptfx_asset_loaded("core")) then
+      print("core loaded")
+      graphics.set_next_ptfx_asset("core")
+      graphics.start_ptfx_looped_on_entity("scr_clown_appears",player.get_player_ped(player.player_id()),offset,rot,10.0)
+              --attach_entity_to_entity(subject,target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
+      --[[
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lf"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rf"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lr"),offset,rot,false,true,false,0,true)
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rr"),offset,rot,false,true,false,0,true)
+      
+      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
+      --]]
+      callStack = 0
+      streaming.set_model_as_no_longer_needed(candle) 
+      return HANDLER_POP
+    else
+      graphics.request_named_ptfx_asset("core")
+      print("request scr_rcbarry2 ")
+      if(callStack > 50)then
+        print("fast out " .. callStack .. " > 10")
+        return HANDLER_POP
+      else
+        callStack = callStack+1
+      end
+      return HANDLER_CONTINUE
+    end
+  else
+    streaming.request_model(candle)
+    return HANDLER_CONTINUE
+  end
 end
 
 local lastAcro = 0

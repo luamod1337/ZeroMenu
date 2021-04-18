@@ -16,8 +16,6 @@ local lConfig
 local lastFirework = 0
 local lastVehicle
 
-
-
 function createNearbyMenu(parent,config)
   lConfig = config
   --Nearby
@@ -100,6 +98,55 @@ function createNearbyMenu(parent,config)
   firework = menu.add_feature("Firework around you","toggle",nearby.id,randomFireWork) 
   
   storage = {}
+  
+  
+  halfpipes = menu.add_feature("Half-Pipes Fun","action",nearby.id,spawnFunRamp) 
+  halfpipes_2 = menu.add_feature("Half-Pipes Fun 2","action",nearby.id,spawnFunRamp2) 
+end
+
+function spawnFunRamp()  
+  if(streaming.has_model_loaded(-613845235)) then  
+    local v3 = player.get_player_coords(player.player_id())   
+    v3.z = v3.z -1.5 
+    for i=1,10 do
+      local pipe = object.create_object(-613845235,v3,true,true)
+      local rot = entity.get_entity_rotation(pipe)  
+      rot.z = rot.z+(i*36) 
+      entity.set_entity_rotation(pipe,rot)      
+      streaming.set_model_as_no_longer_needed(-613845235)
+    end    
+    return HANDLER_POP
+  else
+    streaming.request_model(-613845235)
+    return HANDLER_CONTINUE
+  end
+end
+
+function spawnFunRamp2()  
+  if(streaming.has_model_loaded(-613845235)) then  
+    local v3 = player.get_player_coords(player.player_id())   
+    v3.z = v3.z -1.5 
+    for i=1,13 do
+      local pipe = object.create_object(-613845235,v3,true,true)
+      local rot = entity.get_entity_rotation(pipe)  
+      rot.z = rot.z+(i*14.4) 
+      entity.set_entity_rotation(pipe,rot)      
+    end    
+    v3 = player.get_player_coords(player.player_id())   
+    v3.z = v3.z +5 
+    for i=1,13 do
+      local pipe = object.create_object(-613845235,v3,true,true)
+      local rot = entity.get_entity_rotation(pipe) 
+      rot.y = 180 
+      rot.z = rot.z+(i*14.4) 
+      entity.set_entity_rotation(pipe,rot)      
+    end    
+      streaming.set_model_as_no_longer_needed(-613845235)
+    return HANDLER_POP
+  else
+    streaming.request_model(-613845235)
+    return HANDLER_CONTINUE
+  end
 end
 
 function randomFireWork()
