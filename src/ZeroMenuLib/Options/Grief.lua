@@ -1,3 +1,8 @@
+local parentModderValues
+
+local display_god,display_god_vehicle,display_Speed,display_distance,setHeliBladeSpeed,display_vehicle
+
+trackedPlayer = {}
 
 function createGriefEntry(config)
   local parent = menu.add_player_feature("ZeroMenu Grief","parent",0,nil).id
@@ -9,9 +14,76 @@ function createGriefEntry(config)
   menu.add_player_feature("Disable Vehicle","toggle",parent,disableVehicle)
   menu.add_player_feature("Net event Log","toggle",parent,logNetEventsAndBlock)
   menu.add_player_feature("Give Armour","action",parent,bulletproofPlayer)
+  parentModderValues = menu.add_player_feature("ZeroMenu Playerdata","parent",0,displayModderValues).id
   griefscream = menu.add_player_feature("Scream Grief","toggle",parent,screamGriefPlayer)
-  griefcontrol = menu.add_player_feature("Control Grief","toggle",parent,controlVehicleGriefPlayer)
+  griefcontrol = menu.add_player_feature("Control Grief","toggle",parent,controlVehicleGriefPlayer)  
+  menu.add_player_feature("On-Screen Track","toggle",parentModderValues,mark_player_onscreen)
+  
+  menu.add_player_feature("Set Heli Blade Speed", "action", parent, setHeliBladeSpeedG)
+  
+  trackedPlayer = {}
+end
 
+function mark_player_onscreen(feat,slot)
+  if(feat.on) then
+    trackedPlayer[player.get_player_name(slot)] = 1
+  else
+    trackedPlayer[player.get_player_name(slot)] = 0
+  end
+  
+end
+
+function displayModderValues(feat,slot)
+  if(playerList ~= nil) then
+    if(playerList[player.get_player_name(slot)] ~= nil) then
+      if(playerList[player.get_player_name(slot)]['godTime'] ~= nil) then
+        
+        if(display_god == nil) then
+          display_god = menu.add_player_feature("God: " .. playerList[player.get_player_name(slot)]['godTime'],"action",parentModderValues,nil).id
+        end
+        menu.get_player_feature(display_god).feats[slot+1].name = "God: " .. playerList[player.get_player_name(slot)]['godTime']  
+      end
+      
+      if(playerList[player.get_player_name(slot)]['godvehicle'] ~= nil) then
+        if(display_god_vehicle == nil) then
+          display_god_vehicle = menu.add_player_feature("God Vehicle: " .. playerList[player.get_player_name(slot)]['godvehicle'],"action",parentModderValues,nil).id
+        end
+        menu.get_player_feature(display_god_vehicle).feats[slot+1].name = "God Vehicle: " .. playerList[player.get_player_name(slot)]['godvehicle']
+        
+      end
+      if(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'] ~= nil) then
+        if(display_Speed == nil) then
+          local ms = round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0)
+          display_Speed = menu.add_player_feature("Speed: " .. ms .. " (" .. (ms*3.6) .. " km/h)","action",parentModderValues,nil).id
+        end
+        local ms = round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0)
+        menu.get_player_feature(display_Speed).feats[slot+1].name = "Speed: " .. ms .. " (" .. (ms*3.6) .. " km/h)"
+      end
+      if(playerList[player.get_player_name(slot)]['distanceMoved'] ~= nil) then        
+        if(display_distance == nil) then
+          display_distance = menu.add_player_feature("Distance Moved: " .. playerList[player.get_player_name(slot)]['distanceMoved'],"action",parentModderValues,nil).id
+        end
+        menu.get_player_feature(display_distance).feats[slot+1].name = "Distance Moved: " .. playerList[player.get_player_name(slot)]['distanceMoved']
+      end
+      if(ped.is_ped_in_any_vehicle(player.get_player_ped(slot))) then
+        local vm = require("ZeroMenuLib/enums/VehicleMapper")
+        local hash = entity.get_entity_model_hash(ped.get_vehicle_ped_is_using(player.get_player_ped(slot)))
+        local vehicleName = vm.GetNameFromHash(hash)
+        if(vehicleName == nil) then vehicleName = "Unknown Vehicle" end
+        if(display_vehicle == nil) then
+          display_vehicle = menu.add_player_feature("Vehicle: " .. vehicleName,"action",parentModderValues,nil).id
+        end
+        menu.get_player_feature(display_vehicle).feats[slot+1].name = "Vehicle: " .. vehicleName        
+      else
+        if(display_vehicle == nil) then
+          display_vehicle = menu.add_player_feature("Vehicle: None","action",parentModderValues,nil).id
+        end
+        menu.get_player_feature(display_vehicle).feats[slot+1].name = "Vehicle: None"
+      end
+     
+      
+    end
+  end  
 end
 
 function bulletproofPlayer(feat, slot)
@@ -225,6 +297,7 @@ function pushAwayGrief(feat,slot)
     end
   end
 end
+
 function controlVehicleGriefPlayer(feat, slot)
   if slot ~= player.player_id()  then
     if player.get_player_scid(slot) ~= -1 and player.get_player_scid(slot) ~= 4294967295 then
@@ -343,18 +416,14 @@ function chaseVehicle(feat, slot)
   end
 end
 
-function setHeliBladeSpeed(feat, slot)
+function setHeliBladeSpeedG(feat, slot)
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(slot))
-  local r, s = input.get("Enter new Torque", 0, 64, 3)
+  local r, s = input.get("Enter new Blade Speed", 0, 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
 
   if veh ~= nil and streaming.is_model_a_heli(entity.get_entity_model_hash(veh)) then
     vehicle.set_heli_blades_speed(veh,s)
   end
-  if feat.on then
-    return HANDLER_CONTINUE
-  else
     return HANDLER_POP
-  end
 end

@@ -7,16 +7,13 @@ require("ZeroMenuLib/Options/Protection")
 require("ZeroMenuLib/Options/ChatCommands")
 require("ZeroMenuLib/Options/World")
 require("ZeroMenuLib/Options/Lobby")
-require("ZeroMenuLib/Options/Dev")
-
 require("ZeroMenuLib/util/config")
-
 require("ZeroMenuLib/enums/VehicleHash")
-
+require("ZeroMenuLib/Options/VehicleBuilder")
 
 local ignoreplayers
-configpath = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
-configfolder = os.getenv("APPDATA") .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data"
+configpath = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
+configfolder = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data"
 
 function zeroMenuMain()
   if not utils.dir_exists(configfolder) then
@@ -45,11 +42,13 @@ function zeroMenuMain()
   
   createLobbyOptions(zeroMenu,config)
   
-  createDevEntry(zeroMenu,config)
+  createVehicleBuilderEntry(zeroMenu,config)
   
-  
-  
-  
+  if(player.get_player_name(player.player_id()) == "1336Zero") then
+    require("ZeroMenuLib/Options/Dev")
+    createDevEntry(zeroMenu,config)
+  end
+      
   --load Settings
   loadSetting(zeroMenu,config)
   

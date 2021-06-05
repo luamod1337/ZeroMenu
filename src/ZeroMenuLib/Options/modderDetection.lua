@@ -4,7 +4,7 @@ local zModderMain
 
 -- features
 local god,positionchecker,controlchecker,displayIngameInfo
-local annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings
+local annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings,markasModder
 
 -- integers
 
@@ -25,7 +25,7 @@ local debugSetting = true
 local checkDuration = 60
 
 -- list for all players containing lists
-local playerList
+playerList = nil
 local susList
 
 local lastGC = 0
@@ -55,10 +55,10 @@ function createModderDetectionMenuEntry(parent,config)
 
   zModderMainSettings = menu.add_feature("Settings", "parent", zModderMain.id, nil)
 
-  displayIngameInfo = createConfigedMenuOption("Display Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
+  displayIngameInfo = createConfigedMenuOption("Display All Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
   displayIngameInfo.threaded = false  
   
-  displaySusIngameInfo = createConfigedMenuOption("Display Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
+  displaySusIngameInfo = createConfigedMenuOption("Display All Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
   displaySusIngameInfo.threaded = false  
   
 
@@ -70,6 +70,9 @@ function createModderDetectionMenuEntry(parent,config)
 
   annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
   annouceCheaterChat.threaded = false
+  
+  markasModder = createConfigedMenuOption("Mark as Modder","toggle",zModderMainSettings.id,nil,config,"modderMARK",false,nil)
+  markasModder.threaded = false
   
   
   if config:isFeatureEnabled("PositionCheck") then
@@ -157,7 +160,9 @@ function scanPlayers()
             
             if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce']) then
               ui.notify_above_map(player.get_player_name(slot) .. " is using god since " .. playerList[player.get_player_name(slot)]['godTime'] .. " seconds","ZModder Detection",140)
-              player.set_player_as_modder(slot,1)
+              if(markasModder.on)then
+                player.set_player_as_modder(slot,1)
+              end              
               markSus(player.get_player_name(slot),"god")
               playerList[player.get_player_name(slot)]['godannounce'] = true
             end
@@ -266,7 +271,7 @@ end
 function calculateDistanceMoved(slot)
   local oldCord =  playerList[player.get_player_name(slot)]['cords']
   local newCord = player.get_player_coords(slot)
-  local distance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+  local distance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y']^2) + (newCord['z'] - oldCord['z']^2))
   
   return distance
 end
@@ -350,7 +355,8 @@ function drawDisplayInfo()
   -- if(displayIngameInfo.on and not displaySusIngameInfo.on) then    
     local baseV2 = v2(0.045,0.009)
     for slot = 0, 31 do
-      if(player.is_player_valid(slot) and playerList[player.get_player_name(slot)] ~= nil) then
+      if(player.is_player_valid(slot) and playerList[player.get_player_name(slot)] ~= nil and trackedPlayer ~= nil and trackedPlayer[player.get_player_name(slot)] ~= nil and trackedPlayer[player.get_player_name(slot)] == 1) then
+        
        -- if(playerList[player.get_player_name(slot)]['godTime'] > 0 or round(playerList[player.get_player_name(slot)]['distanceMoved'],0) > 0) then
           
           if(displayIngameInfo.on) then
@@ -400,17 +406,39 @@ function drawDisplayInfo()
               end             
              
               if(displayIngameInfo.on and round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0) > 0) then
-                drawRedText("m/s: " .. round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0),baseV2)
+                local ms = round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0)
+                drawRedText("m/s: " .. ms .. " (" .. (ms * 3.6) .. " km/h)",baseV2)
               end
             else
               if(displayIngameInfo.on) then
-                drawText("m/s: " .. round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0),baseV2)
+                local ms = round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0)
+                drawText("m/s: " .. ms .. " (" .. (ms * 3.6) .. " km/h)",baseV2)
               end
             end
             baseV2 = v2(baseV2.x,baseV2.y + 0.02)
           end     
-          baseV2 = v2(baseV2.x,baseV2.y + 0.02)
-        --end        
+        --end 
+        if(player.is_player_in_any_vehicle(slot)) then
+          
+          local vm = require("ZeroMenuLib/enums/VehicleMapper")
+          local hash = entity.get_entity_model_hash(ped.get_vehicle_ped_is_using(player.get_player_ped(slot)))
+          if(hash ~= nil) then
+            if(streaming.is_model_a_heli(hash) or streaming.is_model_a_plane(hash)) then
+              local vehicleName = vm.GetNameFromHash(hash)
+              if(vehicleName == nil) then vehicleName = "Unknown Plane" end
+              drawText("Is flying a " .. vehicleName,baseV2)
+            else
+              local vehicleName = vm.GetNameFromHash(hash)
+              if(vehicleName == nil) then vehicleName = "Unknown Vehicle" end
+              drawText("Is driving a " .. vehicleName,baseV2)
+            end
+          end
+          
+        else
+          drawText("Walks ",baseV2)
+        end
+        --Abstand zum Nächsten Eintrag
+          baseV2 = v2(baseV2.x,baseV2.y + 0.02)       
       end    
     end
  -- end  

@@ -45,50 +45,18 @@ function loadVehicleMenu(parent,config)
   --noClipVehicleOnExitVar = menu.add_feature("NoClip Vehicle on exit", "toggle", vehiclesubmenu.id, NoClipVehicleOnExit)
   noClipVehicleOnExitVar.threaded = false
 
-  
-  vehicleArcobatic = menu.add_feature("Arcobatic Right", "toggle", vehiclesubmenu.id, ArcrobaticRight)
   vehicleMods = menu.add_feature("Vehicle Mods", "parent", vehiclesubmenu.id, nil)
-  vehicleAttach = menu.add_feature("Safety First", "action", vehicleMods.id, attachCandles)
+  vehicleAttach = menu.add_feature("Safety First", "action", vehicleMods.id, attachSafetyFirst)
   vehicleAttach = menu.add_feature("Add Ramp", "action", vehicleMods.id, attachRamp)
   vehicleAttachLamp = menu.add_feature("Lamp Tire", "action", vehicleMods.id, attachLampToTire)
-  spawnobject = menu.add_feature("Spawn Object", "action", vehicleMods.id, spawnObject)
+  burning_candle_f = menu.add_feature("Candle PTFX to Tires","action",vehicleMods.id,burning_candle)
+  
     
 end
-local requestedObject = 0
-function spawnObject()
 
-if requestedObject == 0 then
-    local r, s = input.get("Enter Object Hash", 10000, 64, 3)
-    if r == 1 then return HANDLER_CONTINUE end
-    if r == 2 then return HANDLER_POP end
-    requestedObject = s
-  end
-  if(streaming.has_model_loaded(requestedObject)) then  
-    local objectCandle = object.create_object(requestedObject,player.get_player_coords(player.player_id()),true,true)
-    requestedObject = 0
-    streaming.set_model_as_no_longer_needed(requestedObject) 
-    return HANDLER_POP
-  else
-    streaming.request_model(requestedObject)
-    return HANDLER_CONTINUE
-  end
-end
 function attachLampToTire()
  local lentity = player.get_player_vehicle(player.player_id())
-  
-  
-  -- wheel_lf
-  -- wheel_rf
-  -- wheel_lm1
-  -- wheel_rm1
-  -- wheel_lm2
-  -- wheel_rm2
-  -- wheel_lm3
-  -- wheel_rm3
-  -- wheel_lr
-  -- wheel_rr
-  --attach_entity_to_entity(Entity subject, Entity target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
-  local candle = -647884455
+ local candle = -647884455
   if(streaming.has_model_loaded(candle)) then  
     local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
     local offset = v3(0,0,0)
@@ -143,7 +111,8 @@ function attachRamp()
 
     print(entity.get_entity_bone_index_by_name(lentity,"bonnet"))
             --attach_entity_to_entity(subject,target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
-    entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"bonnet"),offset,rot,false,true,false,0,true)
+    --entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"bonnet"),offset,rot,false,true,false,0,true)
+    entity.attach_entity_to_entity(objectCandle,lentity,-1,offset,rot,false,true,false,0,true)
     streaming.set_model_as_no_longer_needed(candle) 
     return HANDLER_POP
   else
@@ -157,72 +126,15 @@ end
 local callStack = 0
 function attachCandles()
   local lentity = player.get_player_vehicle(player.player_id())
-  
-  
-  -- wheel_lf
-  -- wheel_rf
-  -- wheel_lm1
-  -- wheel_rm1
-  -- wheel_lm2
-  -- wheel_rm2
-  -- wheel_lm3
-  -- wheel_rm3
-  -- wheel_lr
-  -- wheel_rr
-  --attach_entity_to_entity(Entity subject, Entity target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
-  --2041509221 - safety first
   local candle = -1915729838
   if(streaming.has_model_loaded(candle)) then  
     local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
     local offset = v3(0,0,0)
     local rot = v3(0,0,0)
-     --[[
-      print(entity.is_entity_a_vehicle(lentity))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lf"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rf"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_lr"))
-      print(entity.get_entity_bone_index_by_name(lentity,"wheel_rr"))
-    --]]
     if(graphics.has_named_ptfx_asset_loaded("core")) then
       print("core loaded")
       graphics.set_next_ptfx_asset("core")
       graphics.start_ptfx_looped_on_entity("scr_clown_appears",player.get_player_ped(player.player_id()),offset,rot,10.0)
-              --attach_entity_to_entity(subject,target, int boneIndex, v3 offset, v3 rot, bool softPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot)
-      --[[
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lf"),offset,rot,false,true,false,0,true)
-      
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rf"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lr"),offset,rot,false,true,false,0,true)
-      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rr"),offset,rot,false,true,false,0,true)
-      
-      graphics.start_ptfx_looped_on_entity("ptfx_ribbon_candle_flame",objectCandle,offset,rot,1.0)
-      --]]
       callStack = 0
       streaming.set_model_as_no_longer_needed(candle) 
       return HANDLER_POP
@@ -242,30 +154,53 @@ function attachCandles()
     return HANDLER_CONTINUE
   end
 end
-
-local lastAcro = 0
-
-function ArcrobaticRight()
-  local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-  local vehRotationV3 = entity.get_entity_rotation(veh)
-    --rotation.z = 0
-    --rotation.x = 0
-        
-    if(vehRotationV3.y < 75 and (os.time() - lastAcro) > 0)then
-      vehRotationV3.y = 75
-      entity.set_entity_rotation(veh,vehRotationV3)
-      lastAcro = os.time()
-    else
-      print(vehRotationV3.y)
-    end
-  
-    if vehicleArcobatic.on then    
-    return HANDLER_CONTINUE
-  else
-    return HANDLER_POP
-  end
+function attachSafetyFirst()
+  local lentity = player.get_player_vehicle(player.player_id())
+  --2041509221 - safety first
+  local candle = 2041509221
+  if(streaming.has_model_loaded(candle)) then  
+    local offset = v3(0,0,0)
+    local rot = v3(0,0,0)
+      local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lf"),offset,rot,false,true,false,0,true)
     
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rf"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm1"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm1"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm2"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rm2"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lm3"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_lr"),offset,rot,false,true,false,0,true)
+      
+      objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+      entity.attach_entity_to_entity(objectCandle,lentity,entity.get_entity_bone_index_by_name(lentity,"wheel_rr"),offset,rot,false,true,false,0,true)
+    
+      streaming.set_model_as_no_longer_needed(candle) 
+    return HANDLER_POP
+  else
+    if(callStack > 50)then
+      return HANDLER_POP
+    else
+      callStack = callStack+1
+    end
+    streaming.request_model(candle)
+    return HANDLER_CONTINUE
+  end
 end
+
 
 function tuneVehicle()
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
@@ -391,15 +326,18 @@ end
 
 
 function freezeVehicleOnExit()
-
-  if lastVehicle == 0 then
+  if(lastVehicle ~= ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))) then
+    if(lastVehicle ~= 0) then
+      entity.freeze_entity(lastVehicle,true)
+      ui.notify_above_map("Freezed Last Vehicle" ,"ZeroMenu",140)
+    end
     lastVehicle = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-  elseif lastVehicle ~= 0 and ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())) == 0 then
-    entity.freeze_entity(lastVehicle,true)
-  elseif lastVehicle == ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())) then
-    lastVehicle = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-    entity.freeze_entity(lastVehicle,false)
-  end  
+    if(lastVehicle ~= 0) then
+      entity.freeze_entity(lastVehicle,false)
+      ui.notify_above_map("Unfrozen current Vehicle","ZeroMenu",140)
+    end
+  end
+    
   if freezeVehicleOnExitVar.on then    
     return HANDLER_CONTINUE
   else
@@ -408,7 +346,7 @@ function freezeVehicleOnExit()
 end
 
 function NoClipVehicleOnExit()
-if lastVehicle == 0 then
+  if lastVehicle == 0 then
     lastVehicle = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
   elseif lastVehicle ~= 0 and ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())) == 0 then
     entity.freeze_entity(lastVehicle,true)
@@ -417,18 +355,58 @@ if lastVehicle == 0 then
     entity.freeze_entity(lastVehicle,false)
   end  
 
-    for i in ipairs(vehicle.get_all_vehicles())do
-      local tempveh = vehicle.get_all_vehicles()[i]
+  for i in ipairs(vehicle.get_all_vehicles())do
+    local tempveh = vehicle.get_all_vehicles()[i]
       
-      if not network.has_control_of_entity(tempveh) then
-        network.request_control_of_entity(tempveh)  
-      end 
-      entity.set_entity_no_collsion_entity(tempveh,lastVehicle,false)
-    end      
-  
+    if not network.has_control_of_entity(tempveh) then
+      network.request_control_of_entity(tempveh)  
+    end 
+    entity.set_entity_no_collsion_entity(tempveh,lastVehicle,false)
+  end      
   if noClipVehicleOnExitVar.on then    
     return HANDLER_CONTINUE
   else
     return HANDLER_POP
   end
+end
+
+function burning_candle()
+  --local candle = -1915729838
+  local candle = -769292007
+  if(streaming.has_model_loaded(candle)) then
+    if(player.is_player_in_any_vehicle(player.player_id())) then
+      local wheels = {"wheel_lf","wheel_rf","wheel_lm1","wheel_rm1","wheel_lm2","wheel_rm2","wheel_lm3","wheel_rm3","wheel_lr","wheel_rr"}
+      local parent = player.get_player_vehicle(player.player_id())
+      local offset = v3(0,0,0)
+      for i,s in ipairs(wheels)do
+        local boneIndex = entity.get_entity_bone_index_by_name(parent,s)
+        if(boneIndex > -1) then
+            local rot = v3(0,0,0)
+            local objectCandle = object.create_object(candle,player.get_player_coords(player.player_id()),true,true)
+            attachPTFX(objectCandle,"core","ent_amb_candle_flame",1.0)
+            attachPTFX(objectCandle,"scr_bike_adversary","scr_adversary_slipstream_formation",5.0)
+            entity.attach_entity_to_entity(objectCandle,parent,boneIndex,offset,rot,false,true,false,0,true)
+        end
+      end
+      ui.notify_above_map("Added Candle PTFX To Tires","ZeroMenu",140)
+    else  
+      ui.notify_above_map("Please enter a vehicle!","ZeroMenu",140)
+    end
+  else
+    streaming.request_model(candle)
+    print("request " .. candle)
+    return HANDLER_CONTINUE
+  end
+end
+
+function attachPTFX(entity,dict,ptfx,scale)
+  graphics.set_next_ptfx_asset(dict)
+  while not graphics.has_named_ptfx_asset_loaded(dict) do
+    graphics.request_named_ptfx_asset(dict)
+    system.wait(10)
+    return HANDLER_CONTINUE 
+  end
+  local offset = v3(0,0,0)
+  local rot = v3(0,90,0)
+  graphics.start_ptfx_looped_on_entity(ptfx,entity,offset,rot,scale)
 end

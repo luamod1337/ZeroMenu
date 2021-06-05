@@ -66,9 +66,7 @@ function loadModderFile()
         modderDataTable["reason"] = fields[3]
         modderDataTable["ip"] = fields[4]
         modderDataTable["notified"] = 0
-        modders[fields[2]] = modderDataTable
-        
-        print("loaded modder " .. modderDataTable["name"])
+        modders[fields[2]] = modderDataTable        
         end     
       end    
     else

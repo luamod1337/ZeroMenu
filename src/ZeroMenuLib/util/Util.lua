@@ -44,7 +44,6 @@ function dirVector(p45, h45, d)
   return p45
 end
 
-
 function formatIP(ip)
   return string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)
 end

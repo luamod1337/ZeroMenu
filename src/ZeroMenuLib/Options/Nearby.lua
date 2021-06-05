@@ -3,7 +3,7 @@ require("ZeroMenuLib/Util/Util")
 local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
 
-local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning,AntiDepressorMain, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
+local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
 local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu,firework
 
 local lastSlowMoRun = 0
@@ -19,89 +19,30 @@ local lastVehicle
 function createNearbyMenu(parent,config)
   lConfig = config
   --Nearby
-  nearby = menu.add_feature("Nearby", "parent", parent.id, nil)
-  AntiDepressorMain = menu.add_feature("Anti Depressor", "parent", nearby.id, nil)
-  
+  nearby = menu.add_feature("Nearby", "parent", parent.id, nil) 
   slowMo = createConfigedMenuOption("SlowMo","toggle",nearby.id,slowMoLobby,config,"slowmolobby",false,nil)   
-  --slowMo  = menu.add_feature("SlowMo", "toggle", nearby.id, slowMoLobby)
   slowMo.threaded = false 
-  
-  --if config:isFeatureEnabled("slowmolobby") then
-  --  slowMo.on = true
-  --end
-  
   hyper = createConfigedMenuOption("Hyper","toggle",nearby.id,hyperLobby,config,"hyperlobby",false,nil)   
-  --hyper = menu.add_feature("Hyper", "toggle", nearby.id, hyperLobby)
-  hyper.threaded = false
-  
-  --if config:isFeatureEnabled("hyperlobby") then
-  --  hyper.on = true
-  --end
-  
-  deppressorCheck = createConfigedMenuOption("Check for Depressor","toggle",AntiDepressorMain.id,checkForDepressor,config,"deppressorCheck",false,nil)   
-  --deppressorCheck = menu.add_feature("Check for Depressor", "toggle", AntiDepressorMain.id, checkForDepressor)
+  hyper.threaded = false  
+  deppressorCheck = createConfigedMenuOption("Check for depressors","toggle",nearby.id,checkForDepressor,config,"deppressorCheck",false,nil)   
   deppressorCheck.threaded = true
-  --config:saveIfNotExist("deppressorCheck","false",configpath)
-  
-  --if config:isFeatureEnabled("deppressorCheck") then
-  --  deppressorCheck.on = true
-  --end
-  
-  coronaCheck = createConfigedMenuOption("Check for encounters","toggle",nearby.id,checkForPlayer,config,"coronaCheck",false,nil)   
-  --coronaCheck = menu.add_feature("Check for encounters", "toggle", nearby.id, checkForPlayer)
+  coronaCheck = createConfigedMenuOption("Send China Flu Warning nearby","toggle",nearby.id,checkForPlayer,config,"coronaCheck",false,nil)   
   coronaCheck.threaded = false
-  --config:saveIfNotExist("coronaCheck","false",configpath)
-  
-  --if config:isFeatureEnabled("coronaCheck") then
-  --  coronaCheck.on = true
-  --end
-  
   clearPath = createConfigedMenuOption("Clearpath","toggle",nearby.id,clearPathNearby,config,"clearPath",false,nil)   
-  --clearPath = menu.add_feature("Clearpath", "toggle", nearby.id, clearPathNearby)
   clearPath.threaded = false
-  --config:saveIfNotExist("clearPath","false",configpath)
-  
-  --if config:isFeatureEnabled("clearPath") then
-  --  clearPath.on = true
-  --end
-  
   noCollissionmenu = createConfigedMenuOption("No Vehicle Colission","toggle",nearby.id,noCollision,config,"noCollission",false,nil)
-  --noCollissionmenu = menu.add_feature("No Colission", "toggle", nearby.id, noCollision)
   noCollissionmenu.threaded = false
-  --config:saveIfNotExist("noCollission","false",configpath)
-  
-  
   noCollissionObjmenu = createConfigedMenuOption("No Object Colission","toggle",nearby.id,noObjectCollision,config,"noObjCollission",false,nil)
   noCollissionObjmenu.threaded = false
-  --if config:isFeatureEnabled("noCollission") then
-  --  noCollissionmenu.on = true
-  --end
-  
   partyHardMenu = createConfigedMenuOption("Party Mode","toggle",nearby.id,dancingNpcs,config,"partyHard",false,nil)
-  --partyHardMenu = menu.add_feature("Party Mode", "toggle", nearby.id, dancingNpcs)
   partyHardMenu.threaded = true
-  --config:saveIfNotExist("partyHard","false",configpath)
-  
-  --if config:isFeatureEnabled("partyHard") then
-  --  partyHardMenu.on = true
-  --end
-  
   blmMenu = createConfigedMenuOption("BLM Demo","toggle",nearby.id,warZone,config,"blm",false,nil)
-  --blmMenu = menu.add_feature("BLM Demo", "toggle", nearby.id, warZone)
   blmMenu.threaded = false
-  --config:saveIfNotExist("blm","false",configpath)
-  
-  --if config:isFeatureEnabled("blm") then
-  --  blmMenu.on = true
-  --end
-  
   firework = menu.add_feature("Firework around you","toggle",nearby.id,randomFireWork) 
-  
   storage = {}
-  
-  
-  halfpipes = menu.add_feature("Half-Pipes Fun","action",nearby.id,spawnFunRamp) 
-  halfpipes_2 = menu.add_feature("Half-Pipes Fun 2","action",nearby.id,spawnFunRamp2) 
+    
+  menu.add_feature("Half-Pipes Fun","action",nearby.id,spawnFunRamp) 
+  menu.add_feature("Half-Pipes Fun 2","action",nearby.id,spawnFunRamp2) 
 end
 
 function spawnFunRamp()  
@@ -278,137 +219,160 @@ function dancingNpcs()
   local pedList = {}
     if (os.time() - lastPartyCheck > 10) then
       lastPartyCheck = os.time()
-    for i in ipairs(ped.get_all_peds())do
-    local tempped = ped.get_all_peds()[i]
-      if partyPeds[tempped] == nil then          
+      for i in ipairs(ped.get_all_peds())do
+        local tempped = ped.get_all_peds()[i]
+        if partyPeds[tempped] == nil then          
           if tempped ~= nil then
             if not ped.is_ped_a_player(tempped) then
-            if not ped.is_ped_in_any_vehicle(tempped) then 
-            
-              if not network.has_control_of_entity(tempped) then
-                network.request_control_of_entity(tempped)  
-              end 
-              
-              --print("move")
-              ped.clear_ped_tasks_immediately(tempped)
-             -- print("player_id " .. player.player_id() .. "\n")
-              --print("player ped " .. player.get_player_ped(player.player_id()) .. "\n")
-              --print("ped " .. tempped .. "\n")
-              --ai.task_goto_entity(tempped, player.get_player_ped(player.player_id()),10,10, 100)
-             --task_go_to_coord_by_any_means(Ped ped, v3 coords, float speed, Any p4, bool p5, int walkStyle, float a7)
-             ai.task_go_to_coord_by_any_means(tempped,entity.get_entity_coords(player.get_player_ped(player.player_id())),200,0,true,0,1)
-              
-            system.wait(10)
-            --  random = math.random (5)
-              random = 6
-              print("doing animation " .. random) 
-             -- ped.clear_ped_tasks_immediately(tempped)
-              
-              if not streaming.has_anim_dict_loaded("mini@strip_club@private_dance@part2")then
-                streaming.request_anim_dict("mini@strip_club@private_dance@part2")
-              end
-              
-              if not streaming.has_anim_set_loaded("priv_dance_p2")then
-                streaming.request_anim_set("priv_dance_p2")
-              end
-              pos =  entity.get_entity_coords(player.get_player_ped(player.player_id()))
-              
-              
-              local oldCord = pos
-              local newCord = entity.get_entity_coords(tempped)
-              local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
-               
-              
-              if tempdistance < 10 then
-              
-                --pi = math.pi
-              --rand = math.random(1)
-              
-              --local a = rand * 2 * math.pi
-              --local r = 200 * math.sqrt(rand)
-              
-             -- pos.x = pos.x + r * math.cos(a)
-              --pos.z = pos.z + r * math.cos(a)
-              local radius = 5
-              
-              if math.random(1) == 0 then
-                -- +
-                offset = math.random(radius)        
-              else
-                -- -
-                offset = math.random(radius)*-1
-              end        
-                pos.x = pos.x + offset
-                if math.random(1) == 0 then
-                -- +
-                offset = math.random(radius)        
-              else
-                -- -
-                offset = math.random(radius)*-1
-              end      
-                pos.y = pos.y + offset
-              
-              print("from x " .. entity.get_entity_coords(player.get_player_ped(player.player_id())).x .. " to " .. pos.x)
-              print("from y " .. entity.get_entity_coords(player.get_player_ped(player.player_id())).y .. " to " .. pos.y)
-              print("from z " .. entity.get_entity_coords(player.get_player_ped(player.player_id())).z .. " to " .. pos.z)
-             
-              
-              --pos.x = pos.x + math.random(10)
-              --pos.y = pos.y + math.random(10)+5
-              
-              
-             -- ai.play_anim_on_running_scenario(tempped,"mini@strip_club@private_dance@part2" ,"priv_dance_p2")      
-              --ai.task_start_scenario_in_place(tempped,"WORLD_HUMAN_PARTYING",0,true)
-              --task_start_scenario_at_position(Ped ped, string name, v3 coord, float heading, int duration, bool sittingScenario, bool teleport)
-              local ran = math.random(10)
-              
-              if pedList[i] == nil then
-            -- pedList[i] = tempped
-                pos1 = entity.get_entity_coords(tempped)
-                teleport = true
-                if ran == 1 then
-                  ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PARTYING",pos1,1,1000000,false,teleport)  
-                elseif ran == 2  then    
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_MUSICIAN",pos1,1,1000000,false,teleport) 
-                 elseif ran == 3 then
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_HIGH_CLASS",pos1,1,1000000,false,teleport) 
-                 elseif ran == 4      then
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_LOW_CLASS",pos1,1,1000000,false,teleport) 
-                 elseif ran == 5    then  
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_LOW_CLASS",pos1,1,1000000,false,teleport) 
-                 elseif ran == 6     then 
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PAPARAZZI",pos1,1,1000000,false,teleport) 
-                 elseif ran == 7      then
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_MUSCLE_FLEX",pos1,1,1000000,false,teleport) 
-                 elseif ran == 8   then   
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_HUMAN_STATUE",pos1,1,1000000,false,teleport) 
-                 elseif ran == 9  then   
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_DRUG_DEALER_HARD",pos1,1,1000000,false,teleport) 
-                 elseif ran == 10  then    
-                 ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_DRINKING",pos1,1,1000000,false,teleport) 
+              if not ped.is_ped_in_any_vehicle(tempped) then 
+                if not network.has_control_of_entity(tempped) then
+                  network.request_control_of_entity(tempped)  
                 end
-                partyPeds[tempped] = 1
-              end
+                ped.clear_ped_tasks_immediately(tempped)            
+                ai.task_go_to_coord_by_any_means(tempped,entity.get_entity_coords(player.get_player_ped(player.player_id())),200,0,true,0,1)
               
-              end
+                system.wait(10)
               
+                if not streaming.has_anim_dict_loaded("mini@strip_club@private_dance@part2")then
+                  streaming.request_anim_dict("mini@strip_club@private_dance@part2")
+                  print("request mini@strip_club@private_dance@part2")
+                  return HANDLER_CONTINUE
+                end
+                if not streaming.has_anim_dict_loaded("anim@amb@nightclub@lazlow@hi_podium@")then
+                  streaming.request_anim_dict("anim@amb@nightclub@lazlow@hi_podium@")
+                  print("request anim@amb@nightclub@lazlow@hi_podium@")
+                  return HANDLER_CONTINUE
+                end              
+                if not streaming.has_anim_dict_loaded("anim@amb@nightclub@lazlow@hi_railing@")then
+                  streaming.request_anim_dict("anim@amb@nightclub@lazlow@hi_railing@")
+                  print("request anim@amb@nightclub@lazlow@hi_railing@")
+                  return HANDLER_CONTINUE
+                end
+                if not streaming.has_anim_dict_loaded("anim@amb@nightclub@mini@dance@dance_solo@female@var_a@")then
+                  streaming.request_anim_dict("anim@amb@nightclub@mini@dance@dance_solo@female@var_a@")
+                  print("request anim@amb@nightclub@mini@dance@dance_solo@female@var_b@")
+                  return HANDLER_CONTINUE
+                end
+                if not streaming.has_anim_dict_loaded("anim@amb@nightclub@mini@dance@dance_solo@female@var_b@")then
+                  streaming.request_anim_dict("anim@amb@nightclub@mini@dance@dance_solo@female@var_b@")
+                  print("request anim@amb@nightclub@mini@dance@dance_solo@female@var_b@")
+                  return HANDLER_CONTINUE
+                end                            
+                --if not streaming.has_anim_set_loaded("priv_dance_p2")then
+                --  streaming.request_anim_set("priv_dance_p2")
+                --  print("request priv_dance_p2")
+                --  return HANDLER_CONTINUE
+                --end
               
-              else
+                pos =  entity.get_entity_coords(player.get_player_ped(player.player_id()))
+                local oldCord = pos
+                local newCord = entity.get_entity_coords(tempped)
+                local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+                 
+                if tempdistance < 10 then
+                  local radius = 5              
+                  if math.random(1) == 0 then
+                    -- +
+                    offset = math.random(radius)        
+                  else
+                    -- -
+                    offset = math.random(radius)*-1
+                  end        
                 
-                --task_go_to_coord_by_any_means(Ped ped, v3 coords, float speed, Any p4, bool p5, int walkStyle, float a7)
+                  pos.x = pos.x + offset
+                  if math.random(1) == 0 then
+                    -- +
+                    offset = math.random(radius)        
+                  else
+                    -- -
+                    offset = math.random(radius)*-1
+                  end     
+               
+                  pos.y = pos.y + offset              
+                  local ran = math.random(30)
+                  if pedList[i] == nil then
+                    pos1 = entity.get_entity_coords(tempped)
+                    teleport = true
+                    if ran == 1 then
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PARTYING",pos1,1,1000000,false,teleport)  
+                    elseif ran == 2  then    
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_MUSICIAN",pos1,1,1000000,false,teleport) 
+                    elseif ran == 3 then
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_HIGH_CLASS",pos1,1,1000000,false,teleport) 
+                    elseif ran == 4      then
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_LOW_CLASS",pos1,1,1000000,false,teleport) 
+                    elseif ran == 5    then  
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PROSTITUTE_LOW_CLASS",pos1,1,1000000,false,teleport) 
+                    elseif ran == 6     then 
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PAPARAZZI",pos1,1,1000000,false,teleport) 
+                    elseif ran == 7      then
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_MUSCLE_FLEX",pos1,1,1000000,false,teleport) 
+                    elseif ran == 8   then   
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_HUMAN_STATUE",pos1,1,1000000,false,teleport) 
+                    elseif ran == 9  then   
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_DRUG_DEALER_HARD",pos1,1,1000000,false,teleport) 
+                    elseif ran == 10  then    
+                      ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_DRINKING",pos1,1,1000000,false,teleport) 
+                    elseif ran == 11  then    
+                      ai.task_play_anim(tempped,"amb@code_human_on_bike_idles@police@front@idle_a","idle_a",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 12  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@lazlow@hi_podium@","danceidle_hi_13_crotchgrab_laz",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 13  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@lazlow@hi_podium@","danceidle_hi_11_turnaround_laz",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 14  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@lazlow@hi_podium@","danceidle_hi_17_smackthat_laz",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 15  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@lazlow@hi_podium@","danceidle_hi_17_spiderman_laz",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 16  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@lazlow@hi_railing@","ambclub_09_mi_hi_bellydancer_laz",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 17  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","high_left_up",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 18  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","high_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 19  then    
+                      ai.task_play_anim(tempped,"@amb@nightclub@mini@dance@dance_solo@female@var_b@","high_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 20  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_b@","med_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 21  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_b@","med_center_down",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 22  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","med_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 23  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","low_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 24  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","low_center_down",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 25  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","low_center_up",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 26  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","high_center_up",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 27  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_a@","high_center_down",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 28  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@female@var_b@","high_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 29  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@male@var_a@","high_center",8.0,8.0,-1,1,0,true,true,true)
+                    elseif ran == 30  then    
+                      ai.task_play_anim(tempped,"anim@amb@nightclub@mini@dance@dance_solo@male@var_b@","high_center",8.0,8.0,-1,1,0,true,true,true)
+                    else
+                      print(ran .. " is an unknown scenario")
+                    end
+                    partyPeds[tempped] = 1
+                  end
+                end
+              else
                 ai.task_go_to_coord_by_any_means(tempped, entity.get_entity_coords(player.get_player_ped(player.player_id())),10,0,true,0,1)
-              end
               end
             end
           end
         end
+      end
     end        
-    end
-    if partyHardMenu.on then
-      return HANDLER_CONTINUE
-    else
-      return HANDLER_POP
-    end
+  end
+  if partyHardMenu.on then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
 end
 
 local noCollisionList = {}
@@ -455,16 +419,15 @@ local noCollisionObjList = {}
 
 function noObjectCollision() 
   if noCollissionObjmenu.on then   
+    local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+    local newCord = entity.get_entity_coords(myveh)
     for i in ipairs(object.get_all_objects())do
       local tempObj = object.get_all_objects()[i]
-      if slot ~= player.player_id() then      
-        if noCollisionObjList[tempObj] == nil then
-          local myveh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-          local newCord = entity.get_entity_coords(myveh)
-          local oldCord = entity.get_entity_coords(tempObj)
-          local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
-    
-          if tempdistance <= 10 then
+      if slot ~= player.player_id() then   
+        local oldCord = entity.get_entity_coords(tempObj)
+        local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+        if tempdistance <= 10 then          
+          if noCollisionObjList[tempObj] == nil then
             if myveh ~= nil then
               if not network.has_control_of_entity(tempObj) then
                 network.request_control_of_entity(tempObj)  
