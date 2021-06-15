@@ -28,7 +28,7 @@ function createChatCommands(parent,config)
   chatLog = io.open (chatLogPath,"a")
   chatLog:write("#Created using 1337Zeros ZeroMenu\n")
 
-if not utils.file_exists(chatLogPath) then
+  if not utils.file_exists(chatLogPath) then
     utils.make_dir(chatLogPath)
     file = io.open(chatLogPath, "w")
     file:write("#Created using 1337Zeros ZeroMenu\n")

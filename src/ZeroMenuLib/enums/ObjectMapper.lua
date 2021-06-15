@@ -12934,10 +12934,18 @@ function ObjectMapper.FromHash(Hash)
 end
 
 function ObjectMapper.GetModelFromHash(Hash)
-  if Hash == nil or type(Hash) ~= "number" then return nil end
+  if Hash == nil or type(Hash) ~= "number" then 
+      print("fast out ...")
+      print("type: " .. type(Hash))
+      print("Hash: " .. Hash)
+    return nil 
+  end
   for i=1,#Objects do
     local obj = Objects[i]
-    if obj.Hash == Hash then return obj.Model end
+    if obj.Hash == Hash then 
+      print("found hash " .. Hash)
+      return obj.Model 
+    end
   end
   return nil
 end

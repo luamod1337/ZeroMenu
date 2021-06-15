@@ -158,7 +158,7 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['moved'] = true
             end
             
-            if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce']) then
+            if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce'] and not slot == player.player_id()) then
               ui.notify_above_map(player.get_player_name(slot) .. " is using god since " .. playerList[player.get_player_name(slot)]['godTime'] .. " seconds","ZModder Detection",140)
               if(markasModder.on)then
                 player.set_player_as_modder(slot,1)
@@ -167,7 +167,7 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['godannounce'] = true
             end
             
-            if(playerList[player.get_player_name(slot)]['godvehicle'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godvehicleannounced']) then
+            if(playerList[player.get_player_name(slot)]['godvehicle'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godvehicleannounced'] and not slot == player.player_id()) then
                ui.notify_above_map(player.get_player_name(slot) .. " is using god vehicle since " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZModder Detection",140)
                markSus(player.get_player_name(slot),"Godmode Vehicle")
                playerList[player.get_player_name(slot)]['godvehicleannounced'] = true
@@ -177,7 +177,7 @@ function scanPlayers()
                  playerList[player.get_player_name(slot)]['vehiclespeedTime'] = playerList[player.get_player_name(slot)]['vehiclespeedTime'] + 1
               end
             
-            if(distanceMovedSecond > 500 and positionchecker.on and playerList[player.get_player_name(slot)]['moved'] and not playerList[player.get_player_name(slot)]['wasInside']) then            
+            if(distanceMovedSecond > 500 and positionchecker.on and playerList[player.get_player_name(slot)]['moved'] and not playerList[player.get_player_name(slot)]['wasInside'] and not slot == player.player_id()) then            
               if(not isValidPos(slot)) then                
                 ui.notify_above_map(player.get_player_name(slot) .. " teleported (moved " .. round(distanceMovedSecond,0) .. " in 1 Second)","ZModder Detection",140)            
                 playerList[player.get_player_name(slot)]['willbeInside'] = 1
@@ -190,7 +190,7 @@ function scanPlayers()
               markSus(player.get_player_name(slot),"teleport2")
               playerList[player.get_player_name(slot)]['willbeInside'] = 0
             end
-            if(nameBoundsCheaterChat.on and (string.len(player.get_player_name(slot)) < 6 or string.len(player.get_player_name(slot)) > 16)) then
+            if(nameBoundsCheaterChat.on and (string.len(player.get_player_name(slot)) < 6 or string.len(player.get_player_name(slot)) > 16) and not slot == player.player_id()) then
                 ui.notify_above_map("Name out of Bounds for: " .. player.get_player_name(slot),"ZModder Detection",140)            
                 markSus(player.get_player_name(slot),"Name Length")
             end

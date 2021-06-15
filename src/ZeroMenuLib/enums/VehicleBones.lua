@@ -457,7 +457,6 @@ function vehicleBones.GetUseAbleBones(vehicle)
       local bone =  entity.get_entity_bone_index_by_name(vehicle,vehicleBones[i])
       if(bone >= 0) then
         table.insert(bones, vehicleBones[i])
-        print("adding bone " .. vehicleBones[i])
       end
     end
   end

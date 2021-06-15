@@ -408,5 +408,5 @@ function attachPTFX(entity,dict,ptfx,scale)
   end
   local offset = v3(0,0,0)
   local rot = v3(0,90,0)
-  graphics.start_ptfx_looped_on_entity(ptfx,entity,offset,rot,scale)
+  graphics.start_networked_ptfx_looped_on_entity(ptfx,entity,offset,rot,scale)
 end

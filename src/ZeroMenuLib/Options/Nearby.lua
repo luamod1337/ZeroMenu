@@ -267,8 +267,8 @@ function dancingNpcs()
                 pos =  entity.get_entity_coords(player.get_player_ped(player.player_id()))
                 local oldCord = pos
                 local newCord = entity.get_entity_coords(tempped)
-                local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
-                 
+                local tempdistance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y'])^2 + (newCord['z'] - oldCord['z'])^2)
+                
                 if tempdistance < 10 then
                   local radius = 5              
                   if math.random(1) == 0 then
@@ -425,7 +425,7 @@ function noObjectCollision()
       local tempObj = object.get_all_objects()[i]
       if slot ~= player.player_id() then   
         local oldCord = entity.get_entity_coords(tempObj)
-        local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+        local tempdistance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y'])^2 + (newCord['z'] - oldCord['z'])^2)
         if tempdistance <= 10 then          
           if noCollisionObjList[tempObj] == nil then
             if myveh ~= nil then
@@ -513,11 +513,11 @@ function checkForPlayer()
   for slot = 0, 31 do   
     local oldCord = player.get_player_coords(slot)
     local newCord = getMySelfCoords()   
-    local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+    local tempdistance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y'])^2 + (newCord['z'] - oldCord['z'])^2)
         
-    if slot ~= player.player_id() and storage[player.get_player_name(slot)] == nil then
-      if  tempdistance <= distance then
-        --check if oppressor
+    if player.is_player_valid(slot) and slot ~= player.player_id() and storage[player.get_player_name(slot)] == nil then
+      if tempdistance <= distance then
+        -- send corona warning
         ui.notify_above_map("Send " .. player.get_player_name(slot) .. " a Corona Warning","Anti Depressor",140)
         player.send_player_sms(slot, "Corona Warning, don't get closer!") 
         storage[player.get_player_name(slot)] = {}
@@ -667,7 +667,7 @@ function checkForDepressor()
   for slot = 0, 31 do   
     local oldCord = player.get_player_coords(slot)
     local newCord = getMySelfCoords()   
-    local tempdistance = math.sqrt(math.pow(newCord['x'] - oldCord['x'],2) + math.pow(newCord['y'] - oldCord['y'],2) + math.pow(newCord['z'] - oldCord['z'],2))
+    local tempdistance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y'])^2 + (newCord['z'] - oldCord['z'])^2)
     
     local ignoreSelf = slot ~= player.player_id()
     --local ignoreSelf = true

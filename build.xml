@@ -1,4 +1,5 @@
 <project name="ZeroMenu" default="compile">
+  <buildnumber/>
   <description>
     simple example build file
   </description>
