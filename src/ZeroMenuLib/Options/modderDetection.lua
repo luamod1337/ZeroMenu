@@ -271,8 +271,11 @@ end
 function calculateDistanceMoved(slot)
   local oldCord =  playerList[player.get_player_name(slot)]['cords']
   local newCord = player.get_player_coords(slot)
-  local distance = math.sqrt((newCord['x'] - oldCord['x'])^2 + (newCord['y'] - oldCord['y']^2) + (newCord['z'] - oldCord['z']^2))
-  
+
+  local difX = (newCord['x'] - oldCord['x'])^2
+  local difY = (newCord['y'] - oldCord['y'])^2
+  local difZ = (newCord['z'] - oldCord['z'])^2
+  local distance = math.sqrt(difX + difY + difZ)  
   return distance
 end
 
@@ -360,7 +363,13 @@ function drawDisplayInfo()
        -- if(playerList[player.get_player_name(slot)]['godTime'] > 0 or round(playerList[player.get_player_name(slot)]['distanceMoved'],0) > 0) then
           
           if(displayIngameInfo.on) then
-            drawText(player.get_player_name(slot) .. " (" .. playerList[player.get_player_name(slot)]['totalChecked'] .. ")",baseV2)
+            
+            local gender = "male"
+            if(player.is_player_female(slot)) then
+              gender = "female"
+            end
+            
+            drawText(player.get_player_name(slot) .. " (" .. playerList[player.get_player_name(slot)]['totalChecked'] .. ") (" ..  gender .. ")",baseV2)
             baseV2 = v2(baseV2.x,baseV2.y + 0.02)
           end
           
