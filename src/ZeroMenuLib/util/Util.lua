@@ -10,8 +10,8 @@ function createConfigedMenuOption(name,type,parent,script_function,config,config
     end
   elseif type == "autoaction_value_i" then
     config:saveIfNotExist(configValueName.."_max",defaultValue)  
-    feature.max_i = tonumber(config:getValue(configValueName.."_max"))
-    feature.value_i = tonumber(config:getValue(configValueName))
+    feature.max = tonumber(config:getValue(configValueName.."_max"))
+    feature.value = tonumber(config:getValue(configValueName))
   end
   return feature;
 end

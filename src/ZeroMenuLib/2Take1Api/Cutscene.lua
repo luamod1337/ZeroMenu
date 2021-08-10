@@ -1,5 +1,7 @@
-Cutscene = {}
-Cutscene.__index = Cutscene
+cutscene = {}
+cutscene.__index = cutscene
 
-function Cutscene:stop_cutscene_immediately()end
-function Cutscene:remove_cutscene()end
+function cutscene:stop_cutscene_immediately()end
+function cutscene:remove_cutscene()end
+function cutscene:is_cutscene_active()end
+function cutscene:is_cutscene_playing()end

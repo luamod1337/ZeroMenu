@@ -27,12 +27,11 @@ function logModders()
       elseif modders[player.get_player_name(slot)] ~= nil and warnOfLoadedModdersOption.on then
         local modderData = modders[player.get_player_name(slot)]
         if modderData["notified"] == 0 then          
-          ui.notify_above_map(player.get_player_name(slot) .. " is a known Modder for " .. player.get_modder_flag_text(modderData["reason"]) .. " (" .. modderData["date"] .. ")" ,"ZeroMenu",140)
-          
+          menu.notify(player.get_player_name(slot) .. " is a known Modder for " .. player.get_modder_flag_text(modderData["reason"]) .. " (" .. modderData["date"] .. ")","ZeroMenu",5,140)  
           
           
           if string.match(tostring(player.get_player_scid(slot)),string.sub(tostring(modderData["scid"]),1)) == nil then
-            ui.notify_above_map("Scid missmatch " .. player.get_player_name(slot) .. " had scid '" .. string.sub(tostring(modderData["scid"]),1) .. "' but now he has '" .. player.get_player_scid(slot) .. "'","ZeroMenu",140)
+            menu.notify("Scid missmatch " .. player.get_player_name(slot) .. " had scid '" .. string.sub(tostring(modderData["scid"]),1) .. "' but now he has '" .. player.get_player_scid(slot) .. "'","ZeroMenu",5,140)  
           end
           player.set_player_as_modder(slot,modderData["reason"])
           modderData["notified"] = 1
@@ -75,7 +74,7 @@ function loadModderFile()
 end
 
 function storeModder(slot)
-  ui.notify_above_map("Storing " .. player.get_player_name(slot) .. " in Modder Database","ZeroMenu",140)
+  menu.notify("Storing " .. player.get_player_name(slot) .. " in Modder Database","ZeroMenu",5,140) 
   local file = io.open(modderFilePath, "a")
   local ip = player.get_player_ip(slot)                 
   local ipS = formatIP(ip)   

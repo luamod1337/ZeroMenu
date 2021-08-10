@@ -1,7 +1,8 @@
 require("ZeroMenuLib/Util/Util")
-local selfMain,wander,startScenarioFeat
+local selfMain,wander,startScenarioFeat,modelchangemain
 local vs = require("ZeroMenuLib/enums/Scenarios")
 local ds = require("ZeroMenuLib/enums/DrivingStyle")
+local pm = require("ZeroMenuLib/enums/PedMapper")
 
 function createSelfMenuEntry(parent,config)
   selfMain = menu.add_feature("Self", "parent", parent.id, nil)
@@ -15,6 +16,27 @@ function createSelfMenuEntry(parent,config)
   menu.add_feature("Start Dance","action",selfMain.id,dance) 
   menu.add_feature("Stop Scenario","action",selfMain.id,stopScenario)
   
+  modelchangemain = menu.add_feature("Model Change","parent",selfMain.id,loadModelList)
+  
+end
+
+function loadModelList()
+  local Peds = pm.GetAllHash()
+  local idx = 0
+  while idx < #Peds do
+    idx = idx + 1
+    local entry = Peds[idx]
+    menu.add_feature(entry['name'],"action",modelchangemain.id,function()
+      local pedHash = entry['hash']
+      while not streaming.has_model_loaded(pedHash) do
+        streaming.request_model(pedHash )
+        system.wait(0)
+      end
+      player.set_player_model(pedHash)
+      menu.notify("Changed to " .. entry['name'],"ZeroMenu",5,140)
+    end)    
+  end
+
 end
 
 function wanderStreet()
@@ -82,7 +104,7 @@ function dance()
   local tempped = player.get_player_ped(player.player_id())
   local pos1 = player.get_player_coords(player.player_id())
   local teleport = false
-  ui.notify_above_map("Starting dance with ran = " .. ran,"ZeroMenu",140)
+  menu.notify("Starting dance with ran = " .. ran,"ZeroMenu",5,140) 
   if ran == 1 then
     ai.task_start_scenario_at_position(tempped,"WORLD_HUMAN_PARTYING",pos1,1,1000000,false,teleport)  
   elseif ran == 2  then    

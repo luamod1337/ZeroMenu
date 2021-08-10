@@ -5,21 +5,58 @@ local pm = require("ZeroMenuLib/enums/PedMapper")
 local vb = require("ZeroMenuLib/enums/VehicleBones")
 local pb = require("ZeroMenuLib/enums/PedBones")
 
-
+local xml2lua = require("xml2lua")
+local xmlhandler = require("xmlhandler.tree")
+  
 local vehicleBuilder, spawnVehicle, spawnPed
 local spawnedVehicleList,spawnedObjectList, spawnedPedList, vehicleParentList, pedParentList, objectParentList
 
 local featToEntity
+local xmlList = nil
 
 function createVehicleBuilderEntry(parent,config)
   vehicleBuilder = menu.add_feature("Vehicle Builder","parent",parent.id,loadVehicles)  
   spawnVehicle = menu.add_feature("Spawn Vehicle","action",vehicleBuilder.id,spawnVehicle)  
+  spawnVehicle = menu.add_feature("Spawn XML Vehicle","action",vehicleBuilder.id,spawnXML)  
   spawnVehicle = menu.add_feature("Spawn Object by Hash","action",vehicleBuilder.id,spawnObjectByHash)  
   spawnVehicle = menu.add_feature("Spawn Object by Name","action",vehicleBuilder.id,spawnObjectByName)  
-  spawnPed = menu.add_feature("Spawn Ped by Name","action",vehicleBuilder.id,spawnPedByName)  
+  spawnPed = menu.add_feature("Spawn Ped by Name","action",vehicleBuilder.id,spawnPedByName)
     
   vehicleParentList = menu.add_feature("Vehicles","parent",vehicleBuilder.id,nil)  
   pedParentList = menu.add_feature("Peds","parent",vehicleBuilder.id,nil)  
+  
+  menu.add_feature("Add own Ped","action",pedParentList.id,
+  function()
+    local pedData = {}      
+    --table.insert(spawnedPedList,player.get_player_ped(player.player_id()))
+    pedData['name'] = player.get_player_name(player.player_id())
+    pedData['id'] = player.get_player_ped(player.player_id())
+    spawnedPedList[#spawnedPedList+1] = pedData
+    processSpawnedPed(pedData)
+    menu.notify("Added Own Ped to List","ZeroMenu",5,140) 
+  end)  
+  
+  menu.add_feature("Add Vehicle","action",vehicleParentList.id,
+  function()
+    if(player.is_player_in_any_vehicle(player.player_id())) then
+      local vehicleData = {}
+      local hash = entity.get_entity_model_hash(player.get_player_vehicle(player.player_id()))
+      local vehicleName = vm.GetNameFromHash(hash)
+      if(vehicleName == nil) then vehicleName = "Unknown Vehicle" end
+      vehicleData['name'] = vehicleName
+      vehicleData['hash'] = hash 
+      vehicleData['id'] = player.get_player_vehicle(player.player_id())
+      local arrayID = #spawnedVehicleList+1
+      vehicleData['arrayID'] = arrayID
+      spawnedVehicleList[arrayID] = vehicleData
+      processSpawnedVehicle(vehicleData)
+      menu.notify("Added Own Vehicle to List","ZeroMenu",5,140)
+    else    
+      menu.notify("Please enter a vehicle first!","ZeroMenu",5,140)
+    end
+    
+  end)  
+  
   objectParentList = menu.add_feature("Objects","parent",vehicleBuilder.id,nil)  
   
   spawnedVehicleList = {}
@@ -29,11 +66,7 @@ function createVehicleBuilderEntry(parent,config)
 end
 
 function notifySpawnedStuff()
-
-  ui.notify_above_map("Spawned " .. #spawnedVehicleList .. " Vehicles\n" .. "Spawned " .. #spawnedObjectList ..  " Objects\n" .. "Spawned " .. #spawnedPedList ..     " Peds","ZeroMenu",140)
---ui.notify_above_map("Spawned " .. #spawnedObjectList ..  " Objects","ZeroMenu",140)
---ui.notify_above_map("Spawned " .. #spawnedPedList ..     " Peds","ZeroMenu",140)
-
+  menu.notify("Spawned " .. #spawnedVehicleList .. " Vehicles\n" .. "Spawned " .. #spawnedObjectList ..  " Objects\n" .. "Spawned " .. #spawnedPedList ..     " Peds","ZeroMenu",5,140) 
 end
 
 function processSpawnedVehicle(vehicleData)
@@ -80,7 +113,7 @@ function processSpawnedVehicle(vehicleData)
   menu.add_feature("Delete","action",tempFeature.id,
   function()
     entity.delete_entity(vehicleData['id'])
-    ui.notify_above_map("Deleted " .. vehicleData['name'] ..  " (" .. vehicleData['id'] .. ")","ZeroMenu",140)      
+    menu.notify("Deleted " .. vehicleData['name'] ..  " (" .. vehicleData['id'] .. ")","ZeroMenu",5,140)  
     for i=1,#tempFeature.children do
       menu.delete_feature(tempFeature.children[1].id)
     end
@@ -133,7 +166,7 @@ function processSpawnedObject(objectData)
   menu.add_feature("Delete","action",tempFeature.id,
   function()
     entity.delete_entity(objectData['id'])
-    ui.notify_above_map("Deleted " .. objectData['name'] ..  " (" .. objectData['id'] .. ")","ZeroMenu",140)      
+    menu.notify("Deleted " .. objectData['name'] ..  " (" .. objectData['id'] .. ")","ZeroMenu",5,140)    
     for i=1,#tempFeature.children do
       menu.delete_feature(tempFeature.children[1].id)
     end
@@ -185,8 +218,8 @@ function processSpawnedPed(pedData)
   --Delete
   menu.add_feature("Delete","action",tempFeature.id,
   function()
-    entity.delete_entity(pedData['id'])
-    ui.notify_above_map("Deleted " .. pedData['name'] ..  " (" .. pedData['id'] .. ")","ZeroMenu",140)      
+    entity.delete_entity(pedData['id'])  
+    menu.notify("Deleted " .. pedData['name'] ..  " (" .. pedData['id'] .. ")","ZeroMenu",5,140)    
     for i=1,#tempFeature.children do
       menu.delete_feature(tempFeature.children[1].id)
     end
@@ -277,7 +310,7 @@ function loadAttachAbleObjectList(feat,data)
           bones = {"center"}          
         end        
         attachVehicleFunc.set_str_data(attachVehicleFunc,bones)
-        ui.notify_above_map("Found " .. #bones .. " Bones for " .. parent['id'],"ZeroMenu",140)
+        menu.notify("Found " .. #bones .. " Bones for " .. parent['id'],"ZeroMenu",5,140)    
         --Save feat for deleting later
         local featList = spawnedObjectList[i]['feats']  
         if(featList == nil) then
@@ -360,7 +393,7 @@ function spawnVehicle()
   end 
   
   if(rightHash == nil or streaming.is_model_in_cdimage(rightHash) == false) then
-      ui.notify_above_map("Unknown Hash!","ZeroMenu",140)   
+        menu.notify("Unknown Hash!","ZeroMenu",5,140)    
       requestedVehicle = nil
       return HANDLER_POP
   end
@@ -371,13 +404,14 @@ function spawnVehicle()
       local vehicleData = {}
       vehicleData['hash'] = rightHash
       vehicleData['name'] = requestedVehicle
-      vehicleData['id'] = vehicle.create_vehicle(rightHash,v3,entity.get_entity_heading(player.get_player_ped(player.player_id())),true,false)
+      --vehicleData['id'] = vehicle.create_vehicle(rightHash,v3,entity.get_entity_heading(player.get_player_ped(player.player_id())),true,false)
+      vehicleData['id'] = spawnRawVehicle(rightHash,v3)
       local arrayID = #spawnedVehicleList+1
       vehicleData['arrayID'] = arrayID
       spawnedVehicleList[arrayID] = vehicleData
       streaming.set_model_as_no_longer_needed(rightHash)
       requestedVehicle = nil
-      ui.notify_above_map("Spawned Vehicle " .. rightHash,"ZeroMenu",140)      
+      menu.notify("Spawned Vehicle " .. rightHash,"ZeroMenu",5,140)         
       notifySpawnedStuff()
       processSpawnedVehicle(vehicleData)
     else
@@ -388,6 +422,10 @@ function spawnVehicle()
       return HANDLER_CONTINUE
     end
   end
+end
+
+function spawnRawVehicle(rightHash, v3)
+  return vehicle.create_vehicle(rightHash,v3,entity.get_entity_heading(player.get_player_ped(player.player_id())),true,false)
 end
 
 local requestedPed = nil
@@ -419,7 +457,7 @@ function spawnPedByName()
       pedData['id'] = ped.create_ped(0,rightHash,v3,entity.get_entity_heading(player.get_player_ped(player.player_id())),true,false)
       spawnedPedList[#spawnedPedList+1] = pedData
       streaming.set_model_as_no_longer_needed(rightHash)
-      ui.notify_above_map("Spawned Ped " .. requestedPed,"ZeroMenu",140)   
+      menu.notify("Spawned Ped " .. requestedPed,"ZeroMenu",5,140)     
       processSpawnedPed(pedData)
       notifySpawnedStuff()
       requestedPed = nil
@@ -431,7 +469,7 @@ function spawnPedByName()
       return HANDLER_CONTINUE
     end
   else    
-      ui.notify_above_map("Unknown Ped " .. requestedPed,"ZeroMenu",140)
+      menu.notify("Unknown Ped " .. requestedPed,"ZeroMenu",5,140)  
       requestedPed = nil
   end
 end
@@ -449,10 +487,16 @@ function spawnObjectByName()
   local objectHash = om.GetHashFromModel(requestedObject)
   
   if(streaming.has_model_loaded(objectHash)) then  
-    local objectCandle = object.create_object(objectHash,player.get_player_coords(player.player_id()),true,true)
+    local objectCandle
+    if(streaming.is_model_a_world_object(objectHash)) then
+      objectCandle = object.create_world_object(objectHash,player.get_player_coords(player.player_id()),true,true)
+    else
+      objectCandle = object.create_object(objectHash,player.get_player_coords(player.player_id()),true,true)
+    end
+    
     requestedObject = 0
     streaming.set_model_as_no_longer_needed(objectHash) 
-    ui.notify_above_map("Spawned Object " .. requestedObject,"ZeroMenu",140)
+    menu.notify("Spawned Object " .. requestedObject,"ZeroMenu",5,140)  
     count = 0
     objectData['id'] =  objectCandle
   else
@@ -463,20 +507,20 @@ function spawnObjectByName()
     return HANDLER_CONTINUE
   end
   if(streaming.is_model_in_cdimage(objectHash) == false) then  
-      ui.notify_above_map("Unknown Hash1 " .. requestedObject,"ZeroMenu",140)   
+      menu.notify("Unknown Hash1 " .. requestedObject,"ZeroMenu",5,140)   
       requestedVehicle = nil
       return HANDLER_POP
   end
   
   if(objectData['id'] == nil) then
-      ui.notify_above_map("Unknown Hash2 " .. requestedObject,"ZeroMenu",140)   
+      menu.notify("Unknown Hash2 " .. requestedObject,"ZeroMenu",5,140)  
       requestedVehicle = nil
       return HANDLER_POP
   end
   objectData['hash'] = om.GetHashFromModel(requestedObject)
   objectData['name'] = requestedObject
   spawnedObjectList[#spawnedObjectList+1] = objectData
-  ui.notify_above_map("Spawned " .. requestedObject,"ZeroMenu",140)   
+  menu.notify("Spawned " .. requestedObject,"ZeroMenu",5,140)  
   processSpawnedObject(objectData)
   notifySpawnedStuff()
   requestedObject = 0
@@ -490,20 +534,25 @@ function spawnObjectByHash()
     requestedObject = tonumber(s)
   end
   if(streaming.is_model_in_cdimage(requestedObject) == false) then
-      ui.notify_above_map("Unknown Hash " .. requestedObject,"ZeroMenu",140)   
+      menu.notify("Unknown Hash " .. requestedObject,"ZeroMenu",5,140)    
       requestedObject = nil
       return HANDLER_POP
   end
   if(requestedObject == nil) then
-      ui.notify_above_map("Unknown Hash " .. requestedObject,"ZeroMenu",140)   
+      menu.notify("Unknown Hash " .. requestedObjec,"ZeroMenu",5,140)    
       requestedObject = nil
       return HANDLER_POP
   end
   local objectData = {}
   if(streaming.has_model_loaded(requestedObject)) then  
-    local objectCandle = object.create_object(requestedObject,player.get_player_coords(player.player_id()),true,true)
+    local objectCandle
+    if(streaming.is_model_a_world_object(requestedObject)) then
+      objectCandle = object.create_world_object(requestedObject,player.get_player_coords(player.player_id()),true,true)
+    else 
+      objectCandle = object.create_object(requestedObject,player.get_player_coords(player.player_id()),true,true)
+    end
     streaming.set_model_as_no_longer_needed(requestedObject) 
-    ui.notify_above_map("Spawned Object " .. requestedObject,"ZeroMenu",140)
+    menu.notify("Spawned Object " .. requestedObject,"ZeroMenu",5,140)    
     count = 0
     objectData['id'] =  objectCandle
   else
@@ -518,8 +567,8 @@ function spawnObjectByHash()
   objectData['hash'] = requestedObject
   objectData['name'] = om.GetModelFromHash(requestedObject)
   spawnedObjectList[#spawnedObjectList+1] = objectData
-  requestedObject = nil
-  ui.notify_above_map("Spawned " .. objectData['name'],"ZeroMenu",140)   
+  requestedObject = nil  
+  menu.notify("Spawned " .. objectData['name'],"ZeroMenu",5,140)    
   processSpawnedObject(objectData)
   notifySpawnedStuff()
 end
@@ -537,8 +586,6 @@ function attach_ptfx(feat,data)
   local rotationX = data.parentSettings.children[6].value
   local rotationY = data.parentSettings.children[7].value
   local rotationZ = data.parentSettings.children[8].value
-  
-  --ui.notify_above_map("offset=(" .. offsetX .. "," .. offsetY .. "," .. offsetZ .. ")\n rot=" .. "(" .. rotationX .. "," .. rotationY .. "," .. rotationZ .. ")\n","ZeroMenu",140)
   
   if(dict == nil) then
     local r, s = input.get("Enter Dictonary", "core", 64, 0)
@@ -572,4 +619,202 @@ function attach_ptfx(feat,data)
   flame = nil
   dict = nil
   return HANDLER_POP 
+end
+
+
+local xmlFile = nil
+function spawnXML()
+  xmlList = {}
+  if(xmlFile == nil) then
+    local r, s = input.get("Enter an XML to spawn", "NuclearRocket", 64, 0)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end    
+    xmlFile = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\xmlvehicles\\" .. s .. ".xml"    
+    local testF = io.open(xmlFile,"r")
+    if(testF ~= nil and xmlFile~=nil) then
+      io.close(testF)
+      local handler = loadXMLFile(xmlFile)
+      print(handler)
+      print(handler.root)
+      print(handler.root.Vehicle)
+      print(handler.root.Vehicle.ModelHash)
+      local vehicleHash = tonumber(handler.root.Vehicle.ModelHash:sub(3), 16)
+      local vehicle = nil
+      while not streaming.has_model_loaded(vehicleHash) do
+        streaming.request_model(vehicleHash )
+        system.wait(0)
+      end
+      local v3 = player.get_player_coords(player.player_id())
+                
+      vehicle = spawnRawVehicle(vehicleHash,player.get_player_coords(player.player_id()))
+      entity.freeze_entity(vehicle,true)
+      menu.notify(" spawned " .. vehicle,"ZeroMenu",5,140)
+      streaming.set_model_as_no_longer_needed(vehicleHash)
+      xmlList[handler.root.Vehicle.InitialHandle] = vehicle
+      processXMLVehileProberties(vehicle,handler.root.Vehicle.VehicleProperties,handler)
+      processAttachment(handler.root.Vehicle.SpoonerAttachments.Attachment,handler)
+      menu.notify(s .. " spawned","ZeroMenu",5,140)
+      xmlFile = nil    
+      entity.freeze_entity(vehicle,false)
+    else
+      menu.notify("File '" .. xmlFile .. "' not found","ZeroMenu",5,140)
+      xmlFile = nil
+    end
+  end
+end
+
+function processXMLVehileProberties(xmlvehicle,proberties,handler)
+  vehicle.set_vehicle_colors(xmlvehicle,valueOrDefault(proberties.Colours.Primary,0),valueOrDefault(proberties.Colours.Secondary,0))
+  vehicle.set_vehicle_custom_pearlescent_colour(xmlvehicle,valueOrDefault(proberties.Colours.Pearl,0))
+  vehicle.set_vehicle_extra_colors(xmlvehicle,valueOrDefault(proberties.Colours.Pearl,0),valueOrDefault(proberties.Colours.Rim,0))
+  vehicle.set_vehicle_tire_smoke_color(xmlvehicle,valueOrDefault(proberties.Colours.tyreSmoke_R,0),valueOrDefault(proberties.Colours.tyreSmoke_G,0),valueOrDefault(proberties.Colours.tyreSmoke_B,0))
+  vehicle.set_vehicle_livery(xmlvehicle,valueOrDefault(proberties.Livery,0))
+  vehicle.set_vehicle_number_plate_index(xmlvehicle,valueOrDefault(proberties.NumberPlateIndex,0))
+  vehicle.set_vehicle_number_plate_text(xmlvehicle,valueOrDefault(proberties.NumberPlateText,"ZeroMenu)"))
+  vehicle.set_vehicle_window_tint(xmlvehicle,valueOrDefault(proberties.WindowTint,0))
+  vehicle.set_vehicle_bulletproof_tires(xmlvehicle,valueOrDefault(proberties.BulletProofTyres,false))
+  vehicle.set_vehicle_engine_on(xmlvehicle,valueOrDefault(proberties.EngineOn,true),true,true)
+  vehicle.set_vehicle_engine_health(xmlvehicle,valueOrDefault(proberties.EngineHealth,1000))
+  vehicle.set_vehicle_doors_locked_for_all_players(xmlvehicle,valueOrDefault(proberties.LockStatus,false))
+  vehicle.set_vehicle_neon_light_enabled(xmlvehicle,0,valueOrDefault(proberties.Neons.Left,false))
+  vehicle.set_vehicle_neon_light_enabled(xmlvehicle,1,valueOrDefault(proberties.Neons.Right,false))
+  vehicle.set_vehicle_neon_light_enabled(xmlvehicle,2,valueOrDefault(proberties.Neons.Front,false))
+  vehicle.set_vehicle_neon_light_enabled(xmlvehicle,3,valueOrDefault(proberties.Neons.Back,false))  
+  for i,line in pairs(proberties.Mods) do
+    if(line == 'false') then vehicle.set_vehicle_extra(xmlvehicle,tonumber(i:sub(2)),false) end
+    if(line == 'true') then vehicle.set_vehicle_extra(xmlvehicle,tonumber(i:sub(2)),true) end    
+  end  
+      
+  vehicle.set_vehicle_door_open(xmlvehicle,0,valueOrDefault(proberties.DoorsOpen.FrontLeftDoor,false),true)
+  vehicle.set_vehicle_door_open(xmlvehicle,1,valueOrDefault(proberties.DoorsOpen.FrontRightDoor,false),true)
+  vehicle.set_vehicle_door_open(xmlvehicle,2,valueOrDefault(proberties.DoorsOpen.FrontLeftDoor,false),true)
+  vehicle.set_vehicle_door_open(xmlvehicle,3,valueOrDefault(proberties.DoorsOpen.FrontRightDoor,false),true)
+  vehicle.set_vehicle_door_open(xmlvehicle,4,valueOrDefault(proberties.DoorsOpen.Hood,false),true)
+  vehicle.set_vehicle_door_open(xmlvehicle,5,valueOrDefault(proberties.DoorsOpen.Trunk,false),true)
+   
+  if(proberties.TyresBursted.FrontLeft == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,0,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,0,true,1000) end
+  if(proberties.TyresBursted.FrontRight == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,1,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,1,true,1000) end
+  if(proberties.TyresBursted.BackLeft == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,4,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,4,true,1000) end
+  if(proberties.TyresBursted.BackRight == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,5,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,5,true,1000) end
+  if(proberties.TyresBursted._2 == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,2,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,2,true,1000) end
+  if(proberties.TyresBursted._3 == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,3,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,3,true,1000) end
+  if(proberties.TyresBursted._6 == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,45,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,45,true,1000) end
+  if(proberties.TyresBursted._7 == 'false') then vehicle.set_vehicle_tire_burst(xmlvehicle,47,false,0) else vehicle.set_vehicle_tire_burst(xmlvehicle,47,true,1000) end
+  
+  entity.set_entity_visible(xmlvehicle,valueOrDefault(proberties.IsVisible,true))
+  --entity.set_entity_gravity(xmlvehicle,proberties.HasGravity)
+  entity.set_entity_god_mode(xmlvehicle,valueOrDefault(proberties.IsInvincible,true))  
+end
+
+function processAttachment(atta,handler) 
+  local single = false
+  if(atta == nil) then
+    single = true
+  elseif(#atta == 0) then
+    single = true  
+  end    
+  if(single) then 
+    if(atta.Type == '1') then 
+      processPedAttachment(atta,handler)
+    elseif(atta.Type == '2') then
+      processVehicleAttachment(atta,handler)
+    elseif(atta.Type == '3') then 
+      processObjectAttachment(atta,handler)
+    else
+       menu.notify("Unknown Typ: " .. atta.Type,"ZeroMenu",5,140)
+    end 
+  else
+    for i=1,#atta,1 do
+      if(atta[i].Type == '1') then 
+        processPedAttachment(atta[i],handler)
+      elseif(atta[i].Type == '2') then
+        processVehicleAttachment(atta[i],handler)
+      elseif(atta[i].Type == '3') then 
+        processObjectAttachment(atta[i],handler)
+      else
+        print("Unknown Typ-" .. i .. ": " .. atta[i].Type)
+      end
+    end
+  end
+end
+
+function processObjectAttachment(attachment,handler)
+  local parent = xmlList[attachment.Attachment.AttachedTo]
+  local objectHash = tonumber(attachment.ModelHash:sub(3), 16)
+  menu.notify("Process Attachment Object","ZeroMenu",5,140) 
+  local xmlObject = nil
+  while not streaming.has_model_loaded(objectHash) do
+    streaming.request_model(objectHash)
+    system.wait(0)
+  end 
+  if(streaming.is_model_a_world_object(objectHash)) then
+       xmlObject = object.create_world_object(objectHash,player.get_player_coords(player.player_id()),true,true)
+     else
+       xmlObject = object.create_object(objectHash,player.get_player_coords(player.player_id()),true,true)
+     end
+    xmlList[attachment.InitialHandle] = xmlObject
+    entity.freeze_entity(xmlObject,valueOrDefault(attachment.FrozenPos,false))
+    entity.set_entity_no_collsion_entity(xmlObject,parent,false)
+    entity.set_entity_no_collsion_entity(parent,xmlObject,false)
+    entity.set_entity_collision(xmlObject,true, false, true)
+    entity.set_entity_gravity(xmlObject,valueOrDefault(attachment.HasGravity,true))
+    entity.set_entity_god_mode(xmlObject,valueOrDefault(attachment.IsInvincible,true))
+    entity.set_entity_visible(xmlObject,valueOrDefault(attachment.IsVisible,false))
+    
+    --local rotation = v3(valueOrDefault(attachment.PositionRotation.Pitch,0),valueOrDefault(attachment.PositionRotation.Roll,0),valueOrDefault(attachment.PositionRotation.Yaw,0))
+    local rotation = v3(valueOrDefault(attachment.Attachment.Pitch,0),valueOrDefault(attachment.Attachment.Roll,0),valueOrDefault(attachment.Attachment.Yaw,0))
+    --entity.set_entity_rotation(xmlObject,rotation)
+    --local offset = v3(valueOrDefault(attachment.Attachment.X,0),valueOrDefault(attachment.Attachment.Y,0),valueOrDefault(attachment.Attachment.Z,0))
+    local offset = v3(valueOrDefault(attachment.Attachment.X,0),valueOrDefault(attachment.Attachment.Y,0),valueOrDefault(attachment.Attachment.Z,0))
+    entity.attach_entity_to_entity(xmlObject,parent,valueOrDefault(attachment.Attachment.BoneIndex,0),offset,rotation,false,true,false,2,true)
+    streaming.set_model_as_no_longer_needed(objectHash) 
+end
+function processPedAttachment(attachment,handler)
+  local parent = xmlList[attachment.Attachment.AttachedTo]
+  local pedHash = tonumber(attachment.ModelHash:sub(3), 16)
+  local ped = nil
+  while not streaming.has_model_loaded(pedHash) do
+    streaming.request_model(pedHash )
+    system.wait(0)
+  end
+  ped = ped.create_ped(-1,pedHash,player.get_player_coords(player.player_id()),player.get_player_armour(player.player_id()),true,false)
+  --local v3 = player.get_player_coords(player.player_id())
+  local rotation = v3(valueOrDefault(attachment.PositionRotation.X,0),valueOrDefault(attachment.PositionRotation.Y,0),valueOrDefault(attachment.PositionRotation.Z,0))
+  local offset = v3(valueOrDefault(attachment.Attachment.X,0),valueOrDefault(attachment.Attachment.Y,0),valueOrDefault(attachment.Attachment.Z,0))
+  entity.set_entity_collision(ped,true, false, true)
+  entity.attach_entity_to_entity(ped,parent,valueOrDefault(attachment.Attachment.BoneIndex,0),offset,rotation,false,false,false,0,true)
+end
+function processVehicleAttachment(attachment,handler)
+  local parent = xmlList[attachment.Attachment.AttachedTo]
+  local vehicleHash = tonumber(attachment.ModelHash:sub(3), 16)
+  local vehicle = nil
+  while not streaming.has_model_loaded(vehicleHash) do
+    streaming.request_model(vehicleHash )
+    system.wait(0)
+  end
+  --local v3 = player.get_player_coords(player.player_id())
+  vehicle = spawnRawVehicle(vehicleHash,player.get_player_coords(player.player_id()))
+  
+  entity.set_entity_collision(vehicle,true, false, true)
+  streaming.set_model_as_no_longer_needed(vehicleHash)
+  xmlList[handler.root.Vehicle.InitialHandle] = vehicle
+  processXMLVehileProberties(vehicle,attachment.VehicleProperties)
+  local rotation = v3(valueOrDefault(attachment.PositionRotation.X,0),valueOrDefault(attachment.PositionRotation.Y,0),valueOrDefault(attachment.PositionRotation.Z,0))
+  local offset = v3(valueOrDefault(attachment.Attachment.X,0),valueOrDefault(attachment.Attachment.Y,0),valueOrDefault(attachment.Attachment.Z,0))
+  entity.attach_entity_to_entity(vehicle,parent,valueOrDefault(attachment.Attachment.BoneIndex,0),offset,rotation,false,false,false,0,true)
+end
+
+function loadXMLFile(file)
+  local xmlHandler = xmlhandler:new()
+  local parser = xml2lua.parser(xmlHandler)
+  local file = xml2lua.loadFile(file)
+  parser:parse(file)  
+  return xmlHandler
+end
+
+function valueOrDefault(value,default)
+  if(value ~= nil) then
+    return value
+  end
+  return default
 end

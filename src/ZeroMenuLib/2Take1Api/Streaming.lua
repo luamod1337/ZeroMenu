@@ -1,7 +1,6 @@
 streaming = {}
 streaming.__index = streaming
 
-
 function streaming:request_model(hash)end
 function streaming:has_model_loaded(hash)end
 function streaming:set_model_as_no_longer_needed(hash)end
@@ -23,4 +22,7 @@ function streaming:is_model_a_quad(ulHash)end
 function streaming:is_model_a_boat(ulHash)end
 function streaming:is_model_a_train(ulHash)end
 function streaming:is_model_an_object(ulHash)end
+function streaming:is_model_a_world_object(ulHash)end
 function streaming:is_model_a_ped(ulHash)end
+function streaming:remove_anim_dict(szName)end
+function streaming:remove_anim_set(szName)end

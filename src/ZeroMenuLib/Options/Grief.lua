@@ -21,6 +21,16 @@ function createGriefEntry(config)
   
   menu.add_player_feature("Set Heli Blade Speed", "action", parent, setHeliBladeSpeedG)
   
+  menu.add_player_feature("Attach PTFX", "action", parent, attach_ptfx_to_player)
+  menu.add_player_feature("Flare and Smoke", "action", parent, flareAndSmoke)
+  
+  menu.add_player_feature("Send Troll SMS", "action", parent, sendTrollSms)
+  menu.add_player_feature("Send Virus String SMS", "action", parent, sendVirusTestSms)
+  menu.add_player_feature("Send Virus String SMS", "toggle", parent, sendVirusTestSms)
+  
+  
+  
+  
   trackedPlayer = {}
 end
 
@@ -174,15 +184,15 @@ function speedVehicleGriefPlayer(feat, slot)
         entity.set_entity_max_speed(veh,1)
         vehicle.modify_vehicle_top_speed(veh,1)
         vehicle.set_vehicle_engine_torque_multiplier_this_frame(veh,1)
-        ui.notify_above_map("Set Max Speed to 1 for slot " .. slot ,"ZeroMenu Grief",140)
+        menu.notify("Set Max Speed to 1 for slot " .. slot ,"ZeroMenu",5,140)
       else
-        ui.notify_above_map("Target isn't inside a Vehicle","ZeroMenu Grief",140)
+        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)
       end
     else
-      ui.notify_above_map("Invalid Player","ZeroMenu Grief",140)
+      menu.notify("Invalid Player","ZeroMenu",5,140)
     end
   else
-    ui.notify_above_map("I wouldn't grief yourself!","ZeroMenu Grief",140)
+    menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)
   end
 end
 
@@ -207,10 +217,10 @@ function netEventCallBack(slot,target,eventID)
       local eventToInt = require("ZeroMenuLib/enums/EventToInt")
       local eventname = eventToInt[eventID]
       if eventname ~= nil then
-        ui.notify_above_map("blocked event " .. eventname .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
+        menu.notify("blocked event " .. eventname .. " from " .. player.get_player_name(slot),"ZeroMenu",5,140)
         logEvent("blocked event " .. eventname .. " from " .. player.get_player_name(slot))
       else
-        ui.notify_above_map("blocked event " .. eventID .. " from " .. player.get_player_name(slot),"Net Event Block - ZeroMenu",140)
+        menu.notify("blocked event " .. eventID .. " from " .. player.get_player_name(slot),"ZeroMenu",5,140)
         logEvent("blocked event " .. eventID .. " from " .. player.get_player_name(slot))
       end
 
@@ -222,11 +232,11 @@ end
 function scriptEventCallBack(slot, target, params, count)
   if target == player.player_id() then
     if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
-      ui.notify_above_map("blocked script event " .. count .. " from " .. player.get_player_name(slot),"Script Event Block - ZeroMenu",140)
+        menu.notify("blocked script event " .. count .. " from " .. player.get_player_name(slot),"ZeroMenu",5,140)
       logEvent("blocked script event (size: " .. count .. ") from " .. player.get_player_name(slot))
       local cnt = 0
       for k in pairs(params) do
-        ui.notify_above_map("paramteter " .. cnt .. " = " .. k,"Script Block - ZeroMenu",140)
+        menu.notify("paramteter " .. cnt .. " = " .. k,"ZeroMenu",5,140)
         logEvent("paramteter " .. cnt .. " = " .. k)
         cnt = cnt+1
       end
@@ -308,15 +318,15 @@ function controlVehicleGriefPlayer(feat, slot)
         end
         entity.set_entity_max_speed(veh,1)
         vehicle.set_vehicle_out_of_control(veh,false,false)
-        ui.notify_above_map("Set out of control for slot " .. slot ,"ZeroMenu Grief",140)
+        menu.notify("Set out of control for slot " .. player.get_player_name(slot) ,"ZeroMenu",5,140)        
       else
-        ui.notify_above_map("Target isn't inside a Vehicle","ZeroMenu Grief",140)
+        menu.notify("Target isn't inside a Vehicle" ,"ZeroMenu",5,140)     
       end
     else
-      ui.notify_above_map("Invalid Player","ZeroMenu Grief",140)
+        menu.notify("Invalid Player" ,"ZeroMenu",5,140)     
     end
   else
-    ui.notify_above_map("I wouldn't grief yourself!","ZeroMenu Grief",140)
+        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)     
   end
 
   if feat.on then
@@ -340,15 +350,15 @@ function speedVehicleUpgradeGriefPlayer(feat, slot)
         entity.set_entity_max_speed(veh,s)
         vehicle.modify_vehicle_top_speed(veh,1000000)
         vehicle.set_vehicle_engine_torque_multiplier_this_frame(veh,s)
-        ui.notify_above_map("Set Max Speed to " .. s,"ZeroMenu Grief",140)
+        menu.notify("Set Max Speed to " .. s,"ZeroMenu",5,140)  
       else
-        ui.notify_above_map("Target isn't inside a Vehicle","ZeroMenu Grief",140)
+        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)  
       end
     else
-      ui.notify_above_map("Invalid Player","ZeroMenu Grief",140)
+        menu.notify("Invalid Player","ZeroMenu",5,140)  
     end
   else
-    ui.notify_above_map("I wouldn't grief yourself!","ZeroMenu Grief",140)
+        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)  
   end
  --if grief_upgrade.on then
   --  return HANDLER_CONTINUE
@@ -366,15 +376,15 @@ function doorVehicleGriefPlayer(feat, slot)
           network.request_control_of_entity(veh)
         end
         vehicle.set_vehicle_doors_locked(veh,4)
-        ui.notify_above_map("Locked doors of vehicle","ZeroMenu Grief",140)
+        menu.notify("Locked doors of vehicle","ZeroMenu",5,140)  
       else
-        ui.notify_above_map("Target isn't inside a Vehicle","ZeroMenu Grief",140)
+        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)  
       end
     else
-      ui.notify_above_map("Invalid Player","ZeroMenu Grief",140)
+        menu.notify("Invalid Player","ZeroMenu",5,140)  
     end
   else
-    ui.notify_above_map("I wouldn't grief yourself!","ZeroMenu Grief",140)
+        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)  
   end
  --if grief_door.on then
   --  return HANDLER_CONTINUE
@@ -392,9 +402,9 @@ function screamGriefPlayer(feat, slot)
     audio.play_sound_from_coord(-1,"Horn", entity.get_entity_coords(player.get_player_ped(slot)), "DLC_Apt_Yacht_Ambient_Soundset", true, 5, false)
     audio.play_sound_from_coord(-1,"SHUTTER_FLASH", entity.get_entity_coords(player.get_player_ped(slot)), "CAMERA_FLASH_SOUNDSET", true, 5, false)
 
-    ui.notify_above_map("Horned him","ZeroMenu Grief",140)
+    menu.notify("Horned him","ZeroMenu",5,140)  
   else
-    ui.notify_above_map("Invalid Player","ZeroMenu Grief",140)
+    menu.notify("Invalid Player","ZeroMenu",5,140)  
   end
   if feat.on then
     return HANDLER_CONTINUE
@@ -426,4 +436,100 @@ function setHeliBladeSpeedG(feat, slot)
     vehicle.set_heli_blades_speed(veh,s)
   end
     return HANDLER_POP
+end
+
+
+local dict = nil
+local flame = nil
+local scale = nil
+
+function attach_ptfx_to_player(feat,slot)  
+  local entity = player.get_player_ped(slot)
+
+  
+  if(dict == nil) then
+    local r, s = input.get("Enter Dictonary", "core", 64, 0)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end    
+    dict = s  
+  end
+    
+  if(flame == nil) then
+    local r, s = input.get("Enter PTFX", "ent_amb_candle_flame", 64, 0)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end      
+    flame = s
+  end
+  if(scale == nil) then
+    local r, s = input.get("Enter Scale Value for PTFX", 5.0, 64, 5)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end      
+    scale = s
+  end
+  attachPTFXToEntity(entity,dict,flame,scale)    
+  flame = nil
+  dict = nil
+  scale = nil
+  return HANDLER_POP 
+end
+
+function attachPTFXToEntity(entity,dict,ptfx,scale)
+  graphics.set_next_ptfx_asset(dict)
+  while not graphics.has_named_ptfx_asset_loaded(dict) do
+    graphics.request_named_ptfx_asset(dict)
+    system.wait(0)
+    return HANDLER_CONTINUE 
+  end
+  local offset = v3(0,0,0)
+  local rot = v3(0,0,0)
+  graphics.start_networked_ptfx_looped_on_entity(ptfx,entity,offset,rot,scale)
+end
+
+function flareAndSmoke(feat,slot)
+  local entity = player.get_player_ped(slot)
+  --proj_flare_trail
+  --exp_grd_grenade_smoke
+  attachPTFXToEntity(entity,"core","proj_flare_trail",5.0)  
+    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",1.0)  
+    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",2.0) 
+    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",3.0)  
+    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",4.0)  
+    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",5.0)  
+    menu.notify("Attached PTFX to " .. player.get_player_name(slot),"ZeroMenu",5,140)
+end
+
+function sendTrollSms(feat,slot)
+player.send_player_sms(slot,"test\ntest<br>\test")
+  player.send_player_sms(slot,
+  "░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄░░░░░░░"..
+  "░░░░░█░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░▀▀▄░░░░"..
+  "░░░░█░░░▒▒▒▒▒▒░░░░░░░░▒▒▒░░█░░░"..
+  "░░░█░░░░░░▄██▀▄▄░░░░░▄▄▄░░░░█░░"..
+  "░▄▀▒▄▄▄▒░█▀▀▀▀▄▄█░░░██▄▄█░░░░█░"..
+  "█░▒█▒▄░▀▄▄▄▀░░░░░░░░█░░░▒▒▒▒▒░█"..
+  "█░▒█░█▀▄▄░░░░░█▀░░░░▀▄░░▄▀▀▀▄▒█"..
+  "░█░▀▄░█▄░█▀▄▄░▀░▀▀░▄▄▀░░░░█░░█░"..
+  "░░█░░░▀▄▀█▄▄░█▀▀▀▄▄▄▄▀▀█▀██░█░░"..
+  "░░░█░░░░██░░▀█▄▄▄█▄▄█▄████░█░░░"..
+  "░░░░█░░░░▀▀▄░█░░░█░█▀██████░█░░"..
+  "░░░░░▀▄░░░░░▀▀▄▄▄█▄█▄█▄█▄▀░░█░░"..
+  "░░░░░░░▀▄▄░▒▒▒▒░░░░░░░░░░▒░░░█░"..
+  "░░░░░░░░░░▀▀▄▄░▒▒▒▒▒▒▒▒▒▒░░░░█░"..
+  "░░░░░░░░░░░░░░▀▄▄▄▄▄░░░░░░░░█░░")
+  menu.notify("Send Trollface SMS to" ..  player.get_player_name(slot),"ZeroMenu",5,140)
+end
+
+function sendVirusTestSms(feat,slot)
+  player.send_player_sms(slot,"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*")
+  menu.notify("Send Trollface SMS to" ..  player.get_player_name(slot),"ZeroMenu",5,140)
+end
+
+function sendVirusTestSms(feat,slot)
+  player.send_player_sms(slot,"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*")
+  menu.notify("Send Trollface SMS to" ..  player.get_player_name(slot),"ZeroMenu",5,140)
+  if(feat.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
 end

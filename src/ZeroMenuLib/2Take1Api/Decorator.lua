@@ -1,8 +1,13 @@
-Decorator = {}
-Decorator.__index = Decorator
+decorator = {}
+decorator.__index = decorator
 
-function Decorator:decor_register(name, type)end
-function Decorator:decor_exists_on(e, decor)end
-function Decorator:decor_remove(e, decor)end
-function Decorator:decor_get_int(entity, name)end
-function Decorator:decor_set_int(entity, name, value)end
+function decorator:decor_register(name,type)end
+function decorator:decor_exists_on(e,decor)end
+function decorator:decor_remove(e,decor)end
+function decorator:decor_get_int(entity,name)end
+function decorator:decor_set_int(entity,name,value)end
+function decorator:decor_get_float(entity,name)end
+function decorator:decor_set_float(entity,name,value)end
+function decorator:decor_get_bool(entity,name)end
+function decorator:decor_set_bool(entity,name,value)end
+function decorator:decor_set_time(entity,name,value)end

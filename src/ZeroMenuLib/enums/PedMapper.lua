@@ -842,4 +842,18 @@ function PedMapper.GetPeds(Model, Name, CaseInsensitive)
   end
 end
 
+function PedMapper.GetAllHash()
+  local array = {}
+  local idx = 0
+  while idx < #Peds do
+    local entry = {}
+    idx = idx + 1
+    entry['hash'] = Peds[idx].Hash
+    entry['model'] = Peds[idx].Model
+    entry['name'] = Peds[idx].Name
+    array[#array+1] = entry
+  end
+  return array
+end
+
 return PedMapper

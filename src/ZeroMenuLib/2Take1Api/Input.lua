@@ -1,5 +1,5 @@
-Input = {}
-Input.__index = Input
+input = {}
+input.__index = input
 
-
-function Input:get(title, default, len, type)end
+function input:get(title,default,len,type)end
+--## RAGE

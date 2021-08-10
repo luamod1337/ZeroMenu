@@ -56,7 +56,6 @@ end
 
 function loadSetting(parent,config)
   settings = menu.add_feature("Settings", "parent",parent.id, nil)
-  settings.threaded = false
   --Nearby Settings  
   loadNearbySettings(settings,config)
   loadVehicleSetting(settings,config)
@@ -64,7 +63,7 @@ function loadSetting(parent,config)
   settings = menu.add_feature("Save", "action",settings.id, 
   function()
     config:saveConfig()
-    ui.notify_above_map("saving config","ZeroMenu",140)
+    menu.notify("saving config","ZeroMenu",5,140)  
   end)
 end
 zeroMenuMain()

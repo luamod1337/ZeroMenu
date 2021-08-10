@@ -22,7 +22,7 @@ function Config:create(path,create)
     for line in io.lines(file) do 
       --if not tostring(line:sub(1,1)) == '#' then
       if not self.starts_with(self,line,'#') then
-        for k, v in string.gmatch(line, "(%w+)=(%w+)") do
+        for k, v in string.gmatch(line, "(%w+)=(.+)") do
           self.config[k] = v  
         end
        end     
@@ -64,14 +64,14 @@ end
 
 function Config:saveConfig()
   if self.configValues ~= nil then
-    for key, script in pairs(self.configValues) do  
+    for key, script in pairs(self.configValues) do      
       if script.type == 1 then
         -- toggle found
-        self.config[key] =  script.on
+        self.config[key] = script.on
       else
         -- using a select value
-        self.config[key.."_max"] = script.max_i
-        self.config[key] = script.value_i      
+        self.config[key.."_max"] = script.max        
+        self.config[key] = script.value        
       end    
      end
   end
@@ -80,6 +80,9 @@ function Config:saveConfig()
     file:write("#Created using 1337Zeros config.lua\n")
     for k, v in pairs(self.config) do
       if k ~= "path" then
+        if(k == "gearcontrolx") then
+        end
+        
         file:write(tostring(k) .. "=" .. tostring(v) .."\n");
       end
     end

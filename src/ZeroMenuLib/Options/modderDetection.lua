@@ -39,54 +39,38 @@ function createModderDetectionMenuEntry(parent,config)
   
 	-- Main Features
 	god = createConfigedMenuOption("Godmode check","toggle",zModderMain.id,scanPlayers,config,"godCheck",false,nil)
-	god.threaded = false
 
   positionchecker = createConfigedMenuOption("Position check","toggle",zModderMain.id,scanPlayers,config,"PositionCheck",false,nil)
-  positionchecker.threaded = false
   
   vehicleGodChecker = createConfigedMenuOption("Vehicle God check","toggle",zModderMain.id,scanPlayers,config,"vehiclegodcheck",false,nil)
-  vehicleGodChecker.threaded = false
 
   nameBoundsCheaterChat = createConfigedMenuOption("Check Name bounds","toggle",zModderMain.id,nil,config,"checkNameBounds",false,nil)
-  nameBoundsCheaterChat.threaded = false
 
   vehicleSpeedCheck = createConfigedMenuOption("Check Vehicle Speed","toggle",zModderMain.id,nil,config,"vehiclespeedcheck",false,nil)
-  vehicleSpeedCheck.threaded = false  
 
   zModderMainSettings = menu.add_feature("Settings", "parent", zModderMain.id, nil)
 
   displayIngameInfo = createConfigedMenuOption("Display All Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
-  displayIngameInfo.threaded = false  
   
   displaySusIngameInfo = createConfigedMenuOption("Display All Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
-  displaySusIngameInfo.threaded = false  
-  
-
-
-  
   
   annouceCheaterSMS = createConfigedMenuOption("Annouce Cheater per SMS","toggle",zModderMainSettings.id,nil,config,"modderSMS",false,nil)
-  annouceCheaterSMS.threaded = false
 
   annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
-  annouceCheaterChat.threaded = false
   
   markasModder = createConfigedMenuOption("Mark as Modder","toggle",zModderMainSettings.id,nil,config,"modderMARK",false,nil)
-  markasModder.threaded = false
-  
-  
+
   if config:isFeatureEnabled("PositionCheck") then
     positionchecker.on = true
   end
   
-    if config:isFeatureEnabled("vehiclespeedcheck") then
+  if config:isFeatureEnabled("vehiclespeedcheck") then
     vehicleSpeedCheck.on = true
   end
   
   if config:isFeatureEnabled("checkNameBounds") then
     nameBoundsCheaterChat.on = true
   end
-  
   
   if config:isFeatureEnabled("vehiclegodcheck") then
     vehicleGodChecker.on = true
@@ -133,7 +117,6 @@ function scanPlayers()
           if(playerList[player.get_player_name(slot)]['willbeInside'] > 0) then
             if(isPlayerInside(slot)) then
               playerList[player.get_player_name(slot)]['willbeInside'] = 0
-              --ui.notify_above_map("reseting " .. player.get_player_name(slot),"ZModder Detection",140)
             else
               playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
             end
@@ -145,11 +128,7 @@ function scanPlayers()
             if(checkForGod(slot) and (playerList[player.get_player_name(slot)]['distanceMoved'] > 0 or playerList[player.get_player_name(slot)]['moved'])) then
               playerList[player.get_player_name(slot)]['godTime'] = (playerList[player.get_player_name(slot)]['godTime']+1)
             end
-            
-            if(checkForGod(slot) and (playerList[player.get_player_name(slot)]['distanceMoved'] > 0 or playerList[player.get_player_name(slot)]['moved'])) then
-              playerList[player.get_player_name(slot)]['godTime'] = (playerList[player.get_player_name(slot)]['godTime']+1)
-            end
-            
+                        
             local distanceMovedSecond = calculateDistanceMoved(slot)
             playerList[player.get_player_name(slot)]['distanceMoved'] = (playerList[player.get_player_name(slot)]['distanceMoved'] + distanceMovedSecond)
             playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'] =  distanceMovedSecond
@@ -158,8 +137,8 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['moved'] = true
             end
             
-            if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce'] and not slot == player.player_id()) then
-              ui.notify_above_map(player.get_player_name(slot) .. " is using god since " .. playerList[player.get_player_name(slot)]['godTime'] .. " seconds","ZModder Detection",140)
+            if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce'] ) then
+              menu.notify(player.get_player_name(slot) .. " is using god since " .. playerList[player.get_player_name(slot)]['godTime'] .. " seconds","ZeroMenu",5,140) 
               if(markasModder.on)then
                 player.set_player_as_modder(slot,1)
               end              
@@ -167,8 +146,8 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['godannounce'] = true
             end
             
-            if(playerList[player.get_player_name(slot)]['godvehicle'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godvehicleannounced'] and not slot == player.player_id()) then
-               ui.notify_above_map(player.get_player_name(slot) .. " is using god vehicle since " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZModder Detection",140)
+            if(playerList[player.get_player_name(slot)]['godvehicle'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godvehicleannounced'] ) then
+               menu.notify(player.get_player_name(slot) .. " is using god vehicle since " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZeroMenu",5,140) 
                markSus(player.get_player_name(slot),"Godmode Vehicle")
                playerList[player.get_player_name(slot)]['godvehicleannounced'] = true
             end
@@ -177,22 +156,23 @@ function scanPlayers()
                  playerList[player.get_player_name(slot)]['vehiclespeedTime'] = playerList[player.get_player_name(slot)]['vehiclespeedTime'] + 1
               end
             
-            if(distanceMovedSecond > 500 and positionchecker.on and playerList[player.get_player_name(slot)]['moved'] and not playerList[player.get_player_name(slot)]['wasInside'] and not slot == player.player_id()) then            
+            if(distanceMovedSecond > 500 and positionchecker.on and playerList[player.get_player_name(slot)]['moved'] and not playerList[player.get_player_name(slot)]['wasInside'] ) then            
               if(not isValidPos(slot)) then                
-                ui.notify_above_map(player.get_player_name(slot) .. " teleported (moved " .. round(distanceMovedSecond,0) .. " in 1 Second)","ZModder Detection",140)            
+                menu.notify(player.get_player_name(slot) .. " teleported (moved " .. round(distanceMovedSecond,0) .. " in 1 Second)","ZeroMenu",5,140)          
                 playerList[player.get_player_name(slot)]['willbeInside'] = 1
               end
             end
             
             --playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
             if(playerList[player.get_player_name(slot)]['willbeInside'] > 30 ) then 
-              ui.notify_above_map(player.get_player_name(slot) .. " willbeinside = " .. playerList[player.get_player_name(slot)]['willbeInside'],"ZModder Detection",140)            
+              menu.notify(player.get_player_name(slot) .. " willbeinside = " .. playerList[player.get_player_name(slot)]['willbeInside'],"ZeroMenu",5,140) 
               markSus(player.get_player_name(slot),"teleport2")
               playerList[player.get_player_name(slot)]['willbeInside'] = 0
             end
-            if(nameBoundsCheaterChat.on and (string.len(player.get_player_name(slot)) < 6 or string.len(player.get_player_name(slot)) > 16) and not slot == player.player_id()) then
-                ui.notify_above_map("Name out of Bounds for: " .. player.get_player_name(slot),"ZModder Detection",140)            
+            if(nameBoundsCheaterChat.on and (string.len(player.get_player_name(slot)) < 6 or string.len(player.get_player_name(slot)) > 16) and not playerList[player.get_player_name(slot)]['boundsannounce']) then
+                menu.notify("Name out of Bounds for: " .. player.get_player_name(slot),"ZeroMenu",5,140) 
                 markSus(player.get_player_name(slot),"Name Length")
+                playerList[player.get_player_name(slot)]['boundsannounce'] = true
             end
             if(player.is_player_in_any_vehicle(slot) and entity.get_entity_god_mode(player.get_player_vehicle(slot))) then              
               playerList[player.get_player_name(slot)]['godvehicle'] = (playerList[player.get_player_name(slot)]['godvehicle']+1)
@@ -224,7 +204,8 @@ function scanPlayers()
         playerList[player.get_player_name(slot)]['godvehicleannounced'] = false
         playerList[player.get_player_name(slot)]['wasInside'] = false
         playerList[player.get_player_name(slot)]['vehiclespeedTime'] = 0
-        playerList[player.get_player_name(slot)]['willbeInside'] = 0         
+        playerList[player.get_player_name(slot)]['willbeInside'] = 0      
+        playerList[player.get_player_name(slot)]['boundsannounce'] = false   
       end      
     end  
   end

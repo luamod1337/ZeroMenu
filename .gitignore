@@ -3,3 +3,12 @@
 .buildpath
 .project
 teleportdumb.txt
+*.bat
+*.jar
+func
+*.txt
+tmp
+*.sh
+.metadata
+.ignore
+*.rar

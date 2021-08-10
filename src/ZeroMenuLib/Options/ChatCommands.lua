@@ -33,6 +33,7 @@ function createChatCommands(parent,config)
     file = io.open(chatLogPath, "w")
     file:write("#Created using 1337Zeros ZeroMenu\n")
     file:close()
+    io.close(chatLogPath)
   end
 end
 
@@ -59,6 +60,7 @@ function logChat(playerVar,messageVar)
     file = io.open(chatLogPath, "a")
     file:write(os.date("[%d/%m/%Y %H:%M:%S]") .. " " .. playerXScid .. " > " .. messageVar .. "\n")
     file:close()
+    io.close(chatLogPath)
   end  
 end
 
@@ -79,7 +81,7 @@ function onChatCommand(slot,messageVar)
           vehicle.modify_vehicle_top_speed(veh,speed)
           vehicle.set_vehicle_engine_torque_multiplier_this_frame(veh,speed)
           entity.get_entity_model_hash(ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id())))
-          ui.notify_above_map("Tuned Vehicle of " .. player.get_player_name(slot),"ZeroMenu - Chat",140)
+          menu.notify("Tuned Vehicle of " .. player.get_player_name(slot),"ZeroMenu",5,140)
         end
       elseif splittedMessage[0] == "!slap" and slapCommand.on then
         local pslot = getSlotFromName(splittedMessage[1])
@@ -101,14 +103,14 @@ function onChatCommand(slot,messageVar)
                 entity.set_entity_rotation(veh,rotation)
                 vehicle.set_vehicle_forward_speed(veh, 10000)
               end
-            ui.notify_above_map("slapped player's Vehicle " .. player.get_player_name(pslot),"ZeroMenu",140)
+            menu.notify("slapped player's Vehicle " .. player.get_player_name(pslot),"ZeroMenu",5,140)
           else
             local ped = player.get_player_ped(pslot)
             if not network.has_control_of_entity(ped) then
                 network.request_control_of_entity(ped)  
             end    
             entity.apply_force_to_entity(ped,forceTyp.MinForce,100,100,100,100,100,100,true,true)
-            ui.notify_above_map("slapped player " .. player.get_player_name(pslot),"ZeroMenu",140)
+            menu.notify("slapped player " .. player.get_player_name(pslot),"ZeroMenu",5,140)
           end
         end
       end
