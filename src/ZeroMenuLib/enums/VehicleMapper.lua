@@ -725,7 +725,25 @@ local Vehicles = {
   {Hash=67753863,Model="yosemite3",Name="Declasse Yosemite Rancher"},
   {Hash=1802742206,Model="youga3",Name="Bravado Youga Classic 4x4"},
   {Hash=1492612435,Model="openwheel1",Name="Benefactor BR8"},
-  {Hash=1181339704,Model="openwheel2",Name="Declasse DR1"},
+  {Hash=1181339704,Model="openwheel2",Name="Declasse DR1"},  
+  {Hash=0xB8D657AD,Model="calico",Name="Karin Calico GTF"},
+  {Hash=0x991EFC04,Model="comet6",Name="Pfister Comet S2"},
+  {Hash=0x68A5D1EF,Model="cypher",Name="Cyphe"},
+  {Hash=0x196F9418,Model="dominator7",Name="Vapid Dominator ASP"},
+  {Hash=0x2BE8B90A,Model="dominator8",Name="Vapid Dominator GTT"},
+  {Hash=0x7980BDD5,Model="euros",Name="Annis Euros"},
+  {Hash=0xBDEC3D99,Model="freightcar2",Name="Freight Train"},
+  {Hash=0xA6297CC8,Model="futo2",Name="Karin Futo GTX"},
+  {Hash=0x4DC079D7,Model="growler",Name="Pfister Growler"},
+  {Hash=0xA1B3A871,Model="jester4",Name="Dinka Jester RR"},
+  {Hash=0x546DA331,Model="previon",Name="Karin Previon"},
+  {Hash=0x5216AD5E,Model="remus",Name="Annis Remus"},
+  {Hash=0xE505CF99,Model="rt3000",Name="Dinka RT3000"},
+  {Hash=0xEEA75E63,Model="sultan3",Name="Karin Sultan RS Classic"},
+  {Hash=0xB5D306A4,Model="tailgater2",Name="Obey Tailgater S"},
+  {Hash=0xA42FC3A5,Model="vectre",Name="Emperor Vectre"},
+  {Hash=0x2290C50A,Model="warrener2",Name="Vulcar Warrener HKR"},
+  {Hash=0x91373058,Model="zr350",Name="Annis ZR350"}
 
 }
 

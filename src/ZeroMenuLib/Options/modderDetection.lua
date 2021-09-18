@@ -4,7 +4,7 @@ local zModderMain
 
 -- features
 local god,positionchecker,controlchecker,displayIngameInfo
-local annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings,markasModder
+local blipchecker,annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings,markasModder
 
 -- integers
 
@@ -42,6 +42,8 @@ function createModderDetectionMenuEntry(parent,config)
 
   positionchecker = createConfigedMenuOption("Position check","toggle",zModderMain.id,scanPlayers,config,"PositionCheck",false,nil)
   
+  blipchecker = createConfigedMenuOption("Check Off-Radar","toggle",zModderMain.id,scanPlayers,config,"BlipCheck",false,nil)
+  
   vehicleGodChecker = createConfigedMenuOption("Vehicle God check","toggle",zModderMain.id,scanPlayers,config,"vehiclegodcheck",false,nil)
 
   nameBoundsCheaterChat = createConfigedMenuOption("Check Name bounds","toggle",zModderMain.id,nil,config,"checkNameBounds",false,nil)
@@ -59,6 +61,10 @@ function createModderDetectionMenuEntry(parent,config)
   annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
   
   markasModder = createConfigedMenuOption("Mark as Modder","toggle",zModderMainSettings.id,nil,config,"modderMARK",false,nil)
+
+  if config:isFeatureEnabled("BlipCheck") then
+    blipchecker.on = true
+  end
 
   if config:isFeatureEnabled("PositionCheck") then
     positionchecker.on = true
@@ -121,7 +127,7 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['willbeInside'] = playerList[player.get_player_name(slot)]['willbeInside']+1
             end
           end
-          -- player is inside something
+          -- player is not inside something
           if(not isPlayerInside(slot)) then
             playerList[player.get_player_name(slot)]['wasInside'] = false
             -- check for godmode
@@ -135,6 +141,16 @@ function scanPlayers()
             
             if(playerList[player.get_player_name(slot)]['distanceMoved'] > 0) then
               playerList[player.get_player_name(slot)]['moved'] = true
+            end
+            
+            if(ui.get_blip_from_entity(slot) == nil and not isPlayerInside(slot)) then
+              playerList[player.get_player_name(slot)]['nilblip'] = true
+            end
+            
+            
+            
+            if(blipchecker.on and playerList[player.get_player_name(slot)]['nilblip'] > (300)) then
+              menu.notify("No blip for " .. player.get_player_name(slot) .. " for 300 seconds","ZeroMenu",5,140)
             end
             
             if(playerList[player.get_player_name(slot)]['godTime'] > (checkDuration*0.9) and player.get_player_modder_flags(slot) ==0 and not playerList[player.get_player_name(slot)]['godannounce'] ) then
@@ -206,6 +222,9 @@ function scanPlayers()
         playerList[player.get_player_name(slot)]['vehiclespeedTime'] = 0
         playerList[player.get_player_name(slot)]['willbeInside'] = 0      
         playerList[player.get_player_name(slot)]['boundsannounce'] = false   
+        playerList[player.get_player_name(slot)]['nilblip'] = 0  
+        
+        
       end      
     end  
   end

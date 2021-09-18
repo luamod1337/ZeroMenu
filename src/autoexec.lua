@@ -52,7 +52,7 @@ function zeroMenuMain()
   --load Settings
   loadSetting(zeroMenu,config)
   
-  menu.notify("ZeroMenu loaded!","ZeroMenu",5,140)  
+  menu.notify("ZeroMenu v0.4 {version} loaded!","ZeroMenu",5,140)  
 end
 
 function loadSetting(parent,config)

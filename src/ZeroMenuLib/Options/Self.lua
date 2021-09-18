@@ -16,13 +16,13 @@ function createSelfMenuEntry(parent,config)
   menu.add_feature("Start Dance","action",selfMain.id,dance) 
   menu.add_feature("Stop Scenario","action",selfMain.id,stopScenario)
   
-  modelchangemain = menu.add_feature("Model Change","parent",selfMain.id,loadModelList)
-  
+  modelchangemain = menu.add_feature("Model Change","parent",selfMain.id,loadModelList)  
 end
 
 function loadModelList()
   local Peds = pm.GetAllHash()
   local idx = 0
+  
   while idx < #Peds do
     idx = idx + 1
     local entry = Peds[idx]

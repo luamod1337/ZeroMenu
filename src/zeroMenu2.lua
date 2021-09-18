@@ -22,24 +22,24 @@ function zeroMenuMain()
   config = Config:create(configpath,true)
 
 -- Main Feature
-	zeroMenu = menu.add_feature("ZeroMenu", "parent", 0, nil)	
-	--load Vehicle Options
-	loadVehicleMenu(zeroMenu,config)	
-	--Load Modder Detection	
-	createModderDetectionMenuEntry(zeroMenu,config)
-	--Load Nearby
-	createNearbyMenu(zeroMenu,config)
-		
-	createSelfMenuEntry(zeroMenu,config)
-	
+  zeroMenu = menu.add_feature("ZeroMenu", "parent", 0, nil) 
+  --load Vehicle Options
+  loadVehicleMenu(zeroMenu,config)  
+  --Load Modder Detection 
+  createModderDetectionMenuEntry(zeroMenu,config)
+  --Load Nearby
+  createNearbyMenu(zeroMenu,config)
+    
+  createSelfMenuEntry(zeroMenu,config)
+  
   createGriefEntry(config)
   
   createProtectionMenu(zeroMenu,config)
-	
-	createWorldMenu(zeroMenu,config)
-	
-	createChatCommands(zeroMenu,config)
-	
+  
+  createWorldMenu(zeroMenu,config)
+  
+  createChatCommands(zeroMenu,config)
+  
   createLobbyOptions(zeroMenu,config)
   
   createVehicleBuilderEntry(zeroMenu,config)
@@ -48,10 +48,11 @@ function zeroMenuMain()
     require("ZeroMenuLib/Options/Dev")
     createDevEntry(zeroMenu,config)
   end
-			
+      
   --load Settings
   loadSetting(zeroMenu,config)
-	
+  
+  menu.notify("ZeroMenu v0.4 {version} loaded!","ZeroMenu",5,140)  
 end
 
 function loadSetting(parent,config)
@@ -63,7 +64,7 @@ function loadSetting(parent,config)
   settings = menu.add_feature("Save", "action",settings.id, 
   function()
     config:saveConfig()
-    menu.notify("saving config","ZeroMenu",5,140)  
+  menu.notify("saving config","ZeroMenu",5,140)  
   end)
 end
 zeroMenuMain()

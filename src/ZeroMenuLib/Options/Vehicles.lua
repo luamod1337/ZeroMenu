@@ -1,5 +1,7 @@
 require("ZeroMenuLib/Util/Util")
 
+local soundsM = require("ZeroMenuLib/enums/Sounds")
+
 local speed = 15000
 local distance = 50
 local askedInput = false
@@ -19,10 +21,9 @@ gearToPercentSpeed[4] = 112
 gearToPercentSpeed[5] = 150
 gearToPercentSpeed[6] = 180
 gearToPercentSpeed[7] = 200
-local gearFeat,gearX,gearY,gearOverlay,gearOverlay_speed,gearOverlay_rpm,overlay_light
+local gearFeat,gearX,gearY,gearOverlay,gearOverlay_speed,gearOverlay_rpm,overlay_light,soundHorn
 
 function loadVehicleMenu(parent,config)
-  
   
 
   vehiclesubmenu = menu.add_feature("Vehicle", "parent", parent.id, nil)
@@ -53,6 +54,8 @@ function loadVehicleMenu(parent,config)
   burning_candle_f = menu.add_feature("Candle PTFX to Tires","action",vehicleMods.id,burning_candle)
   burning_candle_t = menu.add_feature("Candle PTFX to Tires","toggle",vehicleMods.id,burning_candle2)    
   
+  soundHorn = createConfigedMenuOption("Sound Horn","value_str",vehiclesubmenu.id,onSoundHorn,config,"enable_soundhorn",false,nil)
+  soundHorn.set_str_data(soundHorn,soundsM.getAllSoundNames())
   
   local gear_parent = menu.add_feature("Gear Control","parent",vehiclesubmenu.id,nil)
   
@@ -687,5 +690,22 @@ function setOveralyLight()
   end
 end
 
+function onSoundHorn(feat,data)   
+  local selectedSound = soundsM.getAllSoundNames()[feat.value+1]
+  if(selectedSound ~= nil) then
+    local selectedRef = soundsM.getRefBySoundName(selectedSound)
+    if player.is_player_pressing_horn(player.player_id()) then
+       audio.play_sound_from_coord(-1,selectedSound, entity.get_entity_coords(player.get_player_ped(player.player_id())), selectedRef, true, 50, true)
+    system.wait(0)
+    audio.stop_sound(-1)
+    end
+  end    
+  if(soundHorn.on) then
+    return HANDLER_CONTINUE
+  else
+    
+    return HANDLER_POP
+  end
+end
 
 
