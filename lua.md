@@ -13,14 +13,23 @@ The feature script threads will run when the feature is activated. Threads creat
 
 ### Feature Types
 
-| Name                 | Description                            |
-|----------------------|----------------------------------------|
-| `parent`             | Parent feature                         |
-| `toggle`             | Toggle feature                         |
-| `action`             | Action feature                         |
-| `value_i`            | Toggle feature with integer value      |
-| `action_value_i`     | Action feature with integer value      |
-| `autoaction_value_i` | Auto Action feature with integer value |
+| Name                   | Description                            |
+|------------------------|----------------------------------------|
+| `parent`               | Parent feature                         |
+| `toggle`               | Toggle feature                         |
+| `action`               | Action feature                         |
+| `value_i`              | Toggle feature with integer value      |
+| `value_f`              | Toggle feature with float value        |
+| `slider`               | Toggle feature with slider             |
+| `value_str`            | Toggle feature with string values      |
+| `action_value_i`       | Action feature with integer value      |
+| `action_value_f`       | Action feature with float value        |
+| `action_slider`        | Action feature with slider             |
+| `action_value_str`     | Action feature with string values      |
+| `autoaction_value_i`   | Auto Action feature with integer value |
+| `autoaction_value_f`   | Auto Action feature with float value   |
+| `autoaction_slider `   | Auto Action feature with slider        |
+| `autoaction_value_str` | Auto Action feature with string values |
 
 ### Handlers
 
@@ -44,24 +53,32 @@ Render handlers are executed in the d3d thread. You should only use d3d function
 #### Feat
 
 ```
-@property	boolean		on			read/write		feature on/off boolean
-@property	Feat		parent		readonly
-@property	Feat[]		children	readonly		Only for parents
-@property	int			child_count	readonly		Only for parents
-@property	integer		type		readonly
-@property	integer		id			readonly		Ids will be recycled after the feature is deleted
-@property	integer		value_i		read/write		value for integer features
-@property	integer		min_i		read/write		min value for integer features
-@property	integer		max_i		read/write		max value
-@property	integer		mod_i		read/write		step size
-@property	boolean		threaded	read/write		deprecated
-@property	string		name		read/write
-@property	function	renderer	read/write		d3d handler
-@property	boolean		hidden		read/write		show/hide feature
-@property	*			data		read/write		additional context passed to script handlers
+@property	boolean				on				read/write		feature on/off boolean
+@property	Feat				parent			readonly
+@property	Feat[]				children		readonly		Only for parents
+@property	int					child_count		readonly		Only for parents
+@property	integer				type			readonly
+@property	integer				id				readonly		Ids will be recycled after the feature is deleted
+@property	integer				value_i			read/write		DEPRECATED
+@property	integer				min_i			read/write		DEPRECATED
+@property	integer				max_i			read/write		DEPRECATED
+@property	integer				mod_i			read/write		DEPRECATED
+@property	boolean				threaded		read/write		DEPRECATED
+@property	integer|float|nil	value*¹			read/write		feature value
+@property	integer|float|nil	min*¹			read/write		feature minimum value
+@property	integer|float|nil	max*¹			read/write		feature maximum value
+@property	integer|float|nil	mod*¹			read/write		feature value modifier
+@property	string				name			read/write
+@property	function			renderer		read/write		d3d handler
+@property	boolean				hidden			read/write		show/hide feature
+@property	*					data			read/write		additional context passed to script handlers
+@property	string[]			str_data		read/write		only available for value_str types
 
-@method	Feat toggle()
+@method	Feat		toggle()
+@method void 		set_str_data(string[] data)					only available for value_str types
+@method string[]	get_str_data()								only available for value_str types
 ```
+*¹ These properties are read/write for value_i, value_f and slider, but are readonly for value_str
 
 #### PlayerFeat
 
@@ -71,7 +88,19 @@ Render handlers are executed in the d3d thread. You should only use d3d function
 @property	int			parent_id	readonly
 @property	boolean		threaded	read/write		deprecated
 @property	function	renderer	read/write		Make sure you set the renderer with the PlayerFeat function, and not the Feat function. Otherwise the handler will not receive the player id in the second param.
+
+@property	boolean				on*²			read/write
+@property	integer|float|nil	value*¹*²		read/write		feature values
+@property	integer|float|nil	min*¹*²			read/write		feature minimum values
+@property	integer|float|nil	max*¹*²			read/write		feature maximum values
+@property	integer|float|nil	mod*¹*²			read/write		feature value modifiers
+@property	string[]			str_data		read/write		only available for value_str types
+
+@method void 		set_str_data(string[] data)					only available for value_str types
+@method string[]	get_str_data()								only available for value_str types
 ```
+*¹ These properties are read/write for value_i, value_f and slider, but are readonly for value_str
+*² These properties will expect a single value for setters, but return a table of values from the getters
 
 #### v2
 
@@ -166,7 +195,7 @@ Render handlers are executed in the d3d thread. You should only use d3d function
 #### MenuKey
 
 ```
-@property	vector<uint32_t>	keys			vector of virtual keys
+@property	uint32_t[]			keys			vector of virtual keys
 
 @method		void				push_vk(uint32_t virtualKeyCode)
 @method		bool				push_str(string key)
@@ -199,10 +228,15 @@ Render handlers are executed in the d3d thread. You should only use d3d function
 #### string			get_version()
 #### PlayerFeat		add_player_feature(string name, string type, integer parent, function script_handler)
 #### PlayerFeat		get_player_feature(uint32_t i)
+#### bool			delete_player_feature(uint32_t id)
 #### bool			is_threading_mode(int mode)
 #### Thread			create_thread(function callback, * context)
 #### bool			has_thread_finished(Thread id)
 #### bool			delete_thread(Thread id)
+#### void			notify(string message, string|nil title, uint32_t|nil seconds, uint32_t|nil color)
+#### void			clear_all_notifications()
+#### void			clear_visible_notifications()
+#### bool			is_trusted_mode_enabled()
 ```
 
 ## Hooks
@@ -267,7 +301,7 @@ Event listeners are executed from script thread
 @eventName	script
 
 @property	integer			id
-@property	vector<int>		params
+@property	int[]			params
 ```
 
 ### Event Functions
@@ -386,20 +420,25 @@ enum eModderDetectionFlags : unsigned long long
 {
 	MDF_MANUAL					= 1 << 0x00,
 	MDF_PLAYER_MODEL			= 1 << 0x01,
-	MDF_SCID_0					= 1 << 0x02,
-	MDF_SCID_SPOOF				= 1 << 0x03,
-	MDF_INVALID_OBJECT_CRASH	= 1 << 0x04,
-	MDF_INVALID_PED_CRASH		= 1 << 0x05,
-	MDF_CLONE_SPAWN				= 1 << 0x06,
-	MDF_MODEL_CHANGE_CRASH		= 1 << 0x07,
-	MDF_PLAYER_MODEL_CHANGE		= 1 << 0x08,
-	MDF_RAC						= 1 << 0x09,
-	MDF_MONEY_DROP				= 1 << 0x0A,
-	MDF_SEP						= 1 << 0x0B,
-	MDF_ATTACH_OBJECT			= 1 << 0x0C,
-	MDF_ATTACH_PED				= 1 << 0x0D,
+	MDF_SCID_SPOOF				= 1 << 0x02,
+	MDF_INVALID_OBJECT_CRASH	= 1 << 0x03,
+	MDF_INVALID_PED_CRASH		= 1 << 0x04,
+	MDF_MODEL_CHANGE_CRASH		= 1 << 0x05,
+	MDF_PLAYER_MODEL_CHANGE		= 1 << 0x06,
+	MDF_RAC						= 1 << 0x07,
+	MDF_MONEY_DROP				= 1 << 0x08,
+	MDF_SEP						= 1 << 0x09,
+	MDF_ATTACH_OBJECT			= 1 << 0x0A,
+	MDF_ATTACH_PED				= 1 << 0x0B,
+	MDF_NET_ARRAY_CRASH			= 1 << 0x0C,
+	MDF_SYNC_CRASH				= 1 << 0x0D,
+	MDF_NET_EVENT_CRASH			= 1 << 0x0E,
+	MDF_HOST_TOKEN				= 1 << 0x0F,
+	MDF_SE_SPAM					= 1 << 0x10,
+	MDF_INVALID_VEHICLE			= 1 << 0x11,
+	MDF_FRAME_FLAGS				= 1 << 0x12,
 
-	MDF_ENDS					= 1 << 0x0E
+	MDF_ENDS					= 1 << 0x13,
 };
 ```
 
@@ -462,7 +501,7 @@ enum eModderDetectionFlags : unsigned long long
 #### bool				reset_ped_ragdoll_blocking_flags(Ped ped, int flags)
 #### void				set_ped_density_multiplier_this_frame(float mult)
 #### void				set_scenario_ped_density_multiplier_this_frame(float m1, float m2)
-#### vector<Ped>		get_all_peds()
+#### Ped[]				get_all_peds()
 #### Group				create_group()
 #### void				remove_group(Group group)
 #### void				set_ped_as_group_leader(Ped ped, Group group)
@@ -479,6 +518,22 @@ enum eModderDetectionFlags : unsigned long long
 #### bool				is_ped_swimming_underwater(Ped ped)
 #### void				clear_relationship_between_groups(Hash group1, Hash group2)
 #### void				set_relationship_between_groups(int relation, Hash group1, Hash group2)
+#### [...]|nil			get_ped_head_blend_data(Ped ped)
+#### bool				set_ped_head_blend_data(Ped ped, int shape_first, int shape_second, int shape_third, int skin_first, int skin_second, int skin_third, float mix_shape, float mix_skin, float mix_third)
+#### float|nil			get_ped_face_feature(Ped ped, uint32_t id)
+#### bool				set_ped_face_feature(Ped ped, uint32_t id, float val)
+#### int|nil			get_ped_hair_color(Ped ped)
+#### int|nil			get_ped_hair_highlight_color(Ped ped)
+#### int|nil			get_ped_eye_color(Ped ped)
+#### bool				set_ped_hair_colors(Ped ped, int color, int highlight)
+#### bool				set_ped_eye_color(Ped ped, int color)
+#### bool				set_ped_head_overlay(Ped ped, uint32_t overlayID, int val, float opacity)
+#### int|nil			get_ped_head_overlay_value(Ped ped, uint32_t overlayID)
+#### float|nil			get_ped_head_overlay_opacity(Ped ped, uint32_t overlayID)
+#### bool				set_ped_head_overlay_color(Ped ped, uint32_t overlayID, int colorType, int color, int highlight)
+#### int|nil			get_ped_head_overlay_color_type(Ped ped, uint32_t overlayID)
+#### int|nil			get_ped_head_overlay_color(Ped ped, uint32_t overlayID)
+#### int|nil			get_ped_head_overlay_highlight_color(Ped ped, uint32_t overlayID)
 ```
 
 ### Vehicle Functions
@@ -526,7 +581,7 @@ enum eModderDetectionFlags : unsigned long long
 #### void				set_vehicle_engine_health(Vehicle veh, float health)
 #### bool				is_vehicle_damaged(Vehicle veh)
 #### bool				is_vehicle_on_all_wheels(Vehicle veh)
-#### Vehicle			create_vehicle(Hash model, v3 pos, float heading, bool networked, bool unk2)
+#### Vehicle			create_vehicle(Hash model, v3 pos, float heading, bool networked, bool alwaysFalse)
 #### bool				set_vehicle_doors_locked(Vehicle vehicle, int lockStatus)
 #### bool				set_vehicle_neon_lights_color(Vehicle vehicle, int color)
 #### int				get_vehicle_neon_lights_color(Vehicle vehicle)
@@ -587,8 +642,8 @@ enum eModderDetectionFlags : unsigned long long
 #### string				get_livery_name(Vehicle veh, int32_t livery)
 #### void				set_vehicle_window_tint(Vehicle veh, int32_t t)
 #### int32_t			get_vehicle_window_tint(Vehicle veh)
-#### vector<Hash>		get_all_vehicle_model_hashes()
-#### vector<Vehicle>	get_all_vehicles()
+#### Hash[]				get_all_vehicle_model_hashes()
+#### Vehicle[]			get_all_vehicles()
 #### void				modify_vehicle_top_speed(Vehicle veh, float f)
 #### void				set_vehicle_engine_torque_multiplier_this_frame(Vehicle veh, float f)
 #### int32_t			get_vehicle_headlight_color(Vehicle v)
@@ -599,6 +654,57 @@ enum eModderDetectionFlags : unsigned long long
 #### bool				does_vehicle_have_parachute(Vehicle v)
 #### bool				can_vehicle_parachute_be_activated(Vehicle v)
 #### void				set_vehicle_can_be_locked_on(Vehicle veh, bool toggle, bool skipSomeCheck)
+#### int|nil			get_vehicle_current_gear(Vehicle veh)
+#### bool				set_vehicle_current_gear(Vehicle veh, int gear)
+#### int|nil			get_vehicle_next_gear(Vehicle veh)
+#### bool				set_vehicle_next_gear(Vehicle veh, int gear)
+#### int|nil			get_vehicle_max_gear(Vehicle veh)
+#### bool				set_vehicle_max_gear(Vehicle veh, int gear)
+#### float|nil			get_vehicle_gear_ratio(Vehicle veh, int gear)
+#### bool				set_vehicle_gear_ratio(Vehicle veh, int gear, float ratio)
+#### float|nil			get_vehicle_rpm(Vehicle veh)
+#### bool				get_vehicle_has_been_owned_by_player(Vehicle veh)
+#### bool				set_vehicle_has_been_owned_by_player(Vehicle veh, bool owned)
+#### float|nil			get_vehicle_steer_bias(Vehicle veh)
+#### bool				set_vehicle_steer_bias(Vehicle veh, float v)
+#### bool				get_vehicle_reduce_grip(Vehicle veh)
+#### bool				set_vehicle_reduce_grip(Vehicle veh, bool t)
+#### float				get_vehicle_estimated_max_speed(Vehicle veh)
+#### int|nil			get_vehicle_wheel_count(Vehicle veh)
+#### float|nil			get_vehicle_wheel_tire_radius(Vehicle veh, int idx)
+#### float|nil			get_vehicle_wheel_rim_radius(Vehicle veh, int idx)
+#### float|nil			get_vehicle_wheel_tire_width(Vehicle veh, int idx)
+#### float|nil			get_vehicle_wheel_rotation_speed(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_tire_radius(Vehicle veh, int idx, float v)
+#### bool				set_vehicle_wheel_rim_radius(Vehicle veh, int idx, float v)
+#### bool				set_vehicle_wheel_tire_width(Vehicle veh, int idx, float v)
+#### bool				set_vehicle_wheel_rotation_speed(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_render_size(Vehicle veh)
+#### bool				set_vehicle_wheel_render_size(Vehicle veh, float size)
+#### float|nil			get_vehicle_wheel_render_width(Vehicle veh)
+#### bool				set_vehicle_wheel_render_width(Vehicle veh, float width)
+#### void				set_vehicle_tire_fixed(Vehicle veh, int idx)
+#### float|nil			get_vehicle_wheel_power(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_power(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_health(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_health(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_brake_pressure(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_brake_pressure(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_traction_vector_length(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_traction_vector_length(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_x_offset(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_x_offset(Vehicle veh, int idx, float v)
+#### float|nil			get_vehicle_wheel_y_rotation(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_y_rotation(Vehicle veh, int idx, float v)
+#### int				get_vehicle_wheel_flags(Vehicle veh, int idx)
+#### bool				set_vehicle_wheel_flags(Vehicle veh, int idx, int v)
+#### bool				set_vehicle_wheel_is_powered(Vehicle veh, int idx, int v)
+#### int|nil			get_vehicle_class(Vehicle veh)
+#### string|nil			get_vehicle_class_name(Vehicle veh)
+#### string|nil			get_vehicle_brand(Vehicle veh)
+#### string|nil			get_vehicle_model(Vehicle veh)
+#### string|nil			get_vehicle_brand_label(Vehicle veh)
+#### string|nil			get_vehicle_model_label(Vehicle veh)
 ```
 
 ### Entity Functions
@@ -673,8 +779,9 @@ enum eModderDetectionFlags : unsigned long long
 
 ```
 #### Object				create_object(Hash model, v3 pos, bool networked, bool dynamic)
-#### vector<Object>		get_all_objects()
-#### vector<Pickup>		get_all_pickups()
+#### Object				create_world_object(Hash model, v3 pos, bool networked, bool dynamic)
+#### Object[]			get_all_objects()
+#### Pickup[]			get_all_pickups()
 ```
 
 ### Weapon Functions
@@ -694,7 +801,7 @@ enum eModderDetectionFlags : unsigned long long
 #### Hash				get_ped_ammo_type_from_weapon(Ped ped, Hash weapon)
 #### void				set_ped_ammo_by_type(Ped ped, Hash type, uint32_t amount)
 #### bool				has_ped_got_weapon(Ped ped, Hash weapon)
-#### vector<Hash>		get_all_weapon_hashes()
+#### Hash[]				get_all_weapon_hashes()
 #### string				get_weapon_name(Hash weapon)
 #### int				get_weapon_weapon_wheel_slot(Hash weapon)
 #### Hash				get_weapon_model(Hash weapon)
@@ -730,7 +837,10 @@ enum eModderDetectionFlags : unsigned long long
 #### bool				is_model_a_boat(Hash ulHash)
 #### bool				is_model_a_train(Hash ulHash)
 #### bool				is_model_an_object(Hash ulHash)
+#### bool				is_model_a_world_object(Hash ulHash)
 #### bool				is_model_a_ped(Hash ulHash)
+#### void				remove_anim_dict(string szName)
+#### void				remove_anim_set(string szName)
 ```
 ### UI Functions
 
@@ -753,6 +863,8 @@ enum eModderDetectionFlags : unsigned long long
 #### void				set_text_wrap(float start, float end)
 #### void				set_text_outline(bool b)
 #### void				set_text_centre(bool b)
+#### void				set_text_right_justify(bool b)
+#### void				set_text_justification(int j)
 #### void				set_new_waypoint(v2 coord)
 #### v2					get_waypoint_coord()
 #### bool				is_hud_component_active(int32_t componentId)
@@ -768,14 +880,19 @@ enum eModderDetectionFlags : unsigned long long
 #### bool				remove_blip(Blip blip)
 #### void				set_blip_route(Blip blip, bool toggle)
 #### void				set_blip_route_color(Blip blip, int32_t color)
+#### int				get_current_notification()
+#### void				remove_notification(int id)
+#### bool, v3|nil		get_objective_coord()
 ```
 
 ### ScriptDraw Functions
 
 ```
-#### void				draw_text(string text, v2 pos, v2 size, float scale, uint32_t color, uint32_t flags)
-#### void				wdraw_text(wstring text, v2 pos, v2 size, float scale, uint32_t color, uint32_t flags)
+#### void				draw_text(string text, v2 pos, v2 size, float scale, uint32_t color, uint32_t flags, int|nil font)
 #### uint32_t			register_sprite(string path)
+#### v2					get_sprite_origin(uint32_t id)
+#### v2					get_sprite_size(uint32_t id)
+#### v2					get_text_size(string text, float|nil scale, int|nil font)
 #### void				draw_sprite(uint32_t id, v2 pos, float scale, float rot, uint32_t color)
 #### void				draw_line(v2 start, v2 end, uint32_t size, uint32_t color)
 #### void				draw_rect(v2 pos, v2 size, uint32_t color)
@@ -887,6 +1004,8 @@ enum eDrawTextFlags
 #### bool				is_disabled_control_just_pressed(int inputGroup, int control)
 #### bool				is_control_pressed(int inputGroup, int control)
 #### bool				is_disabled_control_pressed(int inputGroup, int control)
+#### float				get_control_normal(int inputGroup, int control)
+#### bool				set_control_normal(int inputGroup, int control, float value)
 ```
 
 ### Graphics Functions
@@ -896,23 +1015,27 @@ enum eDrawTextFlags
 #### int				get_screen_width()
 #### void				request_named_ptfx_asset(string asset)
 #### bool				has_named_ptfx_asset_loaded(string asset)
+#### void				remove_named_ptfx_asset(string name)
 #### void				set_next_ptfx_asset(string asset)
 #### void				set_next_ptfx_asset_by_hash(Hash hash)
 #### Ptfx				start_ptfx_looped_on_entity(string name, Entity e, v3 offset, v3 rot, float scale)
 #### bool				start_ptfx_non_looped_on_entity(string name, Entity e, v3 offset, v3 rot, float scale)
+#### Ptfx				start_networked_ptfx_looped_on_entity(string name, Entity e, v3 offset, v3 rot, float scale)
+#### bool				start_networked_ptfx_non_looped_on_entity(string name, Entity e, v3 offset, v3 rot, float scale)
 #### void				remove_ptfx_from_entity(Entity)
 #### bool				does_looped_ptfx_exist(Ptfx ptfx)
-#### Ptfx				start_particle_fx_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis, bool a8)
-#### bool				start_particle_fx_non_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
-#### bool				start_networked_particle_fx_non_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
+#### Ptfx				start_ptfx_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
+#### bool				start_ptfx_non_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
+#### bool				start_networked_ptfx_non_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
+#### Ptfx				start_networked_ptfx_looped_at_coord(string name, v3 pos, v3 rot, float scale, bool xAxis, bool yAxis, bool zAxis)
 #### void				remove_particle_fx(Ptfx ptfx, bool a2)
-#### void				remove_particle_fx_in_range(v3 pos, float range)
-#### void				set_particle_fx_looped_offsets(Ptfx ptfx, v3 pos, v3 rot)
-#### void				set_particle_fx_looped_evolution(Ptfx ptfx, string propertyName, float amount, bool a4)
-#### void				set_particle_fx_looped_color(Ptfx ptfx, float r, float b, float g, bool a5)
-#### void				set_particle_fx_looped_alpha(Ptfx ptfx, float a)
-#### void				set_particle_fx_looped_scale(Ptfx ptfx, float scale)
-#### void				set_particle_fx_looped_far_clip_dist(Ptfx ptfx, float dist)
+#### void				remove_ptfx_in_range(v3 pos, float range)
+#### void				set_ptfx_looped_offsets(Ptfx ptfx, v3 pos, v3 rot)
+#### void				set_ptfx_looped_evolution(Ptfx ptfx, string propertyName, float amount, bool a4)
+#### void				set_ptfx_looped_color(Ptfx ptfx, float r, float b, float g, bool a5)
+#### void				set_ptfx_looped_alpha(Ptfx ptfx, float a)
+#### void				set_ptfx_looped_scale(Ptfx ptfx, float scale)
+#### void				set_ptfx_looped_far_clip_dist(Ptfx ptfx, float dist)
 #### void				enable_clown_blood_vfx(bool toggle)
 #### void				enable_alien_blood_vfx(bool toggle)
 #### void				animpostfx_play(Hash effect, int32_t duration, bool looped)
@@ -1002,6 +1125,8 @@ enum eDrawTextFlags
 #### void				task_turn_ped_to_face_entity(Ped ped, Entity entity, int duration)
 #### void				task_aim_gun_at_entity(Ped ped, Entity entity, int duration, bool a4)
 #### bool				is_task_active(Ped ped, Any taskId)
+#### bool				task_play_anim(Ped ped, string dict, string anim, float speed, float speedMult, int duration, int flag, float playbackRate, bool lockX, bool lockY, bool lockZ)
+#### void				stop_anim_task(Ped ped, const char* dict, const char* anim, float a4)
 ```
 
 <https://pastebin.com/2gFqJ3Px>
@@ -1015,6 +1140,11 @@ enum eDrawTextFlags
 #### bool				decor_remove(Entity e, string decor)
 #### int				decor_get_int(Entity entity, string name)
 #### bool				decor_set_int(Entity entity, string name, int value)
+#### float				decor_get_float(Entity entity, string name)
+#### bool				decor_set_float(Entity entity, string name, float value)
+#### bool				decor_get_bool(Entity entity, string name)
+#### bool				decor_set_bool(Entity entity, string name, bool value)
+#### bool				decor_set_time(Entity entity, string name, int value)
 ```
 
 ### Interior Functions
@@ -1044,17 +1174,31 @@ enum eDrawTextFlags
 #### bool				stat_set_int(Hash hash, int32_t value, bool save)
 #### bool				stat_set_float(Hash hash, float value, bool save)
 #### bool				stat_set_bool(Hash hash, bool value, bool save)
+#### int64_t			stat_get_i64(Hash hash)
+#### bool				stat_set_i64(Hash hash, int64_t v, uint32_t|nil flags)
+#### uint64_t			stat_get_u64(Hash hash)
+#### bool				stat_set_u64(Hash hash, uint64_t v, uint32_t|nil flags)
+#### int32_t|nil		stat_get_masked_int(Hash hash, int mask, int a3, int|nil a4)
+#### bool				stat_set_masked_int(Hash hash, int32_t val, int mask, int a4, bool save)
+#### bool|nil			stat_get_masked_bool(Hash hash, int mask, int|nil a3)
+#### bool				stat_set_masked_bool(Hash hash, bool val, int mask, int a4, bool save)
+#### hash, int			stat_get_bool_hash_and_mask(string stat, int index, int character)
+#### hash, int			stat_get_int_hash_and_mask(string stat, int index, int character)
 ```
 
 ### Script Functions
 
 ```
-#### void 				trigger_script_event(int eventId, Player player, vector<int> params)
+#### void 				trigger_script_event(int eventId, Player player, int[] params)
 #### Player 			get_host_of_this_script()
-#### float				get_global_f(int i)
-#### int				get_global_i(int i)
-#### float				get_local_f(Hash script, int i)
-#### int				get_local_i(Hash script, int i)
+#### float|nil			get_global_f(uint32_t i)
+#### int|nil			get_global_i(uint32_t i)
+#### bool				set_global_f(uint32_t i, float v)
+#### bool				set_global_i(uint32_t i, int v)
+#### float|nil			get_local_f(Hash script, uint32_t i)
+#### int|nil			get_local_i(Hash script, uint32_t i)
+#### bool				set_local_f(Hash script, uint32_t i, float v)
+#### bool				set_local_i(Hash script, uint32_t i, int v)
 ```
 
 ### Audio Functions
@@ -1088,6 +1232,26 @@ enum eRayIntersect : unsigned
 };
 ```
 
+### Rope Functions
+
+```
+#### void				rope_load_textures()
+#### void				rope_unload_textures()
+#### bool				rope_are_textures_loaded()
+#### int				add_rope(v3 pos, v3 rot, float maxLen, int ropeType, float initLength, float minLength, float lengthChangeRate, bool onlyPPU, bool collisionOn, bool lockFromFront, float timeMultiplier, bool breakable)
+#### bool				does_rope_exist(int rope)
+#### bool				delete_rope(int rope)
+#### void				attach_rope_to_entity(int rope, Entity e, v3 offset, bool a3)
+#### void				attach_entities_to_rope(int rope, Entity ent1, Entity ent2, v3 pos_ent1, v3 pos_ent2, float len, int a7, int a8, string|nil boneName1, string|nil boneName2)
+#### void				detach_rope_from_entity(int rope, Entity entity)
+#### void				start_rope_unwinding_front(int rope)
+#### void				start_rope_winding(int rope)
+#### void				stop_rope_unwinding_front(int rope)
+#### void				stop_rope_winding(int rope)
+#### void				rope_force_length(int rope, float len)
+#### void				activate_physics(Entity entity)
+```
+
 ### System Functions
 
 ```
@@ -1099,10 +1263,8 @@ enum eRayIntersect : unsigned
 
 ```
 #### int				str_to_vk(string keyName)
-#### wstring			string_to_wstring(string str)
-#### string				wstring_to_string(wstring str)
-#### vector<string>		get_all_files_in_directory(string path, string extension)
-#### vector<string>		get_all_sub_directories_in_directory(string path)
+#### string[]			get_all_files_in_directory(string path, string extension)
+#### string[]			get_all_sub_directories_in_directory(string path)
 #### bool				file_exists(string path)
 #### bool				dir_exists(string path)
 #### bool 				make_dir(string path)
@@ -1111,6 +1273,6 @@ enum eRayIntersect : unsigned
 #### void				to_clipboard(string str)
 #### int				time()
 #### int				time_ms()
-#### vector<uint64_t>	str_to_vecu64(string str)
-#### string				vecu64_to_str(vector<uint64_t> vec)
+#### uint64_t[]			str_to_vecu64(string str)
+#### string				vecu64_to_str(uint64_t[] vec)
 ```

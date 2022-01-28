@@ -13,6 +13,8 @@ function menu:create_thread(callback,context)end
 function menu:has_thread_finished(id)end
 function menu:delete_thread(id)end
 function menu:notify(message,title,seconds,color)end
+function menu:clear_all_notifications()end
+function menu:clear_visible_notifications()end
 function menu:is_trusted_mode_enabled()end
 --## Hooks
 function menu:script_event_hook(source,target,params,count)end

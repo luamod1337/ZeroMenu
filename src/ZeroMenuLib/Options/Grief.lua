@@ -28,10 +28,37 @@ function createGriefEntry(config)
   menu.add_player_feature("Send Virus String SMS", "action", parent, sendVirusTestSms)
   menu.add_player_feature("Send Virus String SMS", "toggle", parent, sendVirusTestSms)
   
-  
+  menu.add_player_feature("Atomizer Grief", "toggle", parent, electroGrief)
   
   
   trackedPlayer = {}
+end
+
+function electroGrief(feat,slot)
+  if(feat.on) then
+    --2461879995  - Eletric Fence
+    --0x3656C8C1 - stungun
+    --local bullet = 0x7F7497E5
+    local bullet = 0xAF3696A1
+    --bullet = 0x3656C8C1
+    --bullet = 0xAF3696A1
+    --bullet = 0x3656C8C1 -- stungun not working ?
+    
+    --bullet = 0x4DD2DC56 -- smoke launcher
+    --bullet = 0xAF3696A1 -- atomizer
+    
+    local pos = player.get_player_coords(slot)
+    gameplay.shoot_single_bullet_between_coords(pos,pos,1,bullet,slot,true,true,10)
+    --gameplay.shoot_single_bullet_between_coords(start,endvalue,damage,weapon,owner,audible,invaluevisible,speed)
+    --menu.notify("Atomizer Grief","ZeroMenu",5,140)
+    system.wait(1000)
+  end
+  
+  if(feat.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
 end
 
 function mark_player_onscreen(feat,slot)

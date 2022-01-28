@@ -47,3 +47,12 @@ end
 function formatIP(ip)
   return string.format("%i.%i.%i.%i", (ip >> 24) & 0xff, ((ip >> 16) & 0xff), ((ip >> 8) & 0xff), ip & 0xff)
 end
+
+function calculateDistanceMovedBetweenCoords(oldCord,newCord)
+
+  local difX = (newCord['x'] - oldCord['x'])^2
+  local difY = (newCord['y'] - oldCord['y'])^2
+  local difZ = (newCord['z'] - oldCord['z'])^2
+  local distance = math.sqrt(difX + difY + difZ)  
+  return distance
+end

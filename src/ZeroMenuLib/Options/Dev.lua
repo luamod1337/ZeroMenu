@@ -1,4 +1,4 @@
-local dev,sparkel,burning_candle_f,call_ptfx_f,vehicleArcobatic,spawnobject,hashbyshoot
+local dev,sparkel,burning_candle_f,call_ptfx_f,vehicleArcobatic,spawnobject,hashbyshoot,ropeTestFunc
 local lastAcro = 0
 
 
@@ -20,11 +20,48 @@ function createDevEntry(parent,config)
   menu.add_feature("Vehicle Tire Width","action",dev.id,whateverTireWidth)
   menu.add_feature("Vehicle Rim Width","action",dev.id,whateverRimWidth)
   menu.add_feature("Vehicle Wheel Render Size","action",dev.id,whateverWheelRenderSize)
+  
+    
   hashbyshoot = menu.add_feature("Get Hash by Aim","toggle",dev.id,hashbyshooting)
   
+   menu.add_feature("Set Max Gear", "action", dev.id, function()
+    local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+    local r, s = input.get("Enter new Torque", 10, 64, 3)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end
+    menu.notify("Changed max gear to " .. s ,"ZeroMenu",5,140)
+    local oldMaxGear = vehicle.get_vehicle_max_gear(veh)
+    local timeout = 0
+    while(network.has_control_of_entity(veh) == false and timeout < 10) do
+      network.request_control_of_entity(veh)      
+      system.wait(0)
+      timeout = timeout+1
+    end
+    
+    vehicle.set_vehicle_max_gear(veh,s)
+    
+    for i=oldMaxGear,s do 
+      vehicle.set_vehicle_gear_ratio(veh,i,i)
+      if(vehicle.get_vehicle_gear_ratio(veh,i) ~= nil) then
+        menu.notify("Gear: " .. i .. ", ratio = " .. vehicle.get_vehicle_gear_ratio(veh,i) ,"ZeroMenu",5,140)
+     end
+      
+    end
+    
+   end)
   
+  menu.add_feature("Get Bullet by holded gun","action",dev.id,getBulletFromGun)
   
-  
+end
+
+function getBulletFromGun()
+  local ped = player.get_player_ped(player.player_id())
+  --local r, s = input.get("Enter new Torque", 10, 64, 1)
+   -- if r == 1 then return HANDLER_CONTINUE end
+   -- if r == 2 then return HANDLER_POP end
+   print("Bullet = " .. weapon.get_ped_ammo_type_from_weapon(ped,"0xAF3696A1"))
+   menu.notify("Bullet = " .. weapon.get_ped_ammo_type_from_weapon(ped,"0xAF3696A1") ,"ZeroMenu",10,140)
+
 end
 
 

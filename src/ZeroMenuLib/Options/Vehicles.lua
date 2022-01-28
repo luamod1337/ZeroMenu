@@ -59,6 +59,21 @@ function loadVehicleMenu(parent,config)
   
   local gear_parent = menu.add_feature("Gear Control","parent",vehiclesubmenu.id,nil)
   
+  menu.add_feature("Set Max Gear","action",gear_parent.id,function()
+    local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+  
+    if veh ~= nil then
+      local r, s = input.get("Enter max Gear", vehicle.get_vehicle_max_gear(veh), 64, 3)
+      if r == 1 then return HANDLER_CONTINUE end
+      if r == 2 then return HANDLER_POP end
+      
+      vehicle.set_vehicle_max_gear(veh,s)
+      menu.notify("Changed max gear to " .. s,"ZeroMenu",5,140)
+    else 
+      menu.notify("Please enter a Vehicle first","ZeroMenu",5,140)
+    end
+  end)
+  
   --gearFeat = menu.add_feature("Enable","toggle",gear_parent.id,setGear)
   gearFeat =    createConfigedMenuOption("Enable","toggle",gear_parent.id,setGear,config,"enable_gearcontrol",false,nil)
   if config:isFeatureEnabled("enable_gearcontrol") then
@@ -67,7 +82,8 @@ function loadVehicleMenu(parent,config)
   gearOverlay = createConfigedMenuOption("Enable Overlay","toggle",gear_parent.id,setGearOveraly,config,"enablegearoverlay",false,nil)
   if config:isFeatureEnabled("enable_gearoverlay") then
     gearOverlay.on = true
-  end
+  end 
+  
   
   --gearOverlay_speed = menu.add_feature("Enable Speed Overlay","toggle",gear_parent.id,setGearOveraly)
   --gearOverlay_rpm   = menu.add_feature("Enable RPM Overlay"  ,"toggle",gear_parent.id,setGearOveralyRpm)
@@ -86,7 +102,7 @@ function loadVehicleMenu(parent,config)
     overlay_light.on = true
   end
   
-  gearX = createConfigedMenuOption("Overlay X" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontrolx",false,nil)
+  gearX = createConfigedMenuOption("Overlay   X" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontrolx",false,nil)
   --gearX = menu.add_feature("Overlay X","autoaction_value_f",gear_parent.id,nil)
   gearX.min = 0.1
   gearX.max = 1.0
@@ -104,7 +120,64 @@ function loadVehicleMenu(parent,config)
   gearX.value = tonumber(config:getValue("gearcontrolx"))
   gearY.value = tonumber(config:getValue("gearcontroly"))
   
+  menu.add_feature("Rope Entities together","action",vehiclesubmenu.id,ropeTogether)
+  
 end
+
+local hit_ent1,hit_ent2
+local ropeTogetherannounced = false
+
+function ropeTogether()
+
+  if(ropeTogetherannounced == false) then
+    menu.notify("Please shoot an Entity to rope them together!","ZeroMenu",5,140)
+    ropeTogetherannounced = true
+  end
+
+  local a,b = ped.get_ped_last_weapon_impact(player.get_player_ped(player.player_id())) 
+  if(a == true) then
+    if(hit_ent1 == nil) then
+      --select ent1
+      hit_ent1 = player.get_entity_player_is_aiming_at(player.player_id())
+      if(hit_ent1 ~= nil and hit_ent1 ~= 0) then        
+        menu.notify("Selected Entity with id: " .. hit_ent1,"ZeroMenu",5,140)
+      else
+        menu.notify("Couldn't find an Entity!","ZeroMenu",5,140)
+        hit_ent1 = nil
+        ropeTogetherannounced = false
+      end
+    else
+      --select ent2
+      hit_ent2 = player.get_entity_player_is_aiming_at(player.player_id())
+      if(hit_ent2 ~= nil and hit_ent2 ~= 0) then        
+        menu.notify("Selected second Entity with id: " .. hit_ent2,"ZeroMenu",5,140)
+      else
+        menu.notify("Couldn't find an Entity!","ZeroMenu",5,140)
+        hit_ent2 = nil
+        ropeTogetherannounced = false
+      end
+    end
+    if(hit_ent1 ~= nil and hit_ent2 ~= nil) then
+      
+      local length = calculateDistanceMovedBetweenCoords(entity.get_entity_coords(hit_ent1),entity.get_entity_coords(hit_ent2))
+      menu.notify("Creating a Rope between " .. hit_ent1 .. " and " .. hit_ent2 .. " length of " .. length,"ZeroMenu",5,140)
+      
+      local ropePos = entity.get_entity_coords(hit_ent1)
+      local newRope = rope.add_rope(ropePos,v3(0,0,0),1,1,10,10,10,false,false,false,1.0,false)
+
+      rope.attach_entities_to_rope(newRope,hit_ent1,hit_ent2,entity.get_entity_coords(hit_ent1),entity.get_entity_coords(hit_ent2),length ,0,0,"Center","Center")
+
+      hit_ent1 = nil
+      hit_ent2 = nil
+      ropeTogetherannounced = false
+      return HANDLER_POP       
+    else
+      return HANDLER_CONTINUE
+    end
+  end
+  return HANDLER_CONTINUE
+end
+
 
 function attachLampToTire()
  local lentity = player.get_player_vehicle(player.player_id())

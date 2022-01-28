@@ -38,3 +38,4 @@ function ui:set_blip_route(blip,toggle)end
 function ui:set_blip_route_color(blip,color)end
 function ui:get_current_notification()end
 function ui:remove_notification(id)end
+function ui:get_objective_coord()end

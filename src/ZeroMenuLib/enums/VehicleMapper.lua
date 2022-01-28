@@ -743,8 +743,24 @@ local Vehicles = {
   {Hash=0xB5D306A4,Model="tailgater2",Name="Obey Tailgater S"},
   {Hash=0xA42FC3A5,Model="vectre",Name="Emperor Vectre"},
   {Hash=0x2290C50A,Model="warrener2",Name="Vulcar Warrener HKR"},
-  {Hash=0x91373058,Model="zr350",Name="Annis ZR350"}
-
+  {Hash=0x91373058,Model="zr350",Name="Annis ZR350"},
+  {Name="Pfister Astron",Model="astron",Hash=0x258C9364},
+  {Name="Gallivanter Baller ST",Model="baller7",Hash=0x1573422D},
+  {Name="Bravado Buffalo STX",Model="buffalo4",Hash=0xDB0C9B04},
+  {Name="Dewbauchee Champion",Model="champion",Hash=0xC972A155},
+  {Name="Lampadati Cinquemila",Model="cinquemila",Hash=0xA4F52C13},
+  {Name="Pfister Comet S2 Cabrio",Model="comet7",Hash=0x440851D8},
+  {Name="Enus Deity",Model="deity",Hash=0x5B531351},
+  {Name="Declasse Granger 3600LX",Model="granger2",Hash=0xF06C29C7},
+  {Name="Pegassi Ignus",Model="ignus",Hash=0xA9EC907B},
+  {Name="Obey I-Wagen",Model="iwagen",Hash=0x27816B7E},
+  {Name="Enus Jubilee",Model="jubilee",Hash=0x1B8165D3},
+  {Name="Maibatsu Mule",Model="mule5",Hash=0x501AC93C},
+  {Name="Mammoth Patriot Mil-Spec",Model="patriot3",Hash=0xD80F4A44},
+  {Name="Western Reever",Model="reever",Hash=0x76D7C404},
+  {Name="Nagasaki Shinobi",Model="shinobi",Hash=0x50A6FB9C},
+  {Name="Vapid Youga Custom",Model="youga4",Hash=0x589A840C},
+  {Name="Overflod Zeno",Model="zeno",Hash=0x2714AA93}
 }
 
 local VehicleMapper = {}

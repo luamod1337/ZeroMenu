@@ -4,7 +4,7 @@ local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
 
 local slowMo,hyper,CoronaMainFeature, coronaCheck, distanceWarning, deppressorCheck, distanceTP,oppressor,hydra,lazer,b11,deluxo,speed,akula,friends,team,max_speed_grief,slowMo,mk1
-local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu,firework
+local clearPath,noCollissionmenu,partyHardMenu,blmMenu,noCollissionObjmenu,firework,removeGunsOfPeds
 
 local lastSlowMoRun = 0
 local storage
@@ -34,6 +34,8 @@ function createNearbyMenu(parent,config)
 
   menu.add_feature("Half-Pipes Fun","action",nearby.id,spawnFunRamp)
   menu.add_feature("Half-Pipes Fun 2","action",nearby.id,spawnFunRamp2)
+  
+  removeGunsOfPeds = menu.add_feature("Remove Guns of shooting Peds","toggle",nearby.id,nerfEnemyPeds)
 end
 
 function spawnFunRamp()
@@ -78,6 +80,28 @@ function spawnFunRamp2()
   else
     streaming.request_model(-613845235)
     return HANDLER_CONTINUE
+  end
+end
+
+function nerfEnemyPeds()
+  for i in ipairs(ped.get_all_peds())do
+    local tempped = ped.get_all_peds()[i]
+    if(tempped ~= nil) then
+      if(not ped.is_ped_a_player(tempped) and ped.is_ped_shooting(tempped)) then
+        weapon.remove_all_ped_weapons(tempped)    
+        ped.clear_ped_tasks_immediately(tempped)
+        ped.remove_ped_from_group(tempped)
+        ped.set_ped_combat_ability(tempped,0)
+        ped.set_ped_combat_movement(tempped,0)
+        ped.set_ped_combat_range(tempped,0)
+        
+      end      
+    end    
+  end
+  if(removeGunsOfPeds.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
   end
 end
 

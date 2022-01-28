@@ -8,7 +8,9 @@ teleportdumb.txt
 func
 *.txt
 tmp
+tmp2
 *.sh
 .metadata
 .ignore
 *.rar
+build
