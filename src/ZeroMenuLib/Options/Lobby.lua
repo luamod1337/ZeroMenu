@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 local modders = {}
 local modderFilePath = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\modders.csv"
@@ -13,16 +13,16 @@ function createLobbyOptions(parent,config)
     end    
     loadModderFile()
     local LobbyParent = menu.add_feature("Lobby","parent",parent.id,nil)    
-    --createConfigedMenuOption(name,type,parent,script_function,config,configValueName,defaultValue,defaultValueMax)
-    logModderOption = createConfigedMenuOption("Log Modder","toggle",LobbyParent.id,logModders,config,"logModder",false,nil)    
-    warnOfLoadedModdersOption = createConfigedMenuOption("Info about known Modders","toggle",LobbyParent.id,infoModders,config,"infoModder",false,nil)    
+    --util.createConfigedMenuOption(self,name,type,parent,script_function,config,configValueName,defaultValue,defaultValueMax)
+    logModderOption = util.createConfigedMenuOption(self,"Log Modder","toggle",LobbyParent.id,logModders,config,"logModder",false,nil)    
+    warnOfLoadedModdersOption = util.createConfigedMenuOption(self,"Info about known Modders","toggle",LobbyParent.id,infoModders,config,"infoModder",false,nil)    
 
 end
 
 function logModders()
   for slot = 0, 31 do
     if player.is_player_valid(slot) then      
-      if isPlayerModder(slot) and modders[player.get_player_name(slot)] == nil then
+      if util.isPlayerModder(self,slot) and modders[player.get_player_name(slot)] == nil then
         storeModder(slot)     
       elseif modders[player.get_player_name(slot)] ~= nil and warnOfLoadedModdersOption.on then
         local modderData = modders[player.get_player_name(slot)]
@@ -48,16 +48,15 @@ function logModders()
 end
 
 function loadModderFile()
-  if utils.file_exists(modderFilePath)then      
-    for line in io.lines(modderFilePath) do         
-      if not starts_with(line,'#') and not starts_with(line,'date,') then
-        fields = {}
+  if utils.file_exists(modderFilePath) then
+    for line in io.lines(modderFilePath) do
+      if not util.starts_with(self,line,'#') and not util.starts_with(self,line,'date,') then
+        local fields = {}
         local cnt = 0
         line:gsub("([^"..",".."]*)", function(c)
            fields[cnt] = c
            cnt = cnt+1
-        end)
-        
+        end)        
         local modderDataTable = {}
         modderDataTable["date"] = fields[0]
         modderDataTable["scid"] = fields[1]
@@ -77,7 +76,7 @@ function storeModder(slot)
   menu.notify("Storing " .. player.get_player_name(slot) .. " in Modder Database","ZeroMenu",5,140) 
   local file = io.open(modderFilePath, "a")
   local ip = player.get_player_ip(slot)                 
-  local ipS = formatIP(ip)   
+  local ipS = util.formatIP(self,ip)   
   file:write(
     os.date("[%d/%m/%Y %H:%M:%S]") .. 
       ", " .. player.get_player_scid(slot) .. 

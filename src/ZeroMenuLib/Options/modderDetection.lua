@@ -1,10 +1,10 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 local zModderMain
 
 -- features
 local god,positionchecker,controlchecker,displayIngameInfo
-local blipchecker,annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings,markasModder
+local blipchecker,annouceCheaterSMS,annouceCheaterChat,displaySusIngameInfo,nameBoundsCheaterChat,vehicleGodChecker,vehicleSpeedCheck,zModderMainSettings,markasModder,playerKDChecker,playerMoneyChecker,illegalnameCheaterChat
 
 -- integers
 
@@ -29,7 +29,9 @@ playerList = nil
 local susList
 
 local lastGC = 0
-
+local annoucedArray = {}
+local moneyArray = {}
+local kdArray = {}
 
 function createModderDetectionMenuEntry(parent,config)
 
@@ -38,29 +40,35 @@ function createModderDetectionMenuEntry(parent,config)
   
   
 	-- Main Features
-	god = createConfigedMenuOption("Godmode check","toggle",zModderMain.id,scanPlayers,config,"godCheck",false,nil)
+	god = util.createConfigedMenuOption(self,"Godmode check","toggle",zModderMain.id,scanPlayers,config,"godCheck",false,nil)
 
-  positionchecker = createConfigedMenuOption("Position check","toggle",zModderMain.id,scanPlayers,config,"PositionCheck",false,nil)
+  positionchecker = util.createConfigedMenuOption(self,"Position check","toggle",zModderMain.id,scanPlayers,config,"PositionCheck",false,nil)
   
-  blipchecker = createConfigedMenuOption("Check Off-Radar","toggle",zModderMain.id,scanPlayers,config,"BlipCheck",false,nil)
+  blipchecker = util.createConfigedMenuOption(self,"Check Off-Radar","toggle",zModderMain.id,scanPlayers,config,"BlipCheck",false,nil)
   
-  vehicleGodChecker = createConfigedMenuOption("Vehicle God check","toggle",zModderMain.id,scanPlayers,config,"vehiclegodcheck",false,nil)
+  vehicleGodChecker = util.createConfigedMenuOption(self,"Vehicle God check","toggle",zModderMain.id,scanPlayers,config,"vehiclegodcheck",false,nil)
 
-  nameBoundsCheaterChat = createConfigedMenuOption("Check Name bounds","toggle",zModderMain.id,nil,config,"checkNameBounds",false,nil)
+  nameBoundsCheaterChat = util.createConfigedMenuOption(self,"Check Name bounds","toggle",zModderMain.id,nil,config,"checkNameBounds",false,nil)
 
-  vehicleSpeedCheck = createConfigedMenuOption("Check Vehicle Speed","toggle",zModderMain.id,nil,config,"vehiclespeedcheck",false,nil)
+  illegalnameCheaterChat = util.createConfigedMenuOption(self,"Check Illegal Name","toggle",zModderMain.id,nil,config,"checkIllegalName",false,nil)
+
+  vehicleSpeedCheck = util.createConfigedMenuOption(self,"Check Vehicle Speed","toggle",zModderMain.id,nil,config,"vehiclespeedcheck",false,nil)
+  
+  playerKDChecker = util.createConfigedMenuOption(self,"Check Player KD","toggle",zModderMain.id,nil,config,"kdcheck",false,nil)
+  
+  playerMoneyChecker = util.createConfigedMenuOption(self,"Check Player Money (Total)","toggle",zModderMain.id,nil,config,"moneycheck",false,nil)
 
   zModderMainSettings = menu.add_feature("Settings", "parent", zModderMain.id, nil)
 
-  displayIngameInfo = createConfigedMenuOption("Display All Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
+  displayIngameInfo = util.createConfigedMenuOption(self,"Display All Player Infos","toggle",zModderMainSettings.id,nil,config,"displayinfos",false,nil)
   
-  displaySusIngameInfo = createConfigedMenuOption("Display All Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
+  displaySusIngameInfo = util.createConfigedMenuOption(self,"Display All Sus Player Infos","toggle",zModderMainSettings.id,nil,config,"displaySUSinfos",false,nil)
   
-  annouceCheaterSMS = createConfigedMenuOption("Annouce Cheater per SMS","toggle",zModderMainSettings.id,nil,config,"modderSMS",false,nil)
+  annouceCheaterSMS = util.createConfigedMenuOption(self,"Annouce Cheater per SMS","toggle",zModderMainSettings.id,nil,config,"modderSMS",false,nil)
 
-  annouceCheaterChat = createConfigedMenuOption("Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
+  annouceCheaterChat = util.createConfigedMenuOption(self,"Annouce Cheater per Chat","toggle",zModderMainSettings.id,nil,config,"modderCHAT",false,nil)
   
-  markasModder = createConfigedMenuOption("Mark as Modder","toggle",zModderMainSettings.id,nil,config,"modderMARK",false,nil)
+  markasModder = util.createConfigedMenuOption(self,"Mark as Modder","toggle",zModderMainSettings.id,nil,config,"modderMARK",false,nil)
 
   if config:isFeatureEnabled("BlipCheck") then
     blipchecker.on = true
@@ -104,7 +112,8 @@ function createModderDetectionMenuEntry(parent,config)
 	
 	playerList = {}
 	susList = {}
-
+	kdArray = {}
+  moneyArray = {}
 	--vpnIPList = loadVPNList()
 	checkedList = {}
 end
@@ -143,11 +152,10 @@ function scanPlayers()
               playerList[player.get_player_name(slot)]['moved'] = true
             end
             
+            
             if(ui.get_blip_from_entity(slot) == nil and not isPlayerInside(slot)) then
               playerList[player.get_player_name(slot)]['nilblip'] = true
-            end
-            
-            
+            end            
             
             if(blipchecker.on and playerList[player.get_player_name(slot)]['nilblip'] > (300)) then
               menu.notify("No blip for " .. player.get_player_name(slot) .. " for 300 seconds","ZeroMenu",5,140)
@@ -166,6 +174,41 @@ function scanPlayers()
                menu.notify(player.get_player_name(slot) .. " is using god vehicle since " .. playerList[player.get_player_name(slot)]['godvehicle'] .. " seconds","ZeroMenu",5,140) 
                markSus(player.get_player_name(slot),"Godmode Vehicle")
                playerList[player.get_player_name(slot)]['godvehicleannounced'] = true
+            end
+            
+            if(annoucedArray[player.get_player_name(slot)] == nil) then
+              annoucedArray[player.get_player_name(slot)] = {}
+              annoucedArray[player.get_player_name(slot)]["money"] = false
+              annoucedArray[player.get_player_name(slot)]["kd"] = false
+            end
+            
+            if(moneyArray[player.get_player_name(slot)] == nil and playerMoneyChecker.on) then
+              --moneyArray[player.get_player_name(slot)] = script.get_global_i(1853131   + (1 + (slot * 888)) + 205 + 56)
+              moneyArray[player.get_player_name(slot)] = util.getPlayerMoney(self,slot)
+              annoucedArray[player.get_player_name(slot)]["money"] = false
+              --menu.notify("Player " .. player.get_player_name(slot) .. " has " .. moneyArray[player.get_player_name(slot)] .. " $",title,seconds,color)
+            end
+            if(kdArray[player.get_player_name(slot)] == nil and playerKDChecker.on) then
+              --kdArray[player.get_player_name(slot)] = script.get_global_f(1853131  + (1 + (slot * 888)) + 205 + 26)
+              kdArray[player.get_player_name(slot)] = util.getKDOf(self,slot)
+              annoucedArray[player.get_player_name(slot)]["kd"]  = false
+              --menu.notify("Player " .. player.get_player_name(slot) .. " has " .. moneyArray[player.get_player_name(slot)] .. " $",title,seconds,color)
+            end
+            
+            --menu.notify("Player " .. player.get_player_name(slot) .. " has a kd of " .. kdArray[player.get_player_name(slot)] .. " and " ..  moneyArray[player.get_player_name(slot)] .. "$",title,seconds,color)
+            
+            if(moneyArray[player.get_player_name(slot)] ~= nil and moneyArray[player.get_player_name(slot)] >= 500000000 and (not annoucedArray[player.get_player_name(slot)]["money"] or annoucedArray[player.get_player_name(slot)]["money"] == nil)) then
+              playerList[player.get_player_name(slot)]['annoucedMoney'] = true
+              annoucedArray[player.get_player_name(slot)]["money"] = true
+              menu.notify(player.get_player_name(slot) .. " has more than 500M $ (" .. format_num(moneyArray[player.get_player_name(slot)],2) .. "$)","ZeroMenu",5,140) 
+              markSus(player.get_player_name(slot),"Total Money")
+            end
+            
+            if(kdArray[player.get_player_name(slot)] ~= nil and (kdArray[player.get_player_name(slot)] < 0 or kdArray[player.get_player_name(slot)] > 10) and (not annoucedArray[player.get_player_name(slot)]["kd"] or annoucedArray[player.get_player_name(slot)]["kd"] == nil)) then
+              playerList[player.get_player_name(slot)]['announcedkd'] = true
+              annoucedArray[player.get_player_name(slot)]["kd"] = true
+              menu.notify(player.get_player_name(slot) .. " has a suspicious  kd (" .. kdArray[player.get_player_name(slot)] .. ")","ZeroMenu",5,140) 
+              markSus(player.get_player_name(slot),"KD")
             end
             
             if(round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0) > 112 and player.get_player_vehicle(slot) ~= 0) then
@@ -190,6 +233,13 @@ function scanPlayers()
                 markSus(player.get_player_name(slot),"Name Length")
                 playerList[player.get_player_name(slot)]['boundsannounce'] = true
             end
+            
+            if(illegalnameCheaterChat.on and not string.find(player.get_player_name(slot), "^[%.%-%w_]+$") and not playerList[player.get_player_name(slot)]['boundsannounce']) then
+                menu.notify("Illegal Name for: " .. player.get_player_name(slot),"ZeroMenu",5,140) 
+                markSus(player.get_player_name(slot),"Illegal Name")
+                playerList[player.get_player_name(slot)]['illegalnameannounce'] = true
+            end
+            
             if(player.is_player_in_any_vehicle(slot) and entity.get_entity_god_mode(player.get_player_vehicle(slot))) then              
               playerList[player.get_player_name(slot)]['godvehicle'] = (playerList[player.get_player_name(slot)]['godvehicle']+1)
             end
@@ -218,6 +268,7 @@ function scanPlayers()
         playerList[player.get_player_name(slot)]['godannounce'] = false
         playerList[player.get_player_name(slot)]['godvehicle'] = 0
         playerList[player.get_player_name(slot)]['godvehicleannounced'] = false
+        playerList[player.get_player_name(slot)]['annoucedMoney'] = false
         playerList[player.get_player_name(slot)]['wasInside'] = false
         playerList[player.get_player_name(slot)]['vehiclespeedTime'] = 0
         playerList[player.get_player_name(slot)]['willbeInside'] = 0      
@@ -247,6 +298,7 @@ function markSus(player,reason)
  -- if(m.count == 0) then
  --   susList[player]["reason"] = susList[player]["reason"] .. "," .. reason
  -- end  +
+ 
  
  if(string.find(susList[player]["reason"],"," .. reason) == nil and string.find(susList[player]["reason"],reason .. "," ) == nil) then
     susList[player]["reason"] = susList[player]["reason"] .. "," .. reason
@@ -488,4 +540,53 @@ end
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
+end
+-- given a numeric value formats output with comma to separate thousands
+-- and rounded to given decimal places
+-- proudly copied from http://lua-users.org/wiki/FormattingNumbers
+--
+function format_num(amount, decimal, prefix, neg_prefix)
+  local str_amount,  formatted, famount, remain
+  decimal = decimal or 2  -- default 2 decimal places
+  neg_prefix = neg_prefix or "-" -- default negative sign
+  famount = math.abs(round(amount,decimal))
+  famount = math.floor(famount)
+  remain = round(math.abs(amount) - famount, decimal)
+        -- comma to separate the thousands
+  formatted = comma_value(famount)
+        -- attach the decimal portion
+  if (decimal > 0) then
+    remain = string.sub(tostring(remain),3)
+    formatted = formatted .. "," .. remain ..
+                string.rep("0", decimal - string.len(remain))
+  end
+        -- attach prefix string e.g '$' 
+  formatted = (prefix or "") .. formatted 
+        -- if value is negative then format accordingly
+  if (amount<0) then
+    if (neg_prefix=="()") then
+      formatted = "("..formatted ..")"
+    else
+      formatted = neg_prefix .. formatted 
+    end
+  end
+  return formatted
+end
+
+function comma_value(amount)
+  local formatted = amount
+  while true do  
+    formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1.%2')
+    if (k==0) then
+      break
+    end
+  end
+  return formatted
+end
+function round(val, decimal)
+  if (decimal) then
+    return math.floor( (val * 10^decimal) + 0.5) / (10^decimal)
+  else
+    return math.floor(val+0.5)
+  end
 end

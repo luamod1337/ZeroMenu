@@ -167,3 +167,11 @@ function vehicle:get_vehicle_brand(veh)end
 function vehicle:get_vehicle_model(veh)end
 function vehicle:get_vehicle_brand_label(veh)end
 function vehicle:get_vehicle_model_label(veh)end
+function vehicle:start_vehicle_horn(veh,duration,mode,forever)end
+function vehicle:set_vehicle_gravity_amount(veh,gravity)end
+function vehicle:get_vehicle_gravity_amount(veh)end
+function vehicle:get_vehicle_wheel_type(veh)end
+function vehicle:get_vehicle_number_plate_text(veh)end
+function vehicle:get_vehicle_number_plate_index(veh)end
+function vehicle:get_vehicle_parachute_model(veh)end
+function vehicle:set_vehicle_parachute_model(veh,model)end

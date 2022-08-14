@@ -29,7 +29,7 @@ function entity:set_entity_as_mission_entity(entity,toggle,unk)end
 function entity:set_entity_collision(entity,toggle,physics,unk0)end
 function entity:is_entity_in_air(entity)end
 function entity:set_entity_as_no_longer_needed(entity)end
-function entity:set_entity_no_collsion_entity(entity,target,unk)end
+function entity:set_entity_no_collision_entity(entity,target,unk)end
 function entity:freeze_entity(entity,toggle)end
 function entity:get_entity_offset_from_coords(lEntity,coords)end
 function entity:get_entity_offset_from_entity(lEntity,lEntity2)end
@@ -64,3 +64,5 @@ function entity:does_entity_have_drawable(entity)end
 function entity:has_entity_collided_with_anything(entity)end
 function entity:get_entity_entity_has_collided_with(entity)end
 function entity:get_entity_bone_index_by_name(entity,name)end
+function entity:get_entity_forward_vector(entity)end
+function entity:get_entity_model_dimensions(entity)end

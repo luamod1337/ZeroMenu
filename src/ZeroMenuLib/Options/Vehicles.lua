@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 local soundsM = require("ZeroMenuLib/enums/Sounds")
 
@@ -21,7 +21,10 @@ gearToPercentSpeed[4] = 112
 gearToPercentSpeed[5] = 150
 gearToPercentSpeed[6] = 180
 gearToPercentSpeed[7] = 200
-local gearFeat,gearX,gearY,gearOverlay,gearOverlay_speed,gearOverlay_rpm,overlay_light,soundHorn
+local gearFeat,gearX,gearY,gearOverlay,gearOverlay_speed,gearOverlay_rpm,overlay_light,soundHorn,ropeListFeature,hornSpam,gravityForAll
+
+local gravityValue = nil
+local self = nil
 
 function loadVehicleMenu(parent,config)
   
@@ -29,23 +32,31 @@ function loadVehicleMenu(parent,config)
   vehiclesubmenu = menu.add_feature("Vehicle", "parent", parent.id, nil)
 
 
-  slow = menu.add_feature("Slow", "action", vehiclesubmenu.id, slowVehicle)
+  local upgradeMenu = menu.add_feature("Upgrades","parent",vehiclesubmenu.id,nil)  
+  local ropeMenu = menu.add_feature("Rope","parent",vehiclesubmenu.id,nil)
+  local griefMenu = menu.add_feature("Self","parent",vehiclesubmenu.id,nil)
   
-  tune = menu.add_feature("Tune", "action", vehiclesubmenu.id, tuneVehicle)
+  slow = menu.add_feature("Slow", "action", upgradeMenu.id, slowVehicle)
   
-  drift = menu.add_feature("Drift", "action", vehiclesubmenu.id, tuneDriftVehicle)
+  tune = menu.add_feature("Tune", "action", upgradeMenu.id, tuneVehicle)
+  
+  drift = menu.add_feature("Drift", "action", upgradeMenu.id, tuneDriftVehicle)
 
-  maxSpeed = menu.add_feature("Remove Max Speed", "action", vehiclesubmenu.id, removeMaxSpeedVehicle)
+  maxSpeed = menu.add_feature("Remove Max Speed", "action", upgradeMenu.id, removeMaxSpeedVehicle)
   
-  setMaxSpeed = menu.add_feature("Set Max Speed", "action", vehiclesubmenu.id, setMaxSpeedVehicle)
+  setMaxSpeed = menu.add_feature("Set Max Speed", "action", upgradeMenu.id, setMaxSpeedVehicle)
 
-  setHeliBladeSpeed = menu.add_feature("Set Heli Blade Speed", "action", vehiclesubmenu.id, setHeliBladeSpeed)
+  setHeliBladeSpeed = menu.add_feature("Set Heli Blade Speed", "action", upgradeMenu.id, setHeliBladeSpeed)
 
-  vehicleParachute = menu.add_feature("Open Vehicle Parachute", "action", vehiclesubmenu.id, openVehicleParachute)
+  menu.add_feature("Set Vehicle Parachute", "action", griefMenu.id, setVehicleParachute)
+
+
+
+  vehicleParachute = menu.add_feature("Open Vehicle Parachute", "action", griefMenu.id, openVehicleParachute)
   
-  freezeVehicleOnExitVar = createConfigedMenuOption("Freeze Vehicle on exit","toggle",vehiclesubmenu.id,freezeVehicleOnExit,config,"freezeVehOnExit",false,nil)
+  freezeVehicleOnExitVar = util.createConfigedMenuOption(self,"Freeze Vehicle on exit","toggle",griefMenu.id,freezeVehicleOnExit,config,"freezeVehOnExit",false,nil)
   
-  noClipVehicleOnExitVar = createConfigedMenuOption("NoClip Vehicle on exit (stay nearby)","toggle",vehiclesubmenu.id,NoClipVehicleOnExit,config,"noClipVehOnExit",false,nil)
+  noClipVehicleOnExitVar = util.createConfigedMenuOption(self,"NoClip Vehicle on exit (stay nearby)","toggle",griefMenu.id,NoClipVehicleOnExit,config,"noClipVehOnExit",false,nil)
 
   vehicleMods = menu.add_feature("Vehicle Mods", "parent", vehiclesubmenu.id, nil)
   vehicleAttach = menu.add_feature("Safety First", "action", vehicleMods.id, attachSafetyFirst)
@@ -54,7 +65,7 @@ function loadVehicleMenu(parent,config)
   burning_candle_f = menu.add_feature("Candle PTFX to Tires","action",vehicleMods.id,burning_candle)
   burning_candle_t = menu.add_feature("Candle PTFX to Tires","toggle",vehicleMods.id,burning_candle2)    
   
-  soundHorn = createConfigedMenuOption("Sound Horn","value_str",vehiclesubmenu.id,onSoundHorn,config,"enable_soundhorn",false,nil)
+  soundHorn = util.createConfigedMenuOption(self,"Sound Horn","value_str",griefMenu.id,onSoundHorn,config,"enable_soundhorn",false,nil)
   soundHorn.set_str_data(soundHorn,soundsM.getAllSoundNames())
   
   local gear_parent = menu.add_feature("Gear Control","parent",vehiclesubmenu.id,nil)
@@ -75,11 +86,11 @@ function loadVehicleMenu(parent,config)
   end)
   
   --gearFeat = menu.add_feature("Enable","toggle",gear_parent.id,setGear)
-  gearFeat =    createConfigedMenuOption("Enable","toggle",gear_parent.id,setGear,config,"enable_gearcontrol",false,nil)
+  gearFeat =    util.createConfigedMenuOption(self,"Enable","toggle",gear_parent.id,setGear,config,"enable_gearcontrol",false,nil)
   if config:isFeatureEnabled("enable_gearcontrol") then
     gearFeat.on = true
   end
-  gearOverlay = createConfigedMenuOption("Enable Overlay","toggle",gear_parent.id,setGearOveraly,config,"enablegearoverlay",false,nil)
+  gearOverlay = util.createConfigedMenuOption(self,"Enable Overlay","toggle",gear_parent.id,setGearOveraly,config,"enablegearoverlay",false,nil)
   if config:isFeatureEnabled("enable_gearoverlay") then
     gearOverlay.on = true
   end 
@@ -88,21 +99,21 @@ function loadVehicleMenu(parent,config)
   --gearOverlay_speed = menu.add_feature("Enable Speed Overlay","toggle",gear_parent.id,setGearOveraly)
   --gearOverlay_rpm   = menu.add_feature("Enable RPM Overlay"  ,"toggle",gear_parent.id,setGearOveralyRpm)
   
-  gearOverlay_speed = createConfigedMenuOption("Enable Speed Overlay","toggle",gear_parent.id,setGearOveralySpeed,config,"enablegearoverlayspeed",false,nil)
+  gearOverlay_speed = util.createConfigedMenuOption(self,"Enable Speed Overlay","toggle",gear_parent.id,setGearOveralySpeed,config,"enablegearoverlayspeed",false,nil)
   
   if config:isFeatureEnabled("enablegearoverlayspeed") then
     gearOverlay_speed.on = true
   end
-  gearOverlay_rpm =   createConfigedMenuOption("Enable RPM Overlay"  ,"toggle",gear_parent.id,setGearOveralyRpm,config,"enablegearoverlayrpm",false,nil)
+  gearOverlay_rpm =   util.createConfigedMenuOption(self,"Enable RPM Overlay"  ,"toggle",gear_parent.id,setGearOveralyRpm,config,"enablegearoverlayrpm",false,nil)
   if config:isFeatureEnabled("enablegearoverlayrpm") then
     gearOverlay_rpm.on = true
   end
-  overlay_light =   createConfigedMenuOption("Enable Light Overlay"  ,"toggle",gear_parent.id,setOveralyLight,config,"enableoverlaylight",false,nil)
+  overlay_light =   util.createConfigedMenuOption(self,"Enable Light Overlay"  ,"toggle",gear_parent.id,setOveralyLight,config,"enableoverlaylight",false,nil)
   if config:isFeatureEnabled("enableoverlaylight") then
     overlay_light.on = true
   end
   
-  gearX = createConfigedMenuOption("Overlay   X" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontrolx",false,nil)
+  gearX = util.createConfigedMenuOption(self,"Overlay   X" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontrolx",false,nil)
   --gearX = menu.add_feature("Overlay X","autoaction_value_f",gear_parent.id,nil)
   gearX.min = 0.1
   gearX.max = 1.0
@@ -111,7 +122,7 @@ function loadVehicleMenu(parent,config)
   config:saveIfNotExist("gearcontrolx",0.2)
   config:saveIfNotExist("gearcontroly",0.9)
   
-  gearY = createConfigedMenuOption("Overlay Y" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontroly",false,nil)
+  gearY = util.createConfigedMenuOption(self,"Overlay Y" ,"autoaction_value_f",gear_parent.id,nil,config,"gearcontroly",false,nil)
   --gearY = menu.add_feature("Overlay Y","autoaction_value_f",gear_parent.id,nil)
   gearY.min = 0.1
   gearY.max = 1.0
@@ -120,15 +131,106 @@ function loadVehicleMenu(parent,config)
   gearX.value = tonumber(config:getValue("gearcontrolx"))
   gearY.value = tonumber(config:getValue("gearcontroly"))
   
-  menu.add_feature("Rope Entities together","action",vehiclesubmenu.id,ropeTogether)
+  menu.add_feature("Rope Entities together","action",ropeMenu.id,ropeTogether)
+  ropeListFeature = menu.add_feature("Rope List","parent",ropeMenu.id,loadRopeList)
+  
+  
+  hornSpam = menu.add_feature("Use your Car Horn","toggle",griefMenu.id,function()
+    
+      local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+      local duration = 2
+      if veh ~= nil then
+        vehicle.start_vehicle_horn(veh,duration,0,false)
+      end  
+      if hornSpam.on then
+        return HANDLER_CONTINUE
+      end  
+  end)
+  
+  menu.add_feature("Set Vehicle Gravity","action",upgradeMenu.id,function()
+    local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+    local r, s = input.get("Enter new Gravity", vehicle.get_vehicle_gravity_amount(veh), 64, 4)
+    if r == 1 then return HANDLER_CONTINUE end  
+    if r == 2 then return HANDLER_POP end
+    local gravityBefore = vehicle.get_vehicle_gravity_amount(veh)
+    
+    menu.notify("Changed gravity from " .. gravityBefore .. " to " .. s,"ZeroMenu",5,140)  
+    vehicle.set_vehicle_gravity_amount(veh,s) 
+  end)
+  
+  
+  gravityForAll = menu.add_feature("Set Vehicle Gravity for nearby Vehicles","toggle",vehiclesubmenu.id,function()    
+        if gravityValue == nil  then
+           local r, s = input.get("Enter new Gravity", 100, 64, 3)
+            if r == 1 then return HANDLER_CONTINUE end
+            if r == 2 then return HANDLER_POP end
+            
+            gravityValue = s
+        end
+        
+         
+        for i in ipairs(vehicle.get_all_vehicles())do
+          local veh = vehicle.get_all_vehicles()[i]
+          local gravityBefore = vehicle.get_vehicle_gravity_amount(veh)
+          vehicle.set_vehicle_gravity_amount(veh,gravityValue) 
+        end
+        if gravityForAll.on then
+          return HANDLER_CONTINUE
+        else
+          gravityValue = nil
+        end  
+  end)
   
 end
 
 local hit_ent1,hit_ent2
+local hit_pos_1,hit_pos_2
 local ropeTogetherannounced = false
+local ropeList = {}
+
+function loadRopeList()
+  menu.notify("displaying " .. #ropeList .. " ropes","ZeroMenu",5,140)
+  for i=1,#ropeList do
+    if(ropeList[i]["feature"] == nil) then
+      local tmpfeat = menu.add_feature("Rope"..i,"action_value_str",ropeListFeature.id,selectedRopeFeature)
+      tmpfeat.str_data  = {"Delete","start winding","stop winding","start unwinding","stop unwinding","set gravity"}  
+      tmpfeat.data = {ropeObject = ropeList[i]}
+      ropeList[i]["feature"] = 1
+    end    
+  end
+end
+
+function selectedRopeFeature(feat,data)  
+  local featValue = feat.value  
+  if(featValue == 0) then
+    rope.delete_rope(data.ropeObject['rope'])
+    menu.notify("Deleted rope " .. data.ropeObject['rope'],"ZeroMenu",5,140)
+    menu.delete_feature(feat.id)
+  elseif(featValue == 1) then
+    rope.start_rope_winding(data.ropeObject['rope'])
+    menu.notify("Started winding of Rope","ZeroMenu",5,140)
+  elseif(featValue == 2) then
+    rope.stop_rope_winding(data.ropeObject['rope'])
+    menu.notify("Stopped winding of Rope","ZeroMenu",5,140)
+  elseif(featValue == 3) then
+    rope.start_rope_unwinding_front(data.ropeObject['rope'])
+    menu.notify("Started unwinding of Rope","ZeroMenu",5,140)
+  elseif(featValue == 4) then
+    rope.stop_rope_unwinding_front(data.ropeObject['rope'])
+    menu.notify("Stopped unwinding of Rope","ZeroMenu",5,140)
+  elseif(featValue == 5) then
+    local r, s = input.get("Enter new Torque", 100, 64, 3)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end
+    local gravityBefore = vehicle.get_vehicle_gravity_amount(data.ropeObject['ent_2'])
+    menu.notify("Changed gravity from " .. gravityBefore .. " to " .. s,"ZeroMenu",5,140)  
+    vehicle.set_vehicle_gravity_amount(data.ropeObject['ent_2'],s)
+  else
+    menu.notify("called workWithRopeFunction " .. featValue,"ZeroMenu",5,140)
+  end  
+end
 
 function ropeTogether()
-
   if(ropeTogetherannounced == false) then
     menu.notify("Please shoot an Entity to rope them together!","ZeroMenu",5,140)
     ropeTogetherannounced = true
@@ -139,33 +241,58 @@ function ropeTogether()
     if(hit_ent1 == nil) then
       --select ent1
       hit_ent1 = player.get_entity_player_is_aiming_at(player.player_id())
+      hit_pos_1 = b
       if(hit_ent1 ~= nil and hit_ent1 ~= 0) then        
         menu.notify("Selected Entity with id: " .. hit_ent1,"ZeroMenu",5,140)
+        if(entity.is_entity_a_ped(hit_ent1)) then          
+          if(ped.is_ped_in_any_vehicle(hit_ent1)) then
+            hit_ent1 = ped.get_vehicle_ped_is_using(hit_ent1)
+          end        
+        end
       else
-        menu.notify("Couldn't find an Entity!","ZeroMenu",5,140)
+        menu.notify("Couldn't find any entity!","ZeroMenu",5,140)
         hit_ent1 = nil
         ropeTogetherannounced = false
       end
     else
       --select ent2
       hit_ent2 = player.get_entity_player_is_aiming_at(player.player_id())
+      hit_pos_2 = b
       if(hit_ent2 ~= nil and hit_ent2 ~= 0) then        
-        menu.notify("Selected second Entity with id: " .. hit_ent2,"ZeroMenu",5,140)
+        menu.notify("Selected second Entity with id: " .. hit_ent2,"ZeroMenu",5,140)        
+        if(entity.is_entity_a_ped(hit_ent2)) then          
+          if(ped.is_ped_in_any_vehicle(hit_ent2)) then
+            hit_ent2 = ped.get_vehicle_ped_is_using(hit_ent2)
+            hit_pos_2 = b
+          end        
+        end        
       else
-        menu.notify("Couldn't find an Entity!","ZeroMenu",5,140)
+        menu.notify("Couldn't find any entity!","ZeroMenu",5,140)
         hit_ent2 = nil
         ropeTogetherannounced = false
       end
     end
+   -- while(not rope.rope_are_textures_loaded()) do
+   --   rope.rope_load_textures()
+   --   system.wait(100)
+    --end
+    
     if(hit_ent1 ~= nil and hit_ent2 ~= nil) then
       
-      local length = calculateDistanceMovedBetweenCoords(entity.get_entity_coords(hit_ent1),entity.get_entity_coords(hit_ent2))
-      menu.notify("Creating a Rope between " .. hit_ent1 .. " and " .. hit_ent2 .. " length of " .. length,"ZeroMenu",5,140)
+      local length = util.calculateDistanceMovedBetweenCoords(self,entity.get_entity_coords(hit_ent1),entity.get_entity_coords(hit_ent2))
       
       local ropePos = entity.get_entity_coords(hit_ent1)
-      local newRope = rope.add_rope(ropePos,v3(0,0,0),1,1,10,10,10,false,false,false,1.0,false)
+      local newRope = rope.add_rope(ropePos,v3(0,0,0),1,1,10,10,10,true,true,true,1.0,false)
+      local ropeObject = {}
+      ropeObject['rope'] = newRope
+      ropeObject['ent_1'] = hit_ent1
+      ropeObject['ent_2'] = hit_ent2
+      
+      ropeList[#ropeList+1] = ropeObject
+      rope.attach_entities_to_rope(newRope,hit_ent1,hit_ent2,hit_pos_1,hit_pos_2,length ,0,0,"Center","Center")
 
-      rope.attach_entities_to_rope(newRope,hit_ent1,hit_ent2,entity.get_entity_coords(hit_ent1),entity.get_entity_coords(hit_ent2),length ,0,0,"Center","Center")
+      hit_pos_2 = nil
+      hit_pos_1 = nil
 
       hit_ent1 = nil
       hit_ent2 = nil
@@ -411,12 +538,26 @@ function loadVehicleSetting(parent,config)
   ignoreplayers.on = config:isFeatureEnabled("vehicleignoreplayers")  
 end
 
+
+function setVehicleParachute()
+  local parachute = "230075693"
+  if(not streaming.has_model_loaded(parachute)) then   
+    streaming.request_model(parachute)
+    return HANDLER_CONTINUE
+  else
+    local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
+    menu.notify("Enabled Vehicle Parachute ","ZeroMenu",5,140)  
+    streaming.set_vehicle_model_has_parachute(entity.get_entity_model_hash(veh),true)  
+    return HANDLER_POP
+  end
+end
+
 function openVehicleParachute()
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
-
   if veh ~= nil then
     vehicle.set_vehicle_parachute_active(veh,true)
     menu.notify("opening parachute...","ZeroMenu",5,140)    
+    return HANDLER_POP
   end
 end
 

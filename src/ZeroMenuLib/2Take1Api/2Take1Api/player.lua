@@ -46,6 +46,9 @@ function player:is_player_valid(player)end
 function player:get_player_host_token(player)end
 function player:get_player_host_priority(player)end
 function player:set_player_targeting_mode(mode)end
+function player:can_player_be_modder(player)end
+function player:get_player_parachute_model(player)end
+function player:set_player_parachute_model(player,model)end
 --Modder Detection Flags:
 --enum eModderDetectionFlags : unsigned long long
 --{

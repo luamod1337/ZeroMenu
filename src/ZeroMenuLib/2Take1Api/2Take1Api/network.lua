@@ -18,3 +18,4 @@ function network:is_scid_friend(scid)end
 function network:get_entity_player_is_spectating(player)end
 function network:get_player_player_is_spectating(player)end
 function network:send_chat_message(msg,teamOnly)end
+function network:force_remove_player(player)end

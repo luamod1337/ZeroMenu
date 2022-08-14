@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 local eventName = require("ZeroMenuLib/enums/EventName")
 local eModderDetectionFlags = require("ZeroMenuLib/enums/ModderDetectionFlag")
@@ -14,26 +14,25 @@ function createChatCommands(parent,config)
   event.add_event_listener(eventName.CHAT,onChatEvent)
       
   --chatLogOption = menu.add_feature("Chatlog", "toggle", chatCommandParent.id, nil)
-  chatLogOption = createConfigedMenuOption("Chatlog","toggle",chatCommandParent.id,nil,config,"logchat",false,nil)   
-   
+  chatLogOption = util.createConfigedMenuOption(self,"Chatlog","toggle",chatCommandParent.id,nil,config,"logchat",false,nil)   
+  
   --chatCommandsOption = menu.add_feature("Enable Chatcommands", "toggle", chatCommandParent.id, nil)
-  chatCommandsOption = createConfigedMenuOption("Enable Chatcommands","toggle",chatCommandParent.id,nil,config,"enableChatCommands",false,nil)   
+  chatCommandsOption = util.createConfigedMenuOption(self,"Enable Chatcommands","toggle",chatCommandParent.id,nil,config,"enableChatCommands",false,nil)   
  
   --upgradeCommand = menu.add_feature("Enable !upgrade <torque> Command", "toggle", chatCommandParent.id, nil)
-  upgradeCommand = createConfigedMenuOption("Enable !upgrade <torque> Command","toggle",chatCommandParent.id,nil,config,"enableUpgradeCommand",false,nil)     
+  upgradeCommand = util.createConfigedMenuOption(self,"Enable !upgrade <torque> Command","toggle",chatCommandParent.id,nil,config,"enableUpgradeCommand",false,nil)     
   
   --slapCommand = menu.add_feature("Enable !slap <player> Command", "toggle", chatCommandParent.id, nil)
-  slapCommand = createConfigedMenuOption("Enable !slap <player> Command","toggle",chatCommandParent.id,nil,config,"enableSlapCommand",false,nil)   
+  slapCommand = util.createConfigedMenuOption(self,"Enable !slap <player> Command","toggle",chatCommandParent.id,nil,config,"enableSlapCommand",false,nil)   
     
   chatLog = io.open (chatLogPath,"a")
-  chatLog:write("#Created using 1337Zeros ZeroMenu\n")
+  chatLog:write("#Created usi ng 1337Zeros ZeroMenu\n")
 
   if not utils.file_exists(chatLogPath) then
     utils.make_dir(chatLogPath)
     file = io.open(chatLogPath, "w")
     file:write("#Created using 1337Zeros ZeroMenu\n")
     file:close()
-    io.close(chatLogPath)
   end
 end
 
@@ -42,25 +41,21 @@ function onChatEvent(event)
   if chatLogOption.on then
     logChat(event.player,event.body)
   end
-  if chatCommandsOption.on and starts_with(event.body,"!")then  
+  if chatCommandsOption.on and util.starts_with(self,event.body,"!")then  
     onChatCommand(event.player,event.body)  
   end
 end
 
-function starts_with(str, start)
-   return str:sub(1, #start) == start
-end
 
 function logChat(playerVar,messageVar)  
   if gameplay.is_game_state(0) then
     local playerXScid = player.get_player_name(playerVar) .. "|" .. player.get_player_scid(playerVar)
-    if isPlayerModder(playerVar) then    
+    if util.isPlayerModder(self,playerVar) then    
       local playerXScid = "[M] " ..player.get_player_name(playerVar) .. "|" .. player.get_player_scid(playerVar)  
     end
     file = io.open(chatLogPath, "a")
     file:write(os.date("[%d/%m/%Y %H:%M:%S]") .. " " .. playerXScid .. " > " .. messageVar .. "\n")
     file:close()
-    io.close(chatLogPath)
   end  
 end
 
@@ -84,7 +79,7 @@ function onChatCommand(slot,messageVar)
           menu.notify("Tuned Vehicle of " .. player.get_player_name(slot),"ZeroMenu",5,140)
         end
       elseif splittedMessage[0] == "!slap" and slapCommand.on then
-        local pslot = getSlotFromName(splittedMessage[1])
+        local pslot = util.getSlotFromName(self,splittedMessage[1])
         if pslot ~= nil then
           local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(pslot)) 
           if veh ~= nil then            

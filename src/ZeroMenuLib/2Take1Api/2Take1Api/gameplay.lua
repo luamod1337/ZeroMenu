@@ -26,3 +26,4 @@ function gameplay:get_ground_z(pos)end
 function gameplay:get_frame_count()end
 function gameplay:get_frame_time()end
 function gameplay:shoot_single_bullet_between_coords(start,endvalue,damage,weapon,owner,audible,invaluevisible,speed)end
+function gameplay:find_spawn_point_in_direction(pos,fwd,dist)end

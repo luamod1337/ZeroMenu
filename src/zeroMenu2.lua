@@ -7,9 +7,10 @@ require("ZeroMenuLib/Options/Protection")
 require("ZeroMenuLib/Options/ChatCommands")
 require("ZeroMenuLib/Options/World")
 require("ZeroMenuLib/Options/Lobby")
+require("ZeroMenuLib/Options/VehicleBuilder")
+
 require("ZeroMenuLib/util/config")
 require("ZeroMenuLib/enums/VehicleHash")
-require("ZeroMenuLib/Options/VehicleBuilder")
 
 local ignoreplayers
 configpath = os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts\\ZeroMenuLib\\data\\config.cfg"
@@ -44,6 +45,8 @@ function zeroMenuMain()
   
   createVehicleBuilderEntry(zeroMenu,config)
   
+  
+  
   if(player.get_player_name(player.player_id()) == "1336Zero") then
     require("ZeroMenuLib/Options/Dev")
     createDevEntry(zeroMenu,config)
@@ -58,8 +61,7 @@ end
 function loadSetting(parent,config)
   settings = menu.add_feature("Settings", "parent",parent.id, nil)
   --Nearby Settings  
-  loadNearbySettings(settings,config)
-  loadVehicleSetting(settings,config)
+  --loadVehicleSetting(settings,config)
   
   settings = menu.add_feature("Save", "action",settings.id, 
   function()

@@ -26,3 +26,8 @@ function streaming:is_model_a_world_object(ulHash)end
 function streaming:is_model_a_ped(ulHash)end
 function streaming:remove_anim_dict(szName)end
 function streaming:remove_anim_set(szName)end
+function streaming:does_vehicle_model_have_parachute(model)end
+function streaming:set_vehicle_model_has_parachute(model,toggle)end
+function streaming:get_vehicle_model_brand_label(model)end
+function streaming:get_vehicle_model_model_label(model)end
+function streaming:get_vehicle_model_name(model)end

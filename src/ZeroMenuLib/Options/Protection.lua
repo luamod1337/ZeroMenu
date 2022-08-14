@@ -1,4 +1,5 @@
-loadfile("ZeroMenuLib/Util/Util")
+--loadfile("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 local fpsCrashAttampt
 
 local vehicleNearByStorage = {}
@@ -7,7 +8,7 @@ local lastNotify = 0
 function createProtectionMenu(zModderMain,config)
   local protectionSubMenu = menu.add_feature("Protection", "parent", zModderMain.id, nil)
 
-  fpsCrashAttampt = createConfigedMenuOption("FPS Crash","toggle",protectionSubMenu.id,fpsCrashCheck,config,"fpsCrashProtection",false,nil)
+  fpsCrashAttampt = util.createConfigedMenuOption(self,"FPS Crash","toggle",protectionSubMenu.id,fpsCrashCheck,config,"fpsCrashProtection",false,nil)
 end
 
 

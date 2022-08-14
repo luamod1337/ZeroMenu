@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 function createWorldMenu(zModderMain,config)
 
@@ -8,24 +8,21 @@ function createWorldMenu(zModderMain,config)
   
   setWaves = menu.add_feature("Set Wave Intensity", "action", worldSubMenu.id, setWaveIntensity)
     
-  setWaves = menu.add_feature("Clear Objects", "action", worldSubMenu.id, clearObjects)
+  clearObjects = menu.add_feature("Clear Objects", "action", worldSubMenu.id, clearObjects)
   
-  setWaves = menu.add_feature("Clear Vehicles", "action", worldSubMenu.id, clearVehicles)
+  clearVehicles = menu.add_feature("Clear Vehicles", "action", worldSubMenu.id, clearVehicles)
   
-  setWaves = menu.add_feature("Clear Peds", "action", worldSubMenu.id, clearPeds)
+  ClearPeds = menu.add_feature("Clear Peds", "action", worldSubMenu.id, clearPeds)
   
-  setWaves = menu.add_feature("Clear Cops", "action", worldSubMenu.id, clear_area_of_cops)
+  ClearCops = menu.add_feature("Clear Cops", "action", worldSubMenu.id, clear_area_of_cops)
 
 end
 
 function setWaveIntensity()
-
   local r, s = input.get("Enter wave intensity", water.get_waves_intensity(), 64, 3)
   if r == 1 then return HANDLER_CONTINUE end
   if r == 2 then return HANDLER_POP end
-
   water.set_waves_intensity(s)
-
 end
 
 function resetWaveIntensity()

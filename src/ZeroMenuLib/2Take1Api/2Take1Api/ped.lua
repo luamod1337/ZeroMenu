@@ -90,3 +90,7 @@ function ped:set_ped_head_overlay_color(ped,overlayID,colorType,color,highlight)
 function ped:get_ped_head_overlay_color_type(ped,overlayID)end
 function ped:get_ped_head_overlay_color(ped,overlayID)end
 function ped:get_ped_head_overlay_highlight_color(ped,overlayID)end
+function ped:set_can_attack_friendly(ped,toggle,shoot)end
+function ped:add_relationship_group(name)end
+function ped:does_relationship_group_exist(group)end
+function ped:remove_relationship_group(group)end

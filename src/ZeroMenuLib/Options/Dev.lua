@@ -1,7 +1,7 @@
-local dev,sparkel,burning_candle_f,call_ptfx_f,vehicleArcobatic,spawnobject,hashbyshoot,ropeTestFunc
+local dev,sparkel,burning_candle_f,call_ptfx_f,vehicleArcobatic,spawnobject,hashbyshoot,ropeTestFunc,invisiblebyshoot,catGangFeature
 local lastAcro = 0
 
-
+local vm = require("ZeroMenuLib/enums/VehicleMapper")
 
 function createDevEntry(parent,config)
   dev = menu.add_feature("Dev","parent",parent.id,nil)  
@@ -23,6 +23,73 @@ function createDevEntry(parent,config)
   
     
   hashbyshoot = menu.add_feature("Get Hash by Aim","toggle",dev.id,hashbyshooting)
+  
+  invisiblebyshoot = menu.add_feature("Aim to make Invisible","toggle",dev.id,makeObjectInvisible)
+  
+  menu.add_feature("Get Model","action",dev.id,function()   
+    local model = player.get_player_model(player.player_id()) 
+    if util.isModelAnimal(self,model) then
+      menu.notify("You model is " .. model .. " a animal","ZeroMenu",5,140)  
+    else
+      menu.notify("You model is " .. model .. " not a animal","ZeroMenu",5,140)  
+    end
+  end)
+  
+  
+  menu.add_feature("Set Parachute","action",dev.id,function()
+    local veh = player.get_player_vehicle(player.player_id())
+    local parachute_model = vehicle.get_vehicle_parachute_model(veh)
+   
+   -- if(parachute_model ~= nil) then
+   --   menu.notify("Vehicle has allready a parachute model with id = " .. parachute_model,"ZeroMenu",10,5)
+   -- else      
+      
+   -- end
+   local parachute = "230075693"
+   if(not streaming.has_model_loaded(parachute)) then   
+    streaming.request_model(parachute)
+    streaming.set_vehicle_model_has_parachute(entity.get_entity_model_hash(veh),true)
+    return HANDLER_CONTINUE
+   else
+    vehicle.set_vehicle_parachute_model(veh,parachute)       
+    menu.notify("Vehicle parachute set to '" .. parachute .. "'" ,"ZeroMenu",10,5)
+    return HANDLER_POP
+   end
+  end)
+  
+  menu.add_feature("Display KD","action",dev.id,function()
+    local kd = script.get_global_f(1853131  + (1 + (player.player_id() * 888)) + 205 + 26)
+    menu.notify("You have a KD of " .. kd ,"ZeroMenu",5,140)
+  end)
+  
+  menu.add_feature("Set Model","action",dev.id,function()
+    
+    
+    
+    local r, s = input.get("Enter Model Hash", "", 64, 0)
+    if r == 1 then return HANDLER_CONTINUE end
+    if r == 2 then return HANDLER_POP end
+      local modelHash = s
+    if streaming.is_model_a_ped(modelHash) then
+      while not streaming.has_model_loaded(modelHash) do
+        print("requesting model " .. modelHash)
+        streaming.request_model(modelHash)
+        system.wait(0)
+      end
+      print("Setting Player Model to " .. modelHash)
+      if streaming.has_model_loaded(modelHash) then print(modelHash .. " has loaded") end
+      player.set_player_model(modelHash) 
+    end    
+  end)
+  
+  menu.add_feature("Display Money","action",dev.id,function()
+  
+    local moneyz = script.get_global_i(1853131   + (1 + (player.player_id() * 888)) + 205 + 56)
+    menu.notify("you have " .. moneyz .. " $" ,"ZeroMenu",5,140)
+  
+  end)
+  
+  catGangFeature = menu.add_feature("Cat Gang","toggle",dev.id,catGang)
   
    menu.add_feature("Set Max Gear", "action", dev.id, function()
     local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(player.player_id()))
@@ -51,6 +118,15 @@ function createDevEntry(parent,config)
    end)
   
   menu.add_feature("Get Bullet by holded gun","action",dev.id,getBulletFromGun)
+  
+  menu.add_feature("Display Vehicle Rotation","action",dev.id,function()
+    local pvehicle = player.get_player_vehicle(player.player_id())    
+    if(pvehicle ~= nil) then
+      local rotation = entity.get_entity_rotation(pvehicle)
+      menu.notify(rotation.x .. "," .. rotation.y .. "," .. rotation.z ,"ZeroMenu",5,140)
+    end
+  
+  end)
   
 end
 
@@ -313,6 +389,96 @@ function hashbyshooting()
     ui.draw_text(entity.get_entity_model_hash(lastEntity),v2(0.5,0.5))
   end
   if(hashbyshoot.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP 
+  end   
+end
+
+
+local catGangPeds = nil
+local catGangBikes = nil
+function catGang()
+  local catHash = 0x573201B8
+  if catGangPeds == nil then
+  catGangPeds = {}
+    --created peds
+    while not streaming.has_model_loaded(catHash) do
+      streaming.request_model(catHash)
+      system.wait(0)
+    end
+    for i = 1, 10 do
+      local cat = ped.create_ped(
+        -1,
+        catHash,
+        entity.get_entity_coords(player.player_id()),
+        entity.get_entity_heading(player.player_id()),
+        true,
+        false
+      )
+      menu.notify("Spawned a cat","ZeroMenu",5,140)
+      catGangPeds[#catGangPeds] = cat
+      --ai.task_follow_to_offset_of_entity(cat,player.player_id(),v3(0,0,0),1,10,10,true)
+    end
+  else
+    --control peds
+    
+    if player.is_player_in_any_vehicle(player.player_id()) then
+      local playerVehicle = player.get_player_vehicle(player.player_id())
+      --spawn bikes
+      if catGangBikes == nil then
+        catGangBikes = {}
+        for i = 1, #catGangPeds do
+          local cat = catGangPeds[i]          
+          local catbike = vehicle.create_vehicle("4180675781",entity.get_entity_coords(cat),entity.get_entity_heading(player.get_player_ped(cat)),true,false)
+          catGangBikes[#catGangBikes] = catbike
+          ai.task_vehicle_follow(cat,catbike,player.get_player_ped(player.player_id()),entity.get_entity_speed(playerVehicle),4194304,10)
+        end
+      end
+    else
+      --despawn bikes
+      if catGangBikes ~= nil then
+        for i = 1, #catGangBikes do
+          entity.delete_entity(catGangBikes[i])
+        end
+      end
+      --prüfe ob spieler in der nähe
+      if arePlayerNearby() then
+        --Gehe zu einem Spieler in der Nähe statt zu einem Selbst
+      else
+        for i = 1, #catGangPeds do
+            local cat = catGangPeds[i]    
+            ai.task_follow_to_offset_of_entity(cat,player.get_player_ped(player.player_id()),v3(0,0,0),1,10,10,true)
+        end
+      end
+      catGangBikes = nil
+      
+    end
+  end
+  if(catGangFeature.on) then
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP 
+  end   
+end
+
+function arePlayerNearby()
+  return false
+end
+
+function makeObjectInvisible()
+  local lastEntity = player.get_entity_player_is_aiming_at(player.player_id())
+  if(lastEntity ~= nil and entity.is_entity_visible(lastEntity) and lastEntity > 0) then
+    --ui.draw_text(entity.get_entity_model_hash(lastEntity),v2(0.5,0.5))
+    entity.set_entity_visible(lastEntity,false)
+    menu.notify("Made " .. lastEntity .. " invisible","ZeroMenu",5,40)
+  else
+    menu.notify("Made " .. lastEntity .. " not invisible","ZeroMenu",5,40)
+    menu.notify("Made " .. lastEntity .. " not invisible","ZeroMenu",5,40)
+    menu.notify("Made " .. lastEntity .. " not invisible","ZeroMenu",5,40)
+    
+  end
+  if(invisiblebyshoot.on) then
     return HANDLER_CONTINUE
   else
     return HANDLER_POP 

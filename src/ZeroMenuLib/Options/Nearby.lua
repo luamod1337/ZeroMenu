@@ -1,4 +1,4 @@
-require("ZeroMenuLib/Util/Util")
+local util = require("ZeroMenuLib/Util/Util")
 
 local VehicleHash = require("ZeroMenuLib/enums/VehicleHash")
 
@@ -20,20 +20,32 @@ function createNearbyMenu(parent,config)
   lConfig = config
   --Nearby
   nearby = menu.add_feature("Nearby", "parent", parent.id, nil)
-  slowMo = createConfigedMenuOption("SlowMo","toggle",nearby.id,slowMoLobby,config,"slowmolobby",false,nil)
-  hyper = createConfigedMenuOption("Hyper","toggle",nearby.id,hyperLobby,config,"hyperlobby",false,nil)
-  deppressorCheck = createConfigedMenuOption("Check for depressors","toggle",nearby.id,checkForDepressor,config,"deppressorCheck",false,nil)
-  coronaCheck = createConfigedMenuOption("Send China Flu Warning nearby","toggle",nearby.id,checkForPlayer,config,"coronaCheck",false,nil)
-  clearPath = createConfigedMenuOption("Clearpath","toggle",nearby.id,clearPathNearby,config,"clearPath",false,nil)
-  noCollissionmenu = createConfigedMenuOption("No Vehicle Colission","toggle",nearby.id,noCollision,config,"noCollission",false,nil)
-  noCollissionObjmenu = createConfigedMenuOption("No Object Colission","toggle",nearby.id,noObjectCollision,config,"noObjCollission",false,nil)
-  partyHardMenu = createConfigedMenuOption("Party Mode","toggle",nearby.id,dancingNpcs,config,"partyHard",false,nil)
-  blmMenu = createConfigedMenuOption("BLM Demo","toggle",nearby.id,warZone,config,"blm",false,nil)
-  firework = menu.add_feature("Firework around you","toggle",nearby.id,randomFireWork)
+  
+  local mapMods = menu.add_feature("Map Mods","parent",nearby.id,nil)
+  local colissionFeat = menu.add_feature("Colission","parent",nearby.id,nil)
+  
+  slowMo = util.createConfigedMenuOption(self,"Slow Traffic","toggle",nearby.id,slowMoLobby,config,"slowmolobby",false,nil)
+  hyper = util.createConfigedMenuOption(self,"Fast Traffic","toggle",nearby.id,hyperLobby,config,"hyperlobby",false,nil)
+  local coronaParent = menu.add_feature("China Flu","parent",nearby.id,nil)
+  coronaCheck = util.createConfigedMenuOption(self,"Send China Flu Warning nearby","toggle",coronaParent.id,checkForPlayer,config,"coronaCheck",false,nil)
+  clearPath = util.createConfigedMenuOption(self,"Follow me","toggle",nearby.id,clearPathNearby,config,"clearPath",false,nil)
+  noCollissionmenu = util.createConfigedMenuOption(self,"No Vehicle Colission","toggle",colissionFeat.id,noCollision,config,"noCollission",false,nil)
+  noCollissionObjmenu = util.createConfigedMenuOption(self,"No Object Colission","toggle",colissionFeat.id,noObjectCollision,config,"noObjCollission",false,nil)
+  partyHardMenu = util.createConfigedMenuOption(self,"Party Mode","toggle",nearby.id,dancingNpcs,config,"partyHard",false,nil)
+  blmMenu = util.createConfigedMenuOption(self,"BLM Demo","toggle",nearby.id,warZone,config,"blm",false,nil)
+  firework = menu.add_feature("Firework around you","toggle",mapMods.id,randomFireWork)
+  
+  
+  antiopressor = menu.add_feature("Anti-Opressor", "parent", parent.id, nil)
+  deppressorCheck = util.createConfigedMenuOption(self,"Check for depressors","toggle",antiopressor.id,checkForDepressor,config,"deppressorCheck",false,nil)
+  loadNearbySettings(antiopressor,config)
+  
+  loadNearbyFeatSettings(coronaParent,config)
+  
   storage = {}
 
-  menu.add_feature("Half-Pipes Fun","action",nearby.id,spawnFunRamp)
-  menu.add_feature("Half-Pipes Fun 2","action",nearby.id,spawnFunRamp2)
+  menu.add_feature("Half-Pipes dome half","action",mapMods.id,spawnFunRamp)
+  menu.add_feature("Half-Pipes dome full","action",mapMods.id,spawnFunRamp2)
   
   removeGunsOfPeds = menu.add_feature("Remove Guns of shooting Peds","toggle",nearby.id,nerfEnemyPeds)
 end
@@ -84,7 +96,8 @@ function spawnFunRamp2()
 end
 
 function nerfEnemyPeds()
-  for i in ipairs(ped.get_all_peds())do
+  local peds = ped.get_all_peds()
+  for i in ipairs(peds)do
     local tempped = ped.get_all_peds()[i]
     if(tempped ~= nil) then
       if(not ped.is_ped_a_player(tempped) and ped.is_ped_shooting(tempped)) then
@@ -556,27 +569,31 @@ function getMySelfCoords()
   return player.get_player_coords(player.player_id())
 end
 
-function loadNearbySettings(parent,config)
+function loadNearbyFeatSettings(parent,config)
   cfsettings = menu.add_feature("China Flu Settings", "parent", parent.id, nil)
+  
+    --  local settings =  menu.add_feature("Settings", "parent", CoronaMainFeature.id, nil)
+  
+    distanceWarning = menu.add_feature("Warning Distance", "autoaction_value_i", cfsettings.id, function(f)
+      if f.value > distance then
+        distance = distance+100
+      else
+        distance = distance-100
+      end
+  
+      distanceWarning.value = distance
+    end)
+    config:saveIfNotExist("cfdistance",tonumber(distance))
+    config:saveIfNotExist("cfdistancemax",10000)
+  
+  
+    distanceWarning.max = tonumber(config:getValue("cfdistancemax"))
+    distanceWarning.value = tonumber(config:getValue("cfdistance"))
 
-  --  local settings =  menu.add_feature("Settings", "parent", CoronaMainFeature.id, nil)
+end
 
-  distanceWarning = menu.add_feature("Warning Distance", "autoaction_value_i", cfsettings.id, function(f)
-    if f.value > distance then
-      distance = distance+100
-    else
-      distance = distance-100
-    end
-
-    distanceWarning.value = distance
-  end)
-  config:saveIfNotExist("cfdistance",tonumber(distance))
-  config:saveIfNotExist("cfdistancemax",10000)
-
-
-  distanceWarning.max = tonumber(config:getValue("cfdistancemax"))
-  distanceWarning.value = tonumber(config:getValue("cfdistance"))
-
+function loadNearbySettings(parent,config)
+  
   adsettings = menu.add_feature("Anti Depressor", "parent", parent.id, nil)
 
 

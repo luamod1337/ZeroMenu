@@ -16,21 +16,142 @@ function createGriefEntry(config)
   menu.add_player_feature("Give Armour","action",parent,bulletproofPlayer)
   parentModderValues = menu.add_player_feature("ZeroMenu Playerdata","parent",0,displayModderValues).id
   griefscream = menu.add_player_feature("Scream Grief","toggle",parent,screamGriefPlayer)
-  griefcontrol = menu.add_player_feature("Control Grief","toggle",parent,controlVehicleGriefPlayer)  
+  griefcontrol = menu.add_player_feature("Control Grief","toggle",parent,controlVehicleGriefPlayer)
   menu.add_player_feature("On-Screen Track","toggle",parentModderValues,mark_player_onscreen)
-  
+
   menu.add_player_feature("Set Heli Blade Speed", "action", parent, setHeliBladeSpeedG)
-  
+
   menu.add_player_feature("Attach PTFX", "action", parent, attach_ptfx_to_player)
   menu.add_player_feature("Flare and Smoke", "action", parent, flareAndSmoke)
-  
+
   menu.add_player_feature("Send Troll SMS", "action", parent, sendTrollSms)
   menu.add_player_feature("Send Virus String SMS", "action", parent, sendVirusTestSms)
   menu.add_player_feature("Send Virus String SMS", "toggle", parent, sendVirusTestSms)
-  
+
   menu.add_player_feature("Atomizer Grief", "toggle", parent, electroGrief)
-  
-  
+
+  menu.add_player_feature("Make animal","action",parent,function(feat,pid)
+    local isModelAnimal = util.isModelAnimal(self,player.get_player_model(pid))
+    while not isModelAnimal do
+      --715
+      --356
+      --876 Pigeon
+      --157,640 Hawk
+      --143 Cow
+      local randomInt = math.random(0, 1000)
+      --local randomInt = 356
+      isModelAnimal = util.isModelAnimal(self,player.get_player_model(pid))
+      if isModelAnimal then
+        menu.notify(player.get_player_name(pid) .. " is an animal last used int = " .. randomInt,"ZeroMenu",5,140)
+      else
+        menu.notify("Trying to make " .. player.get_player_name(pid) .. " an animal","ZeroMenu",5,140)
+        menu.notify("Sending Scriptevent ..","ZeroMenu",5,140)
+        --script.trigger_script_event(-1178972880 , pid, {pid, 8, 1, 1, 1, 1})
+        script.trigger_script_event(-1178972880 , pid, {pid, 8, randomInt, 1, 1, 1})
+        system.wait(1000)
+      end
+    end
+  end)
+
+  menu.add_player_feature("Give movie props","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 0, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give hidden caches","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 1, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give treasure chest","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 2, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give radio antennas","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 3, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give tuner collectibles","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 4, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give treasure (outfit) chest","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 5, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give buried stashes","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 6, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give halloween Tshirt","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 7, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give Trick or Thread","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 8, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give LG organics product","toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 9, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
+  menu.add_player_feature("Give Junk Energy Skydives" ,"toggle",parent,function(feat,pid)
+    local randomInt = math.random(0, 1000)
+    script.trigger_script_event(-1178972880 , pid, {pid, 10, randomInt, 1, 1, 1})
+    if(feat.on) then
+      return HANDLER_CONTINUE
+    else
+      return HANDLER_POP
+    end
+  end)
   trackedPlayer = {}
 end
 
@@ -43,17 +164,17 @@ function electroGrief(feat,slot)
     --bullet = 0x3656C8C1
     --bullet = 0xAF3696A1
     --bullet = 0x3656C8C1 -- stungun not working ?
-    
+
     --bullet = 0x4DD2DC56 -- smoke launcher
     --bullet = 0xAF3696A1 -- atomizer
-    
+
     local pos = player.get_player_coords(slot)
     gameplay.shoot_single_bullet_between_coords(pos,pos,1,bullet,slot,true,true,10)
     --gameplay.shoot_single_bullet_between_coords(start,endvalue,damage,weapon,owner,audible,invaluevisible,speed)
     --menu.notify("Atomizer Grief","ZeroMenu",5,140)
     system.wait(1000)
   end
-  
+
   if(feat.on) then
     return HANDLER_CONTINUE
   else
@@ -67,26 +188,26 @@ function mark_player_onscreen(feat,slot)
   else
     trackedPlayer[player.get_player_name(slot)] = 0
   end
-  
+
 end
 
 function displayModderValues(feat,slot)
   if(playerList ~= nil) then
     if(playerList[player.get_player_name(slot)] ~= nil) then
       if(playerList[player.get_player_name(slot)]['godTime'] ~= nil) then
-        
+
         if(display_god == nil) then
           display_god = menu.add_player_feature("God: " .. playerList[player.get_player_name(slot)]['godTime'],"action",parentModderValues,nil).id
         end
-        menu.get_player_feature(display_god).feats[slot+1].name = "God: " .. playerList[player.get_player_name(slot)]['godTime']  
+        menu.get_player_feature(display_god).feats[slot+1].name = "God: " .. playerList[player.get_player_name(slot)]['godTime']
       end
-      
+
       if(playerList[player.get_player_name(slot)]['godvehicle'] ~= nil) then
         if(display_god_vehicle == nil) then
           display_god_vehicle = menu.add_player_feature("God Vehicle: " .. playerList[player.get_player_name(slot)]['godvehicle'],"action",parentModderValues,nil).id
         end
         menu.get_player_feature(display_god_vehicle).feats[slot+1].name = "God Vehicle: " .. playerList[player.get_player_name(slot)]['godvehicle']
-        
+
       end
       if(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'] ~= nil) then
         if(display_Speed == nil) then
@@ -96,7 +217,7 @@ function displayModderValues(feat,slot)
         local ms = round(playerList[player.get_player_name(slot)]['lastSecondDistanceMoved'],0)
         menu.get_player_feature(display_Speed).feats[slot+1].name = "Speed: " .. ms .. " (" .. (ms*3.6) .. " km/h)"
       end
-      if(playerList[player.get_player_name(slot)]['distanceMoved'] ~= nil) then        
+      if(playerList[player.get_player_name(slot)]['distanceMoved'] ~= nil) then
         if(display_distance == nil) then
           display_distance = menu.add_player_feature("Distance Moved: " .. playerList[player.get_player_name(slot)]['distanceMoved'],"action",parentModderValues,nil).id
         end
@@ -110,28 +231,28 @@ function displayModderValues(feat,slot)
         if(display_vehicle == nil) then
           display_vehicle = menu.add_player_feature("Vehicle: " .. vehicleName,"action",parentModderValues,nil).id
         end
-        menu.get_player_feature(display_vehicle).feats[slot+1].name = "Vehicle: " .. vehicleName        
+        menu.get_player_feature(display_vehicle).feats[slot+1].name = "Vehicle: " .. vehicleName
       else
         if(display_vehicle == nil) then
           display_vehicle = menu.add_player_feature("Vehicle: None","action",parentModderValues,nil).id
         end
         menu.get_player_feature(display_vehicle).feats[slot+1].name = "Vehicle: None"
       end
-     
-      
+
+
     end
-  end  
+  end
 end
 
 function bulletproofPlayer(feat, slot)
 
   local target = player.get_player_ped(slot)
-   
+
   local boneIndex_arm = entity.get_entity_bone_index_by_name(target,"RB_L_ArmRoll")
   local boneIndex_head = entity.get_entity_bone_index_by_name(target,"IK_Head")
-  
-  
-  if(streaming.has_model_loaded(1141389967)) then  
+
+
+  if(streaming.has_model_loaded(1141389967)) then
     --Back
     local subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     local offset = v3(0,0.25,0)
@@ -143,7 +264,7 @@ function bulletproofPlayer(feat, slot)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     local offset = v3(0,0.25,0.35)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
-        
+
     --back
     offset = v3(0,-0.25,0)
     rot = v3(0,45,0)
@@ -151,11 +272,11 @@ function bulletproofPlayer(feat, slot)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0,-0.25,-0.5)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
-    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)    
+    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0,-0.25,0.35)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
-    
+
     --back
     offset = v3(0,-0.25,0)
     rot = v3(0,-45,0)
@@ -163,33 +284,33 @@ function bulletproofPlayer(feat, slot)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0,-0.25,-0.5)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
-    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)    
+    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0,-0.25,0.35)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
-    
+
     offset = v3(0.25,0,0)
     rot = v3(0,0,90)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0.25,0,-0.5)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
-    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)    
+    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(0.25,0,0.35)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
-    
+
     offset = v3(-0.25,0,0)
     rot = v3(0,0,-90)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(-0.25,0,-0.5)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
-    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)    
+    entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
     offset = v3(-0.25,0,0.35)
     subject = object.create_object(1141389967,player.get_player_coords(player.player_id()),true,true)
     entity.attach_entity_to_entity(subject,target,boneIndex_arm,offset,rot,false,true,false,0,true)
-    
+
     offset = v3(0,0,0.5)
     rot = v3(90,180,270)
     subject = object.create_object(-992802541,player.get_player_coords(player.player_id()),true,true)
@@ -233,8 +354,8 @@ function logNetEventsAndBlock(feat,slot)
   else
     logThisPlayer[player.get_player_name(slot)] = 0
   end
- hook.register_net_event_hook(netEventCallBack)
- hook.register_script_event_hook(scriptEventCallBack)
+  hook.register_net_event_hook(netEventCallBack)
+  hook.register_script_event_hook(scriptEventCallBack)
 
 end
 
@@ -259,7 +380,7 @@ end
 function scriptEventCallBack(slot, target, params, count)
   if target == player.player_id() then
     if (logThisPlayer[player.get_player_name(slot)] ~= nil and logThisPlayer[player.get_player_name(slot)]  == 1) then
-        menu.notify("blocked script event " .. count .. " from " .. player.get_player_name(slot),"ZeroMenu",5,140)
+      menu.notify("blocked script event " .. count .. " from " .. player.get_player_name(slot),"ZeroMenu",5,140)
       logEvent("blocked script event (size: " .. count .. ") from " .. player.get_player_name(slot))
       local cnt = 0
       for k in pairs(params) do
@@ -275,7 +396,7 @@ local chatEventPath =os.getenv('APPDATA') .. "\\PopstarDevs\\2Take1Menu\\scripts
 
 function logEvent(message)
   if not utils.file_exists(chatEventPath) then
-   -- utils.make_dir(chatEventPath)
+    -- utils.make_dir(chatEventPath)
     file = io.open(chatEventPath, "w")
     file:write("#Created using 1337Zeros ZeroMenu\n")
     file:close()
@@ -299,30 +420,30 @@ function disableVehicle(feat,slot)
     vehicle.set_vehicle_engine_on(veh,false,true,true)
   end
   if feat.on then
-      return HANDLER_CONTINUE
-    else
-      return HANDLER_POP
-    end
+    return HANDLER_CONTINUE
+  else
+    return HANDLER_POP
+  end
 end
 
 local lastSpeed = 0
 
 function pushAwayGrief(feat,slot)
   local rotation = v3()
-    rotation.z = 180
-    rotation.y = 0
-    rotation.x = 0
+  rotation.z = 180
+  rotation.y = 0
+  rotation.x = 0
   local veh = ped.get_vehicle_ped_is_using(player.get_player_ped(slot))
   if veh ~= nil then
     if not network.has_control_of_entity(veh) then
       network.request_control_of_entity(veh)
     end
-  if lastSpeed == 0 then
-    local r, s = input.get("Enter new Torque", 10000, 64, 3)
-    if r == 1 then return HANDLER_CONTINUE end
-    if r == 2 then return HANDLER_POP end
-    lastSpeed = s
-  end
+    if lastSpeed == 0 then
+      local r, s = input.get("Enter new Torque", 10000, 64, 3)
+      if r == 1 then return HANDLER_CONTINUE end
+      if r == 2 then return HANDLER_POP end
+      lastSpeed = s
+    end
     entity.set_entity_max_speed(veh,10000)
     vehicle.set_vehicle_out_of_control(veh,false,false)
     entity.set_entity_rotation(veh,rotation)
@@ -345,15 +466,15 @@ function controlVehicleGriefPlayer(feat, slot)
         end
         entity.set_entity_max_speed(veh,1)
         vehicle.set_vehicle_out_of_control(veh,false,false)
-        menu.notify("Set out of control for slot " .. player.get_player_name(slot) ,"ZeroMenu",5,140)        
+        menu.notify("Set out of control for slot " .. player.get_player_name(slot) ,"ZeroMenu",5,140)
       else
-        menu.notify("Target isn't inside a Vehicle" ,"ZeroMenu",5,140)     
+        menu.notify("Target isn't inside a Vehicle" ,"ZeroMenu",5,140)
       end
     else
-        menu.notify("Invalid Player" ,"ZeroMenu",5,140)     
+      menu.notify("Invalid Player" ,"ZeroMenu",5,140)
     end
   else
-        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)     
+    menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)
   end
 
   if feat.on then
@@ -377,17 +498,17 @@ function speedVehicleUpgradeGriefPlayer(feat, slot)
         entity.set_entity_max_speed(veh,s)
         vehicle.modify_vehicle_top_speed(veh,1000000)
         vehicle.set_vehicle_engine_torque_multiplier_this_frame(veh,s)
-        menu.notify("Set Max Speed to " .. s,"ZeroMenu",5,140)  
+        menu.notify("Set Max Speed to " .. s,"ZeroMenu",5,140)
       else
-        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)  
+        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)
       end
     else
-        menu.notify("Invalid Player","ZeroMenu",5,140)  
+      menu.notify("Invalid Player","ZeroMenu",5,140)
     end
   else
-        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)  
+    menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)
   end
- --if grief_upgrade.on then
+  --if grief_upgrade.on then
   --  return HANDLER_CONTINUE
   --else
   --  return HANDLER_POP
@@ -403,17 +524,17 @@ function doorVehicleGriefPlayer(feat, slot)
           network.request_control_of_entity(veh)
         end
         vehicle.set_vehicle_doors_locked(veh,4)
-        menu.notify("Locked doors of vehicle","ZeroMenu",5,140)  
+        menu.notify("Locked doors of vehicle","ZeroMenu",5,140)
       else
-        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)  
+        menu.notify("Target isn't inside a Vehicle","ZeroMenu",5,140)
       end
     else
-        menu.notify("Invalid Player","ZeroMenu",5,140)  
+      menu.notify("Invalid Player","ZeroMenu",5,140)
     end
   else
-        menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)  
+    menu.notify("I wouldn't grief yourself!","ZeroMenu",5,140)
   end
- --if grief_door.on then
+  --if grief_door.on then
   --  return HANDLER_CONTINUE
   --else
   --  return HANDLER_POP
@@ -429,9 +550,9 @@ function screamGriefPlayer(feat, slot)
     audio.play_sound_from_coord(-1,"Horn", entity.get_entity_coords(player.get_player_ped(slot)), "DLC_Apt_Yacht_Ambient_Soundset", true, 5, false)
     audio.play_sound_from_coord(-1,"SHUTTER_FLASH", entity.get_entity_coords(player.get_player_ped(slot)), "CAMERA_FLASH_SOUNDSET", true, 5, false)
 
-    menu.notify("Horned him","ZeroMenu",5,140)  
+    menu.notify("Horned him","ZeroMenu",5,140)
   else
-    menu.notify("Invalid Player","ZeroMenu",5,140)  
+    menu.notify("Invalid Player","ZeroMenu",5,140)
   end
   if feat.on then
     return HANDLER_CONTINUE
@@ -462,7 +583,7 @@ function setHeliBladeSpeedG(feat, slot)
   if veh ~= nil and streaming.is_model_a_heli(entity.get_entity_model_hash(veh)) then
     vehicle.set_heli_blades_speed(veh,s)
   end
-    return HANDLER_POP
+  return HANDLER_POP
 end
 
 
@@ -470,34 +591,34 @@ local dict = nil
 local flame = nil
 local scale = nil
 
-function attach_ptfx_to_player(feat,slot)  
+function attach_ptfx_to_player(feat,slot)
   local entity = player.get_player_ped(slot)
 
-  
+
   if(dict == nil) then
     local r, s = input.get("Enter Dictonary", "core", 64, 0)
     if r == 1 then return HANDLER_CONTINUE end
-    if r == 2 then return HANDLER_POP end    
-    dict = s  
+    if r == 2 then return HANDLER_POP end
+    dict = s
   end
-    
+
   if(flame == nil) then
     local r, s = input.get("Enter PTFX", "ent_amb_candle_flame", 64, 0)
     if r == 1 then return HANDLER_CONTINUE end
-    if r == 2 then return HANDLER_POP end      
+    if r == 2 then return HANDLER_POP end
     flame = s
   end
   if(scale == nil) then
     local r, s = input.get("Enter Scale Value for PTFX", 5.0, 64, 5)
     if r == 1 then return HANDLER_CONTINUE end
-    if r == 2 then return HANDLER_POP end      
+    if r == 2 then return HANDLER_POP end
     scale = s
   end
-  attachPTFXToEntity(entity,dict,flame,scale)    
+  attachPTFXToEntity(entity,dict,flame,scale)
   flame = nil
   dict = nil
   scale = nil
-  return HANDLER_POP 
+  return HANDLER_POP
 end
 
 function attachPTFXToEntity(entity,dict,ptfx,scale)
@@ -505,7 +626,7 @@ function attachPTFXToEntity(entity,dict,ptfx,scale)
   while not graphics.has_named_ptfx_asset_loaded(dict) do
     graphics.request_named_ptfx_asset(dict)
     system.wait(0)
-    return HANDLER_CONTINUE 
+    return HANDLER_CONTINUE
   end
   local offset = v3(0,0,0)
   local rot = v3(0,0,0)
@@ -516,33 +637,33 @@ function flareAndSmoke(feat,slot)
   local entity = player.get_player_ped(slot)
   --proj_flare_trail
   --exp_grd_grenade_smoke
-  attachPTFXToEntity(entity,"core","proj_flare_trail",5.0)  
-    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",1.0)  
-    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",2.0) 
-    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",3.0)  
-    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",4.0)  
-    attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",5.0)  
-    menu.notify("Attached PTFX to " .. player.get_player_name(slot),"ZeroMenu",5,140)
+  attachPTFXToEntity(entity,"core","proj_flare_trail",5.0)
+  attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",1.0)
+  attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",2.0)
+  attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",3.0)
+  attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",4.0)
+  attachPTFXToEntity(entity,"core","exp_grd_grenade_smoke",5.0)
+  menu.notify("Attached PTFX to " .. player.get_player_name(slot),"ZeroMenu",5,140)
 end
 
 function sendTrollSms(feat,slot)
-player.send_player_sms(slot,"test\ntest<br>\test")
+  player.send_player_sms(slot,"test\ntest<br>\test")
   player.send_player_sms(slot,
-  "░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄░░░░░░░"..
-  "░░░░░█░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░▀▀▄░░░░"..
-  "░░░░█░░░▒▒▒▒▒▒░░░░░░░░▒▒▒░░█░░░"..
-  "░░░█░░░░░░▄██▀▄▄░░░░░▄▄▄░░░░█░░"..
-  "░▄▀▒▄▄▄▒░█▀▀▀▀▄▄█░░░██▄▄█░░░░█░"..
-  "█░▒█▒▄░▀▄▄▄▀░░░░░░░░█░░░▒▒▒▒▒░█"..
-  "█░▒█░█▀▄▄░░░░░█▀░░░░▀▄░░▄▀▀▀▄▒█"..
-  "░█░▀▄░█▄░█▀▄▄░▀░▀▀░▄▄▀░░░░█░░█░"..
-  "░░█░░░▀▄▀█▄▄░█▀▀▀▄▄▄▄▀▀█▀██░█░░"..
-  "░░░█░░░░██░░▀█▄▄▄█▄▄█▄████░█░░░"..
-  "░░░░█░░░░▀▀▄░█░░░█░█▀██████░█░░"..
-  "░░░░░▀▄░░░░░▀▀▄▄▄█▄█▄█▄█▄▀░░█░░"..
-  "░░░░░░░▀▄▄░▒▒▒▒░░░░░░░░░░▒░░░█░"..
-  "░░░░░░░░░░▀▀▄▄░▒▒▒▒▒▒▒▒▒▒░░░░█░"..
-  "░░░░░░░░░░░░░░▀▄▄▄▄▄░░░░░░░░█░░")
+    "░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄░░░░░░░"..
+    "░░░░░█░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░▀▀▄░░░░"..
+    "░░░░█░░░▒▒▒▒▒▒░░░░░░░░▒▒▒░░█░░░"..
+    "░░░█░░░░░░▄██▀▄▄░░░░░▄▄▄░░░░█░░"..
+    "░▄▀▒▄▄▄▒░█▀▀▀▀▄▄█░░░██▄▄█░░░░█░"..
+    "█░▒█▒▄░▀▄▄▄▀░░░░░░░░█░░░▒▒▒▒▒░█"..
+    "█░▒█░█▀▄▄░░░░░█▀░░░░▀▄░░▄▀▀▀▄▒█"..
+    "░█░▀▄░█▄░█▀▄▄░▀░▀▀░▄▄▀░░░░█░░█░"..
+    "░░█░░░▀▄▀█▄▄░█▀▀▀▄▄▄▄▀▀█▀██░█░░"..
+    "░░░█░░░░██░░▀█▄▄▄█▄▄█▄████░█░░░"..
+    "░░░░█░░░░▀▀▄░█░░░█░█▀██████░█░░"..
+    "░░░░░▀▄░░░░░▀▀▄▄▄█▄█▄█▄█▄▀░░█░░"..
+    "░░░░░░░▀▄▄░▒▒▒▒░░░░░░░░░░▒░░░█░"..
+    "░░░░░░░░░░▀▀▄▄░▒▒▒▒▒▒▒▒▒▒░░░░█░"..
+    "░░░░░░░░░░░░░░▀▄▄▄▄▄░░░░░░░░█░░")
   menu.notify("Send Trollface SMS to" ..  player.get_player_name(slot),"ZeroMenu",5,140)
 end
 

@@ -52,6 +52,6 @@ function ai:task_aim_gun_at_coord(ped,coord,time,a4,a5)end
 function ai:task_turn_ped_to_face_entity(ped,entity,duration)end
 function ai:task_aim_gun_at_entity(ped,entity,duration,a4)end
 function ai:is_task_active(ped,taskId)end
+--:	<https://pastebin.com/2gFqJ3Px>
 function ai:task_play_anim(ped,dict,anim,speed,speedMult,duration,flag,playbackRate,lockX,lockY,lockZ)end
 function ai:stop_anim_task(ped,dict,anim,a4)end
---<https://pastebin.com/2gFqJ3Px>

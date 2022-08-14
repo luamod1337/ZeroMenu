@@ -50,3 +50,4 @@ function graphics:set_checkpoint_icon_rgba(checkpoinvaluet,r,g,b,a)end
 function graphics:delete_checkpoint(checkpoinvaluet)end
 function graphics:has_scaleform_movie_loaded(scaleform)end
 function graphics:set_scaleform_movie_as_no_longer_needed(scaleform)end
+function graphics:project_3d_coord(coord)end
